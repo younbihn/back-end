@@ -1,6 +1,6 @@
 package com.example.demo.entity;
 
-import com.example.demo.code.NotificationCode;
+import com.example.demo.type.NotificationCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

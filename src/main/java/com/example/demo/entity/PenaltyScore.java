@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
-import com.example.demo.code.ApplyStatus;
-import com.example.demo.code.PenaltyCode;
+import com.example.demo.type.ApplyStatus;
+import com.example.demo.type.PenaltyCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,6 +1,6 @@
 package com.example.demo.entity;
 
-import com.example.demo.code.ApplyStatus;
+import com.example.demo.type.ApplyStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
