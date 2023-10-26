@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS SITE_USER;
 DROP TABLE IF EXISTS MATCHING;
-DROP TABLE IF EXISTS AUTH;
+DROP TABLE IF EXISTS AUTH_DATA;
 DROP TABLE IF EXISTS APPLY;
 DROP TABLE IF EXISTS NOTIFICATION;
 DROP TABLE IF EXISTS WEATHER;
@@ -25,7 +25,7 @@ CREATE TABLE `SITE_USER` (
                              `AGE_GROUP`	varchar(50)	NOT NULL	COMMENT 'TWENTIES, THIRTIES , FORTIES , SENIOR',
                              `PROFILE_IMG`	varchar(1023)	NULL,
                              `CREATE_DATE`	TIMESTAMP	NOT NULL	COMMENT 'YYYY-MM-DD HH:MM:SS',
-                             `PHONE_VERIFICATION`	BOOL	NULL	DEFAULT 0	COMMENT 'true = 1 / false = 0'
+                             `IS_PHONE_VERIFIED`	BOOL	NULL	DEFAULT 0	COMMENT 'true = 1 / false = 0'
 );
 
 CREATE TABLE `MATCHING` (
@@ -40,26 +40,26 @@ CREATE TABLE `MATCHING` (
                             `END_TIME`	TIME	NOT NULL	COMMENT 'HH:MM:SS',
                             `RECRUIT_NUM`	INT	NOT NULL,
                             `COST`	INT	NOT NULL,
-                            `RESERVATION_STATUS`	BOOL	NULL	DEFAULT 0	COMMENT 'true = 1 / false = 0',
+                            `IS_RESERVED`	BOOL	NULL	DEFAULT 0	COMMENT 'true = 1 / false = 0',
                             `NTRP`	VARCHAR(50)	NULL	COMMENT '등록자가 범위를 입력할 수 있으므로',
                             `AGE`	VARCHAR(50)	NULL	COMMENT '등록자가 범위를 입력할 수 있으므로',
                             `RECRUIT_STATUS`	VARCHAR(50)	NULL,
                             `CREATE_TIME`	TIMESTAMP	NOT NULL	COMMENT 'YYYY-MM-DD HH:MM:SS',
-                            `TYPE`	VARCHAR(50)	NULL	COMMENT 'SINGLE, DOUBLE, MIXED_DOUBLE, OTHER',
+                            `MATCHING_TYPE`	VARCHAR(50)	NULL	COMMENT 'SINGLE, DOUBLE, MIXED_DOUBLE, OTHER',
                             `APPLY_NUM`	INT	NULL	DEFAULT 0
 );
 
-CREATE TABLE `AUTH` (
-                        `ID`	BIGINT	NOT NULL,
-                        `REFRESH_TOKEN`	VARCHAR(1023)	NULL	COMMENT '유효시간 14시간',
-                        `SITE_USER_ID`	BIGINT	NOT NULL
+CREATE TABLE `AUTH_DATA` (
+                             `ID`	BIGINT	NOT NULL,
+                             `REFRESH_TOKEN`	VARCHAR(1023)	NULL	COMMENT '유효시간 14시간',
+                             `SITE_USER_ID`	BIGINT	NOT NULL
 );
 
 CREATE TABLE `APPLY` (
                          `ID`	BIGINT	NOT NULL,
                          `MATCHING_ID`	BIGINT	NOT NULL,
                          `SITE_USER_ID`	BIGINT	NOT NULL,
-                         `APPLY_DATE`	TIMESTAMP	NOT NULL	COMMENT 'YYYY-MM-DD HH:MM:SS',
+                         `CREATE_TIME`	TIMESTAMP	NOT NULL	COMMENT 'YYYY-MM-DD HH:MM:SS',
                          `STATUS`	VARCHAR(50)	NOT NULL	COMMENT 'PENDING, ACCEPTED, REJECTED'
 );
 
@@ -100,7 +100,7 @@ CREATE TABLE `PENALTY_SCORE` (
                                  `SCORE`	INT	NOT NULL,
                                  `STATUS`	VARCHAR(50)	NULL	DEFAULT 'PENDING'	COMMENT 'PENDING, ACCEPTED, REJECTED',
                                  `CREATE_TIME`	TIMESTAMP	NOT NULL	COMMENT 'YYYY-MM-DD HH:MM:SS',
-                                 `TYPE`	VARCHAR(50)	NULL	COMMENT 'OFFENSE_CHAT, DELETE_MATCH, CANCEL_AFTER_COMFIRM'
+                                 `CODE`	VARCHAR(50)	NULL	COMMENT 'OFFENSE_CHAT, DELETE_MATCH, CANCEL_AFTER_COMFIRM'
 );
 
 CREATE TABLE `REVIEW` (
@@ -109,7 +109,7 @@ CREATE TABLE `REVIEW` (
                           `MATCHING_ID`	BIGINT	NOT NULL,
                           `SUBJECT_USER_ID`	BIGINT	NOT NULL,
                           `SCORE`	INT	NOT NULL,
-                          `CREATE_TIME`	TIMESTAMP	NOT NULL	COMMENT 'YYYY-MM-DD HH:MM:SS',
+                          `CREATE_TIME`	TIMESTAMP	NOT NULL	COMMENT 'YYYY-MM-DD HH:MM:SS'
 );
 
 ALTER TABLE `SITE_USER` ADD CONSTRAINT `PK_USER` PRIMARY KEY (
@@ -120,8 +120,8 @@ ALTER TABLE `MATCHING` ADD CONSTRAINT `PK_MATCHING` PRIMARY KEY (
                                                                  `ID`
     );
 
-ALTER TABLE `AUTH` ADD CONSTRAINT `PK_AUTH` PRIMARY KEY (
-                                                         `ID`
+ALTER TABLE `AUTH_DATA` ADD CONSTRAINT `PK_AUTH` PRIMARY KEY (
+                                                              `ID`
     );
 
 ALTER TABLE `APPLY` ADD CONSTRAINT `PK_APPLY` PRIMARY KEY (
@@ -151,4 +151,3 @@ ALTER TABLE `PENALTY_SCORE` ADD CONSTRAINT `PK_PENALTY_SCORE` PRIMARY KEY (
 ALTER TABLE `REVIEW` ADD CONSTRAINT `PK_REVIEW` PRIMARY KEY (
                                                              `ID`
     );
-

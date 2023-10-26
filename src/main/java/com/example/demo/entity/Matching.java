@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
-import com.example.demo.code.MatchingType;
-import com.example.demo.code.RecruitStatus;
+import com.example.demo.type.MatchingType;
+import com.example.demo.type.RecruitStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,10 +10,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 @Entity
@@ -76,4 +78,7 @@ public class Matching {
 
     @Column(name = "CREATE_TIME", nullable = false)
     private Timestamp createTime;
+
+    @OneToMany(mappedBy = "matching")
+    private List<Confirm> confirms; // 확정 인원 목록 - 채팅방 만들 때 사용
 }
