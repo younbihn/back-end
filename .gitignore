@@ -36,5 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-### yml ###
-src/main/resources/application-db.yml
+### src/main/resources/application-db.yml - 배포할 때 주석 제거
