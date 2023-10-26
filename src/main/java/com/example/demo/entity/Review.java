@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.sql.Timestamp;
 
@@ -17,15 +18,15 @@ public class Review {
     private Long id;
 
     @ManyToOne
-    @Column(name = "MATCHING_ID", nullable = false)
+    @JoinColumn(name = "MATCHING_ID", nullable = false)
     private Matching matching;
 
     @ManyToOne
-    @Column(name = "OBJECT_USER_ID", nullable = false)
+    @JoinColumn(name = "OBJECT_USER_ID", nullable = false)
     private SiteUser objectUser;
 
     @ManyToOne
-    @Column(name = "SUBJECT_USER_ID", nullable = false)
+    @JoinColumn(name = "SUBJECT_USER_ID", nullable = false)
     private SiteUser subjectUser;
 
     @Column(name = "SCORE", nullable = false)

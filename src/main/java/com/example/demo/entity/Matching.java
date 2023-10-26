@@ -9,17 +9,15 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
-
 @Entity
-@Table(name = "MATCHING")
 public class Matching {
 
     @Id
@@ -27,7 +25,7 @@ public class Matching {
     private Long id;
 
     @ManyToOne
-    @Column(name = "SITE_USER_ID", nullable = false)
+    @JoinColumn(name = "SITE_USER_ID", nullable = false)
     private SiteUser siteUser;
 
     @Column(name = "TITLE", length = 50, nullable = false)

@@ -151,3 +151,4 @@ ALTER TABLE `PENALTY_SCORE` ADD CONSTRAINT `PK_PENALTY_SCORE` PRIMARY KEY (
 ALTER TABLE `REVIEW` ADD CONSTRAINT `PK_REVIEW` PRIMARY KEY (
                                                              `ID`
     );
+

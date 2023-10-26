@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -17,7 +18,7 @@ public class Weather {
     private Long id;
 
     @OneToOne
-    @Column(name = "MATCHING_ID", nullable = false)
+    @JoinColumn(name = "MATCHING_ID", nullable = false)
     private Matching matching;
 
     //TODO : code로 받을지, string으로 받을지 미정

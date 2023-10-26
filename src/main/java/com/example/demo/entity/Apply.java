@@ -8,12 +8,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "APPLY")
 public class Apply {
 
     @Id
@@ -21,11 +20,11 @@ public class Apply {
     private Long id;
 
     @ManyToOne
-    @Column(name = "MATCHING_ID", nullable = false)
+    @JoinColumn(name = "MATCHING_ID", nullable = false)
     private Matching matching;
 
     @ManyToOne
-    @Column(name = "SITE_USER_ID", nullable = false)
+    @JoinColumn(name = "SITE_USER_ID", nullable = false)
     private SiteUser siteUser;
 
     @Column(name = "CREATE_TIME", nullable = false)

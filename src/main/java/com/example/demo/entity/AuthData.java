@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -17,7 +18,7 @@ public class AuthData {
     private Long id;
 
     @OneToOne
-    @Column(name = "site_user_id")
+    @JoinColumn(name = "SITE_USER_ID")
     private SiteUser siteUser;
 
     @Column(name = "REFRESH_TOKEN", length = 1023)
