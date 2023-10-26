@@ -1,6 +1,6 @@
 package com.example.demo.entity;
 
-import com.example.demo.code.ApplyStatusCode;
+import com.example.demo.code.ApplyStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,10 +28,10 @@ public class Apply {
     @Column(name = "SITE_USER_ID", nullable = false)
     private SiteUser siteUser;
 
-    @Column(name = "APPLY_DATE", nullable = false)
-    private Timestamp applyDate;
+    @Column(name = "CREATE_TIME", nullable = false)
+    private Timestamp createTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS", length = 50, nullable = false, columnDefinition = "DEFAULT 'PENDING'")
-    private ApplyStatusCode status;
+    private ApplyStatus status;
 }

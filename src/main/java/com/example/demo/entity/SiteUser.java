@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import com.example.demo.code.AgeGroup;
+import com.example.demo.code.GenderType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,7 +41,7 @@ public class SiteUser {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "GENDER", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
-    private GenerationType gender;
+    private GenderType gender;
 
     @Column(name = "NTRP", precision = 2, scale = 1, nullable = false, columnDefinition = "DECIMAL(2,1)")
     private BigDecimal ntrp;
@@ -61,7 +62,7 @@ public class SiteUser {
     @Column(name = "CREATE_DATE", nullable = false, columnDefinition = "TIMESTAMP")
     private Timestamp createDate;
 
-    @Column(name = "PHONE_VERIFICATION", columnDefinition = "TINYINT(1) DEFAULT 0")
-    private Boolean phoneVerification;
+    @Column(name = "IS_PHONE_VERIFIED", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean isPhoneVerified;
 
 }

@@ -26,9 +26,9 @@ public class Notification {
     @Column(name = "MATCHING_ID")
     private Matching matching;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL) // 알림은 종류가 많아질 수 있으므로 확장성을 위해 int 로 저장
     @Column(name = "CODE", length = 50, nullable = false)
-    private NotificationCode code;
+    private NotificationCode notificationCode;
 
     @Column(name = "CONTENT", length = 255, nullable = false)
     private String content;

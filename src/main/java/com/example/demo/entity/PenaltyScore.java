@@ -1,6 +1,6 @@
 package com.example.demo.entity;
 
-import com.example.demo.code.ApplyStatusCode;
+import com.example.demo.code.ApplyStatus;
 import com.example.demo.code.PenaltyCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
@@ -31,12 +30,12 @@ public class PenaltyScore {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS", length = 50, columnDefinition = "DEFAULT 'PENDING'")
-    private ApplyStatusCode status;
+    private ApplyStatus status;
 
     @Column(name = "CREATE_TIME", nullable = false)
     private Timestamp createTime;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL) // 패널티는 종류가 달라질 수 있으므로 확장성을 위해 int 로 저장
     @Column(name = "CODE", length = 50)
     private PenaltyCode code;
 }

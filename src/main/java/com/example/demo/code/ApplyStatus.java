@@ -1,5 +1,5 @@
 package com.example.demo.code;
 
-public enum ApplyStatusCode {
+public enum ApplyStatus {
     PENDING, ACCEPTED, REJECTED;
 }

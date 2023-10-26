@@ -55,8 +55,8 @@ public class Matching {
     @Column(name = "COST", nullable = false)
     private Integer cost;
 
-    @Column(name = "RESERVATION_STATUS", columnDefinition = "TINYINT(1) DEFAULT 0")
-    private Boolean reservationStatus;
+    @Column(name = "IS_RESERVED", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean isReserved;
 
     @Column(name = "NTRP", length = 50)
     private String ntrp; // 사용자가 범위를 입력할 수 있으므로 string
@@ -65,11 +65,11 @@ public class Matching {
     private String age; // 사용자가 범위를 입력할 수 있으므로 string
 
     @Column(name = "RECRUIT_STATUS", length = 50)
-    private RecruitStatus status;
+    private RecruitStatus recruitStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "MATCHING_TYPE", length = 50)
-    private MatchingType type;
+    private MatchingType matchingType;
 
     @Column(name = "APPLY_NUM", columnDefinition = "INT DEFAULT 0")
     private Integer applyNum;
