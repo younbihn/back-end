@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 
+import com.example.demo.entity.Matching;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.RecruitStatus;
 import java.time.LocalDate;
@@ -36,4 +37,27 @@ public class MatchingDetailDto {
     private MatchingType matchingType;
     private Integer applyNum;
     private LocalDateTime createTime;
+
+    public static MatchingDetailDto toDto(Matching matching) {
+        return MatchingDetailDto.builder()
+                .id(matching.getId())
+                .creatorUserId(matching.getSiteUser().getId())
+                .title(matching.getTitle())
+                .content(matching.getContent())
+                .location(matching.getLocation())
+                .locationImg(matching.getLocationImg()) //TODO : S3 연결
+                .date(matching.getDate().toLocalDate())
+                .startTime(matching.getStartTime().toLocalTime())
+                .endTime(matching.getEndTime().toLocalTime())
+                .recruitNum(matching.getRecruitNum())
+                .cost(matching.getCost())
+                .isReserved(matching.getIsReserved())
+                .ntrp(matching.getNtrp())
+                .ageGroup(matching.getAge())
+                .recruitStatus(matching.getRecruitStatus())
+                .matchingType(matching.getMatchingType())
+                .applyNum(matching.getApplyNum())
+                .createTime(matching.getCreateTime().toLocalDateTime())
+                .build();
+    }
 }
