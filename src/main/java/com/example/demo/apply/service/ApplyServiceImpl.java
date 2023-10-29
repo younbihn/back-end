@@ -5,7 +5,7 @@ import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.exception.impl.AlreadyExistApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
-import com.example.demo.repository.MatchingRepository;
+import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
