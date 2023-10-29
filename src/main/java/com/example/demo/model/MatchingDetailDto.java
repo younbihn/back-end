@@ -38,7 +38,7 @@ public class MatchingDetailDto {
     private Integer applyNum;
     private LocalDateTime createTime;
 
-    public static MatchingDetailDto toDto(Matching matching) {
+    public static MatchingDetailDto fromEntity(Matching matching) {
         return MatchingDetailDto.builder()
                 .id(matching.getId())
                 .creatorUserId(matching.getSiteUser().getId())
