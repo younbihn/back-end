@@ -16,8 +16,10 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Matching {
 
     @Id

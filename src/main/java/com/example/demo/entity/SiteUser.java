@@ -14,8 +14,10 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "SITE_USER")
 public class SiteUser {
 
