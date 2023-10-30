@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.RecruitStatus;
 import jakarta.persistence.Column;
@@ -16,10 +17,16 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 public class Matching {
 
     @Id
@@ -81,4 +88,26 @@ public class Matching {
 
     @OneToMany(mappedBy = "matching")
     private List<Confirm> confirms; // 확정 인원 목록 - 채팅방 만들 때 사용
+
+    public static Matching fromDto(MatchingDetailDto matchingDetailDto, SiteUser siteUser) {
+        return Matching.builder()
+                .siteUser(siteUser)
+                .title(matchingDetailDto.getTitle())
+                .content(matchingDetailDto.getContent())
+                .location(matchingDetailDto.getLocation())
+                .locationImg(matchingDetailDto.getLocationImg()) // TODO: S3 연동
+                .date(Date.valueOf(matchingDetailDto.getDate()))
+                .startTime(Time.valueOf(matchingDetailDto.getStartTime()))
+                .endTime(Time.valueOf(matchingDetailDto.getEndTime()))
+                .recruitNum(matchingDetailDto.getRecruitNum())
+                .cost(matchingDetailDto.getCost())
+                .isReserved(matchingDetailDto.getIsReserved())
+                .ntrp(matchingDetailDto.getNtrp())
+                .age(matchingDetailDto.getAgeGroup())
+                .recruitStatus(matchingDetailDto.getRecruitStatus())
+                .matchingType(matchingDetailDto.getMatchingType())
+                .applyNum(matchingDetailDto.getApplyNum())
+                .createTime(Timestamp.valueOf(matchingDetailDto.getCreateTime()))
+                .build();
+    }
 }
