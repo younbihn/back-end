@@ -5,7 +5,7 @@ import com.example.demo.matching.dto.MatchingPreviewDto;
 import java.util.List;
 
 public interface MatchingService {
-    public MatchingDetailDto create(MatchingDetailDto matchingDetailDto);
+    public MatchingDetailDto create(Long userId, MatchingDetailDto matchingDetailDto);
     public MatchingDetailDto update(MatchingDetailDto matchingDetailDto);
     public void delete(Long matchingId);
     public List<MatchingPreviewDto> getList();
