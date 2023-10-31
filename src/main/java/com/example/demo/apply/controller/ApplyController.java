@@ -37,6 +37,4 @@ public class ApplyController {
 
         return ResponseEntity.ok(result);
     }
-
-
 }

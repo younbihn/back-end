@@ -8,6 +8,7 @@ import com.example.demo.exception.impl.AlreadyExistApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.response.ResponseUtil;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
 import java.sql.Timestamp;
@@ -27,7 +28,7 @@ public class ApplyServiceImpl implements ApplyService {
     private final SiteUserRepository siteUserRepository;
 
     @Override
-    public void apply(long userId, long matchId) {
+    public ApplyDto apply(long userId, long matchId) {
         var user = siteUserRepository.findById(userId);
         var matching = matchingRepository.findById(matchId);
 
@@ -40,7 +41,8 @@ public class ApplyServiceImpl implements ApplyService {
                 .createTime(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
 
-        applyRepository.save(Apply.fromDto(applyDto));
+        var apply = applyRepository.save(Apply.fromDto(applyDto));
+        return ApplyDto.fromEntity(apply);
     }
 
     private void checkDuplication(long userId, long matchId) {
