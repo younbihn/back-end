@@ -108,7 +108,7 @@ class ApplyServiceTest {
         ApplyDto applyDto = applyService.apply(1L, 2L);
 
         // then
-        verify(applyRepository, times(1)).save(captor.capture());
+        verify(applyRepository, times(1)).save(captor.capture()); // save 메서드가 한 번 실행되는 지 검증
         assertEquals(1L, applyDto.getSiteUser().getId());
         assertEquals(2L, applyDto.getMatching().getId());
     }
@@ -159,7 +159,6 @@ class ApplyServiceTest {
                 .status(ApplyStatus.PENDING)
                 .build();
 
-
         given(siteUserRepository.findById(anyLong()))
                 .willReturn(Optional.of(siteUser));
 
@@ -168,6 +167,7 @@ class ApplyServiceTest {
 
         given(applyRepository.existsBySiteUser_IdAndMatching_Id(anyLong(), anyLong()))
                 .willReturn(true);
+
         given(applyRepository.findBySiteUser_IdAndMatching_Id(anyLong(), anyLong()))
                 .willReturn(Optional.of(apply));
 
@@ -217,15 +217,6 @@ class ApplyServiceTest {
                 .applyNum(0)
                 .build();
 
-        Apply apply = Apply.builder()
-                .id(1L)
-                .matching(matching)
-                .siteUser(siteUser)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                .status(ApplyStatus.PENDING)
-                .build();
-
-
         given(siteUserRepository.findById(anyLong()))
                 .willReturn(Optional.of(siteUser));
 
@@ -238,6 +229,62 @@ class ApplyServiceTest {
 
         // then
         assertEquals(exception.getMessage(), "신청 마감된 경기입니다.");
+    }
+
+    @Test
+    void applyCancelSuccess() {
+        //given
+        SiteUser siteUser = SiteUser.builder()
+                .id(1L)
+                .password("1234")
+                .nickname("nick")
+                .email("email@gmail.com")
+                .phoneNumber("010-1234-5678")
+                .gender(GenderType.FEMALE)
+                .ntrp(BigDecimal.valueOf(1.0))
+                .locationSi("안양시")
+                .locationGu("동안구")
+                .ageGroup(AgeGroup.TWENTIES)
+                .createDate(Timestamp.valueOf(LocalDateTime.now()))
+                .isPhoneVerified(true)
+                .build();
+
+        Matching matching = Matching.builder()
+                .id(2L)
+                .siteUser(siteUser)
+                .title("경기해요.")
+                .content("경기 내용입니다.")
+                .location("oo 구장")
+                .date(Date.valueOf("2023-11-10"))
+                .startTime(Time.valueOf("15:00:00"))
+                .endTime(Time.valueOf("17:00:00"))
+                .recruitNum(3)
+                .cost(1000)
+                .isReserved(true)
+                .ntrp("3.0~4.0")
+                .age("20~30")
+                .recruitStatus(RecruitStatus.OPEN)
+                .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                .matchingType(MatchingType.DOUBLE)
+                .applyNum(0)
+                .build();
+
+        Apply apply = Apply.builder()
+                .id(1L)
+                .matching(matching)
+                .siteUser(siteUser)
+                .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                .status(ApplyStatus.PENDING)
+                .build();
+
+        given(applyRepository.findById(anyLong()))
+                .willReturn(Optional.of(apply));
+
+        // when
+        ApplyDto applyDto = applyService.cancel(1L, 1L);
+
+        // then
+        assertEquals(ApplyStatus.CANCELED, applyDto.getApplyStatus());
     }
 
 }
