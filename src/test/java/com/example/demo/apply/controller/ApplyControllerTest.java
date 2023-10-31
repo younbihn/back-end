@@ -1,15 +1,12 @@
 package com.example.demo.apply.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.web.servlet.function.ServerResponse.status;
 
 import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.service.ApplyService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.demo.type.ApplyStatus;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
@@ -28,9 +25,6 @@ class ApplyControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
     void successApply() throws Exception {
         // given
@@ -38,11 +32,26 @@ class ApplyControllerTest {
                 .willReturn(ApplyDto.builder()
                         .createTime(Timestamp.valueOf(LocalDateTime.now()))
                         .build());
-
         // when
         // then
         mockMvc.perform(MockMvcRequestBuilders.post("/apply/matches/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
+
+    @Test
+    void successCancelApply() throws Exception {
+        // given
+        given(applyService.cancel(anyLong(), anyLong()))
+                .willReturn(ApplyDto.builder()
+                        .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                        .applyStatus(ApplyStatus.CANCELED)
+                        .build());
+        // when
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.delete("/apply/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
+
 }
