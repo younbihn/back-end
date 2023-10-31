@@ -4,7 +4,7 @@ import com.example.demo.exception.AbsctractException;
 import com.example.demo.response.ResponseStatus;
 import org.springframework.http.HttpStatus;
 
-public class AlreadyExistApplyException extends AbsctractException {
+public class AlreadyExistedApplyException extends AbsctractException {
     @Override
     public ResponseStatus getStatus() {
         return ResponseStatus.ERROR;

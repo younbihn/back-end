@@ -29,12 +29,12 @@ public class ApplyController {
     }
 
     @DeleteMapping("/{apply_id}") // 매칭 참가 신청 취소 api
-    public ResponseEntity<ApplyDto> cancelApply(@PathVariable(value = "apply_id") long applyId) {
+    public ResponseDto cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
         long userId = 1;
 
         var result = applyService.cancel(userId, applyId);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS("매칭 참가 신청을 취소하였습니다.", null);
     }
 }

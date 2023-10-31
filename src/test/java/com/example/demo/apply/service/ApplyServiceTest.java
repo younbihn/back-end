@@ -13,7 +13,7 @@ import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
-import com.example.demo.exception.impl.AlreadyExistApplyException;
+import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
@@ -172,7 +172,7 @@ class ApplyServiceTest {
                 .willReturn(Optional.of(apply));
 
         // when
-        AlreadyExistApplyException exception = assertThrows(AlreadyExistApplyException.class,
+        AlreadyExistedApplyException exception = assertThrows(AlreadyExistedApplyException.class,
                 () -> applyService.apply(1L, 2L));
 
         // then

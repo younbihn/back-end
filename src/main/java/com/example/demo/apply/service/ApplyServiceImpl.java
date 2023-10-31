@@ -4,11 +4,12 @@ import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
-import com.example.demo.exception.impl.AlreadyExistApplyException;
+import com.example.demo.exception.impl.AlreadyCanceledApplyException;
+import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
+import com.example.demo.exception.impl.NonExistedApplyException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
-import com.example.demo.response.ResponseUtil;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
 import java.sql.Timestamp;
@@ -51,7 +52,7 @@ public class ApplyServiceImpl implements ApplyService {
         if (exists) { // 신청 중복 검사
             var existApply = applyRepository.findBySiteUser_IdAndMatching_Id(userId, matchId);
             if (!existApply.get().getStatus().equals(ApplyStatus.CANCELED)) {
-                throw new AlreadyExistApplyException();
+                throw new AlreadyExistedApplyException();
             }
             existApply.get().setStatus(ApplyStatus.PENDING); // 취소 신청 내역 있을 경우 상태만 변경
         }
@@ -65,6 +66,15 @@ public class ApplyServiceImpl implements ApplyService {
 
     @Override
     public ApplyDto cancel(long userId, long applyId) {
-        return null;
+        var apply = applyRepository.findById(applyId)
+                .orElseThrow(() -> new NonExistedApplyException());
+
+        if (apply.getStatus().equals(ApplyStatus.CANCELED)) {
+            throw new AlreadyCanceledApplyException();
+        }
+
+        apply.setStatus(ApplyStatus.CANCELED);
+
+        return ApplyDto.fromEntity(apply);
     }
 }
