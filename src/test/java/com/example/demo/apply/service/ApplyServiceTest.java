@@ -13,8 +13,10 @@ import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
+import com.example.demo.exception.impl.AlreadyCanceledApplyException;
 import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
+import com.example.demo.exception.impl.NonExistedApplyException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.AgeGroup;
@@ -285,6 +287,36 @@ class ApplyServiceTest {
 
         // then
         assertEquals(ApplyStatus.CANCELED, applyDto.getApplyStatus());
+    }
+
+    @Test
+    void applyCancelFailByNonExistedApply() {
+        // given
+        // when
+        NonExistedApplyException exception = assertThrows(NonExistedApplyException.class,
+                () -> applyService.cancel(1L, 1L));
+
+        // then
+        assertEquals(exception.getMessage(), "참가 신청 내역이 없습니다. 이미 삭제된 경기로 예상됩니다.");
+    }
+
+    @Test
+    void applyCancelFailByAlreadyCanceledApply() {
+        // given
+        Apply apply = Apply.builder()
+                .id(1L)
+                .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                .status(ApplyStatus.CANCELED)
+                .build();
+
+        given(applyRepository.findById(anyLong()))
+                .willReturn(Optional.of(apply));
+        // when
+        AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
+                () -> applyService.cancel(1L, 1L));
+
+        // then
+        assertEquals(exception.getMessage(),  "이미 참가 신청이 취소된 경기입니다.");
     }
 
 }
