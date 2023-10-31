@@ -73,6 +73,7 @@ public class Matching {
     @Column(name = "AGE", length = 50)
     private String age; // 사용자가 범위를 입력할 수 있으므로 string
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "RECRUIT_STATUS", length = 50)
     private RecruitStatus recruitStatus;
 
