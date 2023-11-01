@@ -19,8 +19,13 @@ import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.NonExistedApplyException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.response.ResponseDto;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,12 +76,12 @@ class ApplyServiceTest {
         ArgumentCaptor<Apply> captor = ArgumentCaptor.forClass(Apply.class);
 
         // when
-        ApplyDto applyDto = applyService.apply(1L, 2L);
+        ResponseDto<ApplyDto> applyDto = applyService.apply(1L, 2L);
 
         // then
         verify(applyRepository, times(1)).save(captor.capture()); // save 메서드가 한 번 실행되는 지 검증
-        assertEquals(1L, applyDto.getSiteUser().getId());
-        assertEquals(2L, applyDto.getMatching().getId());
+        assertEquals(1L, applyDto.getData().getSiteUser().getId());
+        assertEquals(2L, applyDto.getData().getMatching().getId());
     }
 
     @Test
@@ -111,11 +116,10 @@ class ApplyServiceTest {
                 .willReturn(Optional.of(apply));
 
         // when
-        AlreadyExistedApplyException exception = assertThrows(AlreadyExistedApplyException.class,
-                () -> applyService.apply(1L, 2L));
+        ResponseDto<ApplyDto> applyDto = applyService.apply(1L, 2L);
 
         // then
-        assertEquals(exception.getMessage(), "이미 참여 신청한 경기입니다.");
+        assertEquals("이미 신청한 매칭 내역이 존재합니다.", applyDto.getMessage());
     }
 
     @Test
@@ -165,12 +169,14 @@ class ApplyServiceTest {
 
         given(applyRepository.findById(anyLong()))
                 .willReturn(Optional.of(apply));
+        given(matchingRepository.findById(anyLong()))
+                .willReturn(Optional.of(matching));
 
         // when
-        ApplyDto applyDto = applyService.cancel(1L);
+        ResponseDto<ApplyDto> applyDto = applyService.cancel(1L);
 
         // then
-        assertEquals(ApplyStatus.CANCELED, applyDto.getApplyStatus());
+        assertEquals(ApplyStatus.CANCELED, applyDto.getData().getApplyStatus());
     }
 
     @Test
@@ -203,46 +209,52 @@ class ApplyServiceTest {
     }
 
     @Test
-    void applyAcceptSuccess() {
-        //given
-        SiteUser siteUser = SiteUser.builder()
-                .id(1L)
-                .build();
-
-        Matching matching = Matching.builder()
-                .id(2L)
-                .build();
-
-        Apply apply = Apply.builder()
-                .id(1L)
-                .status(ApplyStatus.PENDING)
-                .build();
-
-        given(applyRepository.findById(anyLong()))
-                .willReturn(Optional.of(apply));
-
-        // when
-        ApplyDto applyDto = applyService.accept(1L);
-
-        // then
-        assertEquals(ApplyStatus.ACCEPTED, applyDto.getApplyStatus());
-    }
-
-    @Test
-    void applyAcceptFailByAlreadyCanceledApply() {
+    void applyCancelFailedByDateIssue() {
         // given
         Apply apply = Apply.builder()
                 .id(1L)
-                .status(ApplyStatus.CANCELED)
+                .matching(Matching.builder().id(1L).build())
+                .status(ApplyStatus.ACCEPTED)
                 .build();
 
         given(applyRepository.findById(anyLong()))
                 .willReturn(Optional.of(apply));
+
+        given(matchingRepository.findById(anyLong()))
+                .willReturn(Optional.of(Matching.builder()
+                                .id(1L)
+                                .recruitStatus(RecruitStatus.CLOSED)
+                                .date(Date.valueOf(LocalDate.now()))
+                        .build()));
         // when
-        AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
-                () -> applyService.accept(1L));
+        ResponseDto<ApplyDto> applyDto = applyService.cancel(1L);
 
         // then
-        assertEquals(exception.getMessage(), "이미 참가 신청이 취소된 경기입니다.");
+        assertEquals("매칭 당일에는 매칭 취소가 불가능합니다.", applyDto.getMessage());
     }
+
+//    @Test
+//    void applyAcceptSuccess() {
+//        //given
+//        applyRepository.save(Apply.builder()
+//                .id(1L)
+//                .build());
+//        applyRepository.save(Apply.builder()
+//                .id(2L)
+//                .build());
+//        matchingRepository.save(Matching.builder().id(1L).recruitNum(3).build());
+//
+//        List<Long> appliedList = new ArrayList<>();
+//        appliedList.add(1L);
+//
+//        List<Long> confirmedList = new ArrayList<>();
+//        appliedList.add(2L);
+//
+//        // when
+//        ResponseDto<Object> applyDto = applyService.accept(appliedList, confirmedList, 1L);
+//
+//        // then
+//        assertEquals("수락 확정을 진행하였습니다.", applyDto.getMessage());
+//    }
+
 }

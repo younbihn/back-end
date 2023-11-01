@@ -5,15 +5,19 @@ import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.exception.impl.AlreadyCanceledApplyException;
-import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.NonExistedApplyException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.response.ResponseDto;
+import com.example.demo.response.ResponseUtil;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,12 +33,22 @@ public class ApplyServiceImpl implements ApplyService {
     private final SiteUserRepository siteUserRepository;
 
     @Override
-    public ApplyDto apply(long userId, long matchingId) {
+    public ResponseDto apply(long userId, long matchingId) {
         var user = siteUserRepository.findById(userId);
         var matching = matchingRepository.findById(matchingId);
 
         checkRecruitStatus(matching); // 매칭 상태 검사
-        checkDuplication(userId, matchingId); // 신청 중복 검사
+        boolean exists = applyRepository.existsBySiteUser_IdAndMatching_Id(userId, matchingId);
+
+        if (exists) { // 신청 중복 검사
+            var existApply = applyRepository.findBySiteUser_IdAndMatching_Id(userId, matchingId).get();
+            if (!existApply.getStatus().equals(ApplyStatus.CANCELED)) {
+                return ResponseUtil
+                        .FAILURE("이미 신청한 매칭 내역이 존재합니다.", ApplyDto.fromEntity(existApply));
+            }
+            existApply.setStatus(ApplyStatus.PENDING); // 취소 신청 내역 있을 경우 상태만 변경
+            return ResponseUtil.SUCCESS("매칭 신청에 성공하였습니다.", ApplyDto.fromEntity(existApply));
+        }
 
         var applyDto = ApplyDto.builder()
                 .matching(matching.get())
@@ -43,19 +57,7 @@ public class ApplyServiceImpl implements ApplyService {
                 .build();
 
         var apply = applyRepository.save(Apply.fromDto(applyDto));
-        return ApplyDto.fromEntity(apply);
-    }
-
-    private void checkDuplication(long userId, long matchingId) {
-        boolean exists = applyRepository.existsBySiteUser_IdAndMatching_Id(userId, matchingId);
-
-        if (exists) { // 신청 중복 검사
-            var existApply = applyRepository.findBySiteUser_IdAndMatching_Id(userId, matchingId);
-            if (!existApply.get().getStatus().equals(ApplyStatus.CANCELED)) {
-                throw new AlreadyExistedApplyException();
-            }
-            existApply.get().setStatus(ApplyStatus.PENDING); // 취소 신청 내역 있을 경우 상태만 변경
-        }
+        return ResponseUtil.SUCCESS("매칭 신청에 성공하였습니다.", ApplyDto.fromEntity(apply));
     }
 
     private static void checkRecruitStatus(Optional<Matching> matching) {
@@ -65,29 +67,42 @@ public class ApplyServiceImpl implements ApplyService {
     }
 
     @Override
-    public ApplyDto cancel(long applyId) {
+    public ResponseDto cancel(long applyId) {
         var apply = applyRepository.findById(applyId)
                 .orElseThrow(() -> new NonExistedApplyException());
 
         if (apply.getStatus().equals(ApplyStatus.CANCELED)) {
             throw new AlreadyCanceledApplyException();
         }
+        var matchingId = apply.getMatching().getId();
+        var matching = matchingRepository.findById(matchingId).get();
 
+        if (matching.getRecruitStatus().equals(RecruitStatus.CLOSED)) {
+            if (matching.getDate().after(Date.valueOf(LocalDate.now()))) {
+                //TODO: 패널티 부여
+                apply.setStatus(ApplyStatus.CANCELED);
+            }
+            return ResponseUtil.FAILURE("매칭 당일에는 매칭 취소가 불가능합니다.", ApplyDto.fromEntity(apply));
+        }
         apply.setStatus(ApplyStatus.CANCELED);
-
-        return ApplyDto.fromEntity(apply);
+        return ResponseUtil.SUCCESS("매칭 참가 신청을 취소하였습니다.", ApplyDto.fromEntity(apply));
     }
 
     @Override
-    public ApplyDto accept(long applyId) {
-        var apply = applyRepository.findById(applyId).get();
-
-        if (apply.getStatus().equals(ApplyStatus.CANCELED)) {
-            throw new AlreadyCanceledApplyException();
+    public ResponseDto accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
+        // 신청 내역으로 옮겨진 id 받아와서 전부 상태 변경 및 매칭 확정 수/매칭 상태 변경
+        var recruitNum = matchingRepository.findById(matchingId).get().getRecruitNum() - 1;
+        if (recruitNum < confirmedList.size()) {
+            return ResponseUtil.FAILURE("모집 인원보다 많은 인원을 수락할 수 없습니다.", null);
         }
-
-        apply.setStatus(ApplyStatus.ACCEPTED);
-
-        return ApplyDto.fromEntity(apply);
+        for (long applyId : appliedList) {
+            var apply = applyRepository.findById(applyId).get();
+            apply.setStatus(ApplyStatus.PENDING);
+        }
+        for (long confirmId : confirmedList) {
+            var apply = applyRepository.findById(confirmId).get();
+            apply.setStatus(ApplyStatus.ACCEPTED);
+        }
+        return ResponseUtil.SUCCESS("수락 확정을 진행하였습니다.", null);
     }
 }
