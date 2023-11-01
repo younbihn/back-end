@@ -6,4 +6,6 @@ public interface ApplyService {
     ApplyDto apply(long userId, long matchId);
 
     ApplyDto cancel(long applyId);
+
+    ApplyDto accept(long applyId);
 }

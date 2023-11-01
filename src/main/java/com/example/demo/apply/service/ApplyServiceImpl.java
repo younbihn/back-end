@@ -77,4 +77,17 @@ public class ApplyServiceImpl implements ApplyService {
 
         return ApplyDto.fromEntity(apply);
     }
+
+    @Override
+    public ApplyDto accept(long applyId) {
+        var apply = applyRepository.findById(applyId).get();
+
+        if (apply.getStatus().equals(ApplyStatus.CANCELED)) {
+            throw new AlreadyCanceledApplyException();
+        }
+
+        apply.setStatus(ApplyStatus.ACCEPTED);
+
+        return ApplyDto.fromEntity(apply);
+    }
 }
