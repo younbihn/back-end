@@ -2,12 +2,15 @@ package com.example.demo.matching.service;
 
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
+import com.example.demo.response.ResponseDto;
 import java.util.List;
 
 public interface MatchingService {
-    public MatchingDetailDto create(Long userId, MatchingDetailDto matchingDetailDto);
-    public MatchingDetailDto update(MatchingDetailDto matchingDetailDto);
-    public void delete(Long matchingId);
-    public List<MatchingPreviewDto> getList();
-    public MatchingDetailDto getDetail(Long matchingId);
+    MatchingDetailDto create(Long userId, MatchingDetailDto matchingDetailDto);
+    MatchingDetailDto update(MatchingDetailDto matchingDetailDto);
+    void delete(Long matchingId);
+    List<MatchingPreviewDto> getList();
+    MatchingDetailDto getDetail(Long matchingId);
+
+    ResponseDto<MatchingDetailDto> confirm(long matchId);
 }

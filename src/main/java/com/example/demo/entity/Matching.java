@@ -21,12 +21,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+@DynamicInsert
 public class Matching {
 
     @Id
@@ -81,14 +85,11 @@ public class Matching {
     @Column(name = "MATCHING_TYPE", length = 50)
     private MatchingType matchingType;
 
-    @Column(name = "APPLY_NUM", columnDefinition = "INT DEFAULT 0")
+    @Column(name = "APPLY_NUM") // default 값 1 들어감.
     private Integer applyNum;
 
     @Column(name = "CREATE_TIME", nullable = false)
     private Timestamp createTime;
-
-    @OneToMany(mappedBy = "matching")
-    private List<Confirm> confirms; // 확정 인원 목록 - 채팅방 만들 때 사용
 
     public static Matching fromDto(MatchingDetailDto matchingDetailDto, SiteUser siteUser) {
         return Matching.builder()
