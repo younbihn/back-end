@@ -54,4 +54,19 @@ class ApplyControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    void successAcceptApply() throws Exception {
+        // given
+        given(applyService.accept(anyLong()))
+                .willReturn(ApplyDto.builder()
+                        .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                        .applyStatus(ApplyStatus.ACCEPTED)
+                        .build());
+        // when
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.patch("/apply/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
+
 }
