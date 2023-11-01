@@ -283,7 +283,7 @@ class ApplyServiceTest {
                 .willReturn(Optional.of(apply));
 
         // when
-        ApplyDto applyDto = applyService.cancel(1L, 1L);
+        ApplyDto applyDto = applyService.cancel(1L);
 
         // then
         assertEquals(ApplyStatus.CANCELED, applyDto.getApplyStatus());
@@ -294,7 +294,7 @@ class ApplyServiceTest {
         // given
         // when
         NonExistedApplyException exception = assertThrows(NonExistedApplyException.class,
-                () -> applyService.cancel(1L, 1L));
+                () -> applyService.cancel(1L));
 
         // then
         assertEquals(exception.getMessage(), "참가 신청 내역이 없습니다. 이미 삭제된 경기로 예상됩니다.");
@@ -313,7 +313,7 @@ class ApplyServiceTest {
                 .willReturn(Optional.of(apply));
         // when
         AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
-                () -> applyService.cancel(1L, 1L));
+                () -> applyService.cancel(1L));
 
         // then
         assertEquals(exception.getMessage(),  "이미 참가 신청이 취소된 경기입니다.");

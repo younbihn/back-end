@@ -42,7 +42,7 @@ class ApplyControllerTest {
     @Test
     void successCancelApply() throws Exception {
         // given
-        given(applyService.cancel(anyLong(), anyLong()))
+        given(applyService.cancel(anyLong()))
                 .willReturn(ApplyDto.builder()
                         .createTime(Timestamp.valueOf(LocalDateTime.now()))
                         .applyStatus(ApplyStatus.CANCELED)

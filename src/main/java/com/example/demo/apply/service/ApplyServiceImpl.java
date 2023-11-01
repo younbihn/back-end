@@ -65,7 +65,7 @@ public class ApplyServiceImpl implements ApplyService {
     }
 
     @Override
-    public ApplyDto cancel(long userId, long applyId) {
+    public ApplyDto cancel(long applyId) {
         var apply = applyRepository.findById(applyId)
                 .orElseThrow(() -> new NonExistedApplyException());
 
