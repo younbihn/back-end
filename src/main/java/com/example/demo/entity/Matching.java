@@ -85,8 +85,8 @@ public class Matching {
     @Column(name = "MATCHING_TYPE", length = 50)
     private MatchingType matchingType;
 
-    @Column(name = "APPLY_NUM") // default 값 1 들어감.
-    private Integer applyNum;
+    @Column(name = "CONFIRMED_NUM") // default 값 1 들어감.
+    private Integer confirmedNum;
 
     @Column(name = "CREATE_TIME", nullable = false)
     private Timestamp createTime;
@@ -108,7 +108,7 @@ public class Matching {
                 .age(matchingDetailDto.getAgeGroup())
                 .recruitStatus(matchingDetailDto.getRecruitStatus())
                 .matchingType(matchingDetailDto.getMatchingType())
-                .applyNum(matchingDetailDto.getApplyNum())
+                .confirmedNum(matchingDetailDto.getConfirmedNum())
                 .createTime(Timestamp.valueOf(matchingDetailDto.getCreateTime()))
                 .build();
     }

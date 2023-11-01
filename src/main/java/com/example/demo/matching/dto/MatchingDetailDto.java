@@ -34,7 +34,7 @@ public class MatchingDetailDto {
     private String ageGroup;
     private RecruitStatus recruitStatus;
     private MatchingType matchingType;
-    private Integer applyNum;
+    private Integer confirmedNum;
     private LocalDateTime createTime;
 
     public static MatchingDetailDto fromEntity(Matching matching) {
@@ -55,7 +55,7 @@ public class MatchingDetailDto {
                 .ageGroup(matching.getAge())
                 .recruitStatus(matching.getRecruitStatus())
                 .matchingType(matching.getMatchingType())
-                .applyNum(matching.getApplyNum())
+                .confirmedNum(matching.getConfirmedNum())
                 .createTime(matching.getCreateTime().toLocalDateTime())
                 .build();
     }

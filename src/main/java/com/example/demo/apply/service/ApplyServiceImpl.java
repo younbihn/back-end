@@ -29,12 +29,12 @@ public class ApplyServiceImpl implements ApplyService {
     private final SiteUserRepository siteUserRepository;
 
     @Override
-    public ApplyDto apply(long userId, long matchId) {
+    public ApplyDto apply(long userId, long matchingId) {
         var user = siteUserRepository.findById(userId);
-        var matching = matchingRepository.findById(matchId);
+        var matching = matchingRepository.findById(matchingId);
 
         checkRecruitStatus(matching); // 매칭 상태 검사
-        checkDuplication(userId, matchId); // 신청 중복 검사
+        checkDuplication(userId, matchingId); // 신청 중복 검사
 
         var applyDto = ApplyDto.builder()
                 .matching(matching.get())
@@ -46,11 +46,11 @@ public class ApplyServiceImpl implements ApplyService {
         return ApplyDto.fromEntity(apply);
     }
 
-    private void checkDuplication(long userId, long matchId) {
-        boolean exists = applyRepository.existsBySiteUser_IdAndMatching_Id(userId, matchId);
+    private void checkDuplication(long userId, long matchingId) {
+        boolean exists = applyRepository.existsBySiteUser_IdAndMatching_Id(userId, matchingId);
 
         if (exists) { // 신청 중복 검사
-            var existApply = applyRepository.findBySiteUser_IdAndMatching_Id(userId, matchId);
+            var existApply = applyRepository.findBySiteUser_IdAndMatching_Id(userId, matchingId);
             if (!existApply.get().getStatus().equals(ApplyStatus.CANCELED)) {
                 throw new AlreadyExistedApplyException();
             }

@@ -1,16 +1,14 @@
 package com.example.demo.matching.controller;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.service.MatchingService;
-import com.example.demo.matching.service.MatchingServiceImpl;
 import com.example.demo.response.ResponseDto;
 import com.example.demo.response.ResponseUtil;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,11 +38,13 @@ public class MatchingController {
         return s3Uploader.uploadFile(file);
     }
 
-    @PatchMapping("/{match_id}/confirm")
-    public ResponseDto confirmMatching(@PathVariable(value = "match_id") long matchId) {
+    @GetMapping("/{matching_id}/apply")
+    public ResponseDto applyList(@PathVariable(value = "matching_id") long matchingId) {
 
-        matchingService.confirm(matchId);
+        Long userId = 1L;
 
-        return ResponseUtil.SUCCESS("매칭을 완료하였습니다.", null);
+        var applyList = matchingService.getApplyList(userId, matchingId);
+
+        return ResponseUtil.SUCCESS("매칭 신청 내역을 불러왔습니다.", applyList);
     }
 }

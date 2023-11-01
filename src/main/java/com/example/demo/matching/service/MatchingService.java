@@ -1,5 +1,6 @@
 package com.example.demo.matching.service;
 
+import com.example.demo.matching.dto.ApplyListResponseDto;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.response.ResponseDto;
@@ -12,5 +13,5 @@ public interface MatchingService {
     List<MatchingPreviewDto> getList();
     MatchingDetailDto getDetail(Long matchingId);
 
-    ResponseDto<MatchingDetailDto> confirm(long matchId);
+    ResponseDto<List<ApplyListResponseDto>> getApplyList(Long userId, long matchId);
 }

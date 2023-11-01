@@ -21,10 +21,10 @@ public class ApplyController {
     private final ApplyService applyService;
 
     @PostMapping("/matches/{match_id}") // 매칭 참가 신청 api
-    public ResponseDto apply(@PathVariable(value = "match_id") long matchId) {
+    public ResponseDto apply(@PathVariable(value = "match_id") long matchingId) {
 
         long userId = 1; // 로그인 구현 전 임시로 부여
-        applyService.apply(userId, matchId);
+        applyService.apply(userId, matchingId);
 
         return ResponseUtil.SUCCESS("매칭 참가 신청에 성공하였습니다.", null);
     }
@@ -37,7 +37,7 @@ public class ApplyController {
         return ResponseUtil.SUCCESS("매칭 참가 신청을 취소하였습니다.", null);
     }
 
-    @PatchMapping("/{apply_id}")
+    @PatchMapping("/{apply_id}") // 참가 신청 수락 api => 수정하기
     public ResponseDto acceptApply(@PathVariable(value = "apply_id") long applyId) {
 
         applyService.accept(applyId);
