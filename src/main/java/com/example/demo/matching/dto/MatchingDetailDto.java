@@ -3,6 +3,7 @@ package com.example.demo.matching.dto;
 import com.example.demo.entity.Matching;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.RecruitStatus;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

@@ -5,8 +5,8 @@ import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.exception.impl.AlreadyCanceledApplyException;
+import com.example.demo.exception.impl.AlreadyClosedMatchingException;
 import com.example.demo.exception.impl.AlreadyExistedApplyException;
-import com.example.demo.exception.impl.CancellationOnGameDayException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.NonExistedApplyException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
@@ -15,9 +15,7 @@ import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -87,15 +85,21 @@ public class ApplyServiceImpl implements ApplyService {
 
         checkYourOwnPosting(matching, apply);
 
-        if (matching.getRecruitStatus().equals(RecruitStatus.CLOSED)) {
-            if (matching.getDate().after(Date.valueOf(LocalDate.now()))) {
-                //TODO: 패널티 부여
-                apply.setStatus(ApplyStatus.CANCELED);
-            }
-            throw new CancellationOnGameDayException();
+        if (matching.getRecruitStatus().equals(RecruitStatus.FULL)) {
+            //TODO: 패널티 부여
+            apply.setStatus(ApplyStatus.CANCELED);
+            return ApplyDto.fromEntity(apply);
         }
+        checkMatchingClosed(matching);
+
         apply.setStatus(ApplyStatus.CANCELED);
         return ApplyDto.fromEntity(apply);
+    }
+
+    private static void checkMatchingClosed(Matching matching) {
+        if (matching.getRecruitStatus().equals(RecruitStatus.CLOSED)) {
+            throw new AlreadyClosedMatchingException();
+        }
     }
 
     private static void checkYourOwnPosting(Matching matching, Apply apply) {
@@ -112,7 +116,6 @@ public class ApplyServiceImpl implements ApplyService {
 
     @Override
     public boolean accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
-        // 신청 내역으로 옮겨진 id 받아와서 전부 상태 변경 및 매칭 확정 수/매칭 상태 변경
         var matching = matchingRepository.findById(matchingId).get();
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = confirmedList.size();
@@ -129,15 +132,8 @@ public class ApplyServiceImpl implements ApplyService {
         }
 
         matching.setConfirmedNum(confirmedNum);
-        revieewRecruitStatus(confirmedNum, recruitNum, matching);
 
         return true;
-    }
-
-    private static void revieewRecruitStatus(int confirmedNum, Integer recruitNum, Matching matching) {
-        if (confirmedNum == recruitNum) {
-            matching.setRecruitStatus(RecruitStatus.CLOSED);
-        }
     }
 
     private static void checkOverRecruitNumber(int recruitNum, int confirmedNum) {

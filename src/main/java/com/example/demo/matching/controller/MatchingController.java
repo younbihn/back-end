@@ -3,14 +3,12 @@ package com.example.demo.matching.controller;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.service.MatchingService;
-import com.example.demo.response.ResponseDto;
-import com.example.demo.response.ResponseUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,10 +38,12 @@ public class MatchingController {
     }
 
     @GetMapping("/{matching_id}/apply")
-    public ResponseDto applyList(@PathVariable(value = "matching_id") long matchingId) throws JsonProcessingException {
+    public ResponseEntity<Map<String, String>> applyList(@PathVariable(value = "matching_id") long matchingId) throws JsonProcessingException {
 
         Long userId = 1L;
 
-        return ResponseUtil.SUCCESS("매칭 리스트 조회에 성공하였습니다.", matchingService.getApplyList(userId, matchingId));
+        var result = matchingService.getApplyList(userId, matchingId);
+
+        return ResponseEntity.ok(result);
     }
 }

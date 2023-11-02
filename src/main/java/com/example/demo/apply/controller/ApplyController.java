@@ -2,11 +2,11 @@ package com.example.demo.apply.controller;
 
 import com.example.demo.apply.dto.AllLists;
 import com.example.demo.apply.service.ApplyService;
-import com.example.demo.response.ResponseDto;
-import com.example.demo.response.ResponseStatus;
-import com.example.demo.response.ResponseUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,25 +23,25 @@ public class ApplyController {
     private final ApplyService applyService;
 
     @PostMapping("/matches/{match_id}") // 매칭 참가 신청 api
-    public ResponseDto apply(@PathVariable(value = "match_id") long matchingId) {
+    public ResponseEntity<HttpStatus> apply(@PathVariable(value = "match_id") long matchingId) {
 
         long userId = 1; // 로그인 구현 전 임시로 부여
 
-        applyService.apply(userId, matchingId);
+        var result = applyService.apply(userId, matchingId);
 
-        return ResponseUtil.SUCCESS("매칭 참가 신청에 성공하였습니다.", null);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("/{apply_id}") // 매칭 참가 신청 취소 api => 경기 확정
-    public ResponseDto cancelApply(@PathVariable(value = "apply_id") long applyId) {
+    public ResponseEntity<HttpStatus> cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
         applyService.cancel(applyId);
 
-        return ResponseUtil.SUCCESS("매칭 참가 신청을 취소하였습니다.", null);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PatchMapping("/matches/{matching_id}") // 참가 신청 수락 api
-    public ResponseDto acceptApply(@RequestBody AllLists allLists,
+    public ResponseEntity<HttpStatus> acceptApply(@RequestBody AllLists allLists,
                                    @PathVariable(value = "matching_id") long matchingId) {
 
         List<Long> appliedList = allLists.getAppliedList();
@@ -49,6 +49,6 @@ public class ApplyController {
 
         applyService.accept(appliedList, confirmedList, matchingId);
 
-        return ResponseUtil.SUCCESS("수락 확정을 진행하였습니다.", null);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }

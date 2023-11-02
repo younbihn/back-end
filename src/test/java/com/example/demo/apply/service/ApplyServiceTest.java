@@ -14,13 +14,14 @@ import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.exception.impl.AlreadyCanceledApplyException;
+import com.example.demo.exception.impl.AlreadyClosedMatchingException;
 import com.example.demo.exception.impl.AlreadyExistedApplyException;
-import com.example.demo.exception.impl.CancellationOnGameDayException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.NonExistedApplyException;
+import com.example.demo.exception.impl.OverRecruitNumberException;
+import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
-import com.example.demo.response.ResponseDto;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
 import java.sql.Date;
@@ -73,6 +74,7 @@ class ApplyServiceTest {
                         .matching(matching)
                         .siteUser(siteUser)
                         .build());
+
         ArgumentCaptor<Apply> captor = ArgumentCaptor.forClass(Apply.class);
 
         // when
@@ -210,11 +212,12 @@ class ApplyServiceTest {
     }
 
     @Test
-    void applyCancelFailedByDateIssue() {
+    void applyCancelFailByYourOwnPosting() {
         // given
         Apply apply = Apply.builder()
                 .id(1L)
                 .matching(Matching.builder().id(1L).build())
+                .siteUser(SiteUser.builder().id(1L).build())
                 .status(ApplyStatus.ACCEPTED)
                 .build();
 
@@ -224,16 +227,44 @@ class ApplyServiceTest {
         given(matchingRepository.findById(anyLong()))
                 .willReturn(Optional.of(Matching.builder()
                         .id(1L)
+                        .siteUser(SiteUser.builder().id(1L).build())
                         .recruitStatus(RecruitStatus.CLOSED)
-                        .date(Date.valueOf(LocalDate.now()))
                         .build()));
 
         // when
-        CancellationOnGameDayException exception = assertThrows(CancellationOnGameDayException.class,
+        YourOwnPostingCancelException exception = assertThrows(YourOwnPostingCancelException.class,
                 () -> applyService.cancel(1L));
 
         // then
-        assertEquals(exception.getMessage(), "경기 당일 혹은 그 이후에는 참여 취소가 불가능합니다.");
+        assertEquals("자신이 주최한 매칭은 참가 취소를 할 수 없습니다.", exception.getMessage());
+    }
+
+    @Test
+    void applyCancelFailedByClosedMatching() {
+        // given
+        Apply apply = Apply.builder()
+                .id(1L)
+                .matching(Matching.builder().id(1L).build())
+                .siteUser(SiteUser.builder().id(1L).build())
+                .status(ApplyStatus.ACCEPTED)
+                .build();
+
+        given(applyRepository.findById(anyLong()))
+                .willReturn(Optional.of(apply));
+
+        given(matchingRepository.findById(anyLong()))
+                .willReturn(Optional.of(Matching.builder()
+                        .id(1L)
+                        .siteUser(SiteUser.builder().id(2L).build())
+                        .recruitStatus(RecruitStatus.CLOSED)
+                        .build()));
+
+        // when
+        AlreadyClosedMatchingException exception = assertThrows(AlreadyClosedMatchingException.class,
+                () -> applyService.cancel(1L));
+
+        // then
+        assertEquals("매칭 확정된 경기는 참여 취소가 불가능합니다.", exception.getMessage());
     }
 
     @Test
@@ -251,7 +282,7 @@ class ApplyServiceTest {
         appliedList.add(1L);
 
         List<Long> confirmedList = new ArrayList<>();
-        appliedList.add(2L);
+        confirmedList.add(2L);
 
         given(applyRepository.findById(1L))
                 .willReturn(Optional.of(Apply.builder()
@@ -268,5 +299,33 @@ class ApplyServiceTest {
 
         // then
         verify(applyRepository, times(2)).findById(anyLong());
+    }
+
+    @Test
+    void applyAcceptFailedByOverRecruitNumber() {
+        //given
+        given(matchingRepository.findById(anyLong()))
+                .willReturn(Optional.of(Matching.builder()
+                        .id(1L)
+                        .recruitStatus(RecruitStatus.OPEN)
+                        .recruitNum(2)
+                        .date(Date.valueOf(LocalDate.now()))
+                        .build()));
+
+        List<Long> appliedList = new ArrayList<>();
+        appliedList.add(1L);
+
+        List<Long> confirmedList = new ArrayList<>();
+        confirmedList.add(1L);
+        confirmedList.add(3L);
+        confirmedList.add(4L);
+        confirmedList.add(5L);
+
+        // when
+        OverRecruitNumberException exception = assertThrows(OverRecruitNumberException.class,
+                () -> applyService.accept(appliedList, confirmedList, 1L));
+
+        // then
+        assertEquals("모집 인원보다 많은 인원을 수락할 수 없습니다.", exception.getMessage());
     }
 }

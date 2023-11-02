@@ -1,7 +1,6 @@
 package com.example.demo.apply.service;
 
 import com.example.demo.apply.dto.ApplyDto;
-import com.example.demo.response.ResponseDto;
 import java.util.List;
 
 public interface ApplyService {

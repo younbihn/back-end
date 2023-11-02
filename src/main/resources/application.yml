@@ -12,14 +12,10 @@ spring:
     hibernate:
       ddl-auto: none
     generate-ddl: false
-    show-sql: false
+    show-sql: true
     database: mysql
     defer-datasource-initialization: true
 
   sql:
     init:
       mode: always
-
-  jackson:
-    serialization:
-      fail-on-empty-beans: false

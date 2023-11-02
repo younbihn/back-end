@@ -91,7 +91,7 @@ public class MatchingServiceImpl implements MatchingService {
                         .nickname(apply.getSiteUser().getNickname())
                         .build()).collect(Collectors.toList());
 
-            result.put("applyListForAdmin", objectMapper.writeValueAsString(applyListForUser));
+            result.put("applyListForUser", objectMapper.writeValueAsString(applyListForUser));
             result.put("recruitNum", recruitNumber);
             result.put("confirmedNum", confirmedNumber);
 
