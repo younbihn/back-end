@@ -1,6 +1,6 @@
 package com.example.demo.entity;
 
-import com.example.demo.model.MatchingDetailDto;
+import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.RecruitStatus;
 import jakarta.persistence.Column;
@@ -90,7 +90,7 @@ public class Matching {
     @OneToMany(mappedBy = "matching")
     private List<Confirm> confirms; // 확정 인원 목록 - 채팅방 만들 때 사용
 
-    public static Matching toEntity(MatchingDetailDto matchingDetailDto, SiteUser siteUser) {
+    public static Matching fromDto(MatchingDetailDto matchingDetailDto, SiteUser siteUser) {
         return Matching.builder()
                 .siteUser(siteUser)
                 .title(matchingDetailDto.getTitle())
