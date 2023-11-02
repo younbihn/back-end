@@ -7,7 +7,7 @@ public class UserNotFoundException extends AbsctractException {
 
     @Override
     public int getStatusCode() {
-        return HttpStatus.INTERNAL_SERVER_ERROR.value();
+        return HttpStatus.NOT_FOUND.value();
     }
 
     @Override
