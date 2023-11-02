@@ -54,8 +54,6 @@ public class ApplyController {
         if (result.getStatus().equals(ResponseStatus.FAILURE)) {
             return result;
         }
-        return ResponseUtil.SUCCESS("참가 신청을 수락하였습니다.", null);
+        return ResponseUtil.SUCCESS("수락 확정을 진행하였습니다.", null);
     }
-
-
 }

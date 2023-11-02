@@ -14,7 +14,6 @@ import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.exception.impl.AlreadyCanceledApplyException;
-import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.NonExistedApplyException;
 import com.example.demo.matching.repository.MatchingRepository;
@@ -59,7 +58,6 @@ class ApplyServiceTest {
                 .id(2L)
                 .recruitStatus(RecruitStatus.OPEN)
                 .build();
-
 
         given(siteUserRepository.findById(anyLong()))
                 .willReturn(Optional.of(siteUser));
@@ -222,9 +220,9 @@ class ApplyServiceTest {
 
         given(matchingRepository.findById(anyLong()))
                 .willReturn(Optional.of(Matching.builder()
-                                .id(1L)
-                                .recruitStatus(RecruitStatus.CLOSED)
-                                .date(Date.valueOf(LocalDate.now()))
+                        .id(1L)
+                        .recruitStatus(RecruitStatus.CLOSED)
+                        .date(Date.valueOf(LocalDate.now()))
                         .build()));
         // when
         ResponseDto<ApplyDto> applyDto = applyService.cancel(1L);
@@ -233,28 +231,37 @@ class ApplyServiceTest {
         assertEquals("매칭 당일에는 매칭 취소가 불가능합니다.", applyDto.getMessage());
     }
 
-//    @Test
-//    void applyAcceptSuccess() {
-//        //given
-//        applyRepository.save(Apply.builder()
-//                .id(1L)
-//                .build());
-//        applyRepository.save(Apply.builder()
-//                .id(2L)
-//                .build());
-//        matchingRepository.save(Matching.builder().id(1L).recruitNum(3).build());
-//
-//        List<Long> appliedList = new ArrayList<>();
-//        appliedList.add(1L);
-//
-//        List<Long> confirmedList = new ArrayList<>();
-//        appliedList.add(2L);
-//
-//        // when
-//        ResponseDto<Object> applyDto = applyService.accept(appliedList, confirmedList, 1L);
-//
-//        // then
-//        assertEquals("수락 확정을 진행하였습니다.", applyDto.getMessage());
-//    }
+    @Test
+    void applyAcceptSuccess() {
+        //given
+        given(matchingRepository.findById(anyLong()))
+                .willReturn(Optional.of(Matching.builder()
+                        .id(1L)
+                        .recruitStatus(RecruitStatus.OPEN)
+                        .recruitNum(3)
+                        .date(Date.valueOf(LocalDate.now()))
+                        .build()));
 
+        List<Long> appliedList = new ArrayList<>();
+        appliedList.add(1L);
+
+        List<Long> confirmedList = new ArrayList<>();
+        appliedList.add(2L);
+
+        given(applyRepository.findById(1L))
+                .willReturn(Optional.of(Apply.builder()
+                        .id(1L)
+                        .build()));
+
+        given(applyRepository.findById(2L))
+                .willReturn(Optional.of(Apply.builder()
+                        .id(2L)
+                        .build()));
+
+        // when
+        ResponseDto<Object> applyDto = applyService.accept(appliedList, confirmedList, 1L);
+
+        // then
+        assertEquals("수락 확정을 진행하였습니다.", applyDto.getMessage());
+    }
 }
