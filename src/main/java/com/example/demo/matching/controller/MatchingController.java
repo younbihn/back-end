@@ -35,15 +35,17 @@ public class MatchingController {
     @PostMapping
     public ResponseEntity<MatchingDetailDto> createMatching (
             @RequestBody MatchingDetailDto matchingDetailDto,
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam(value = "file", required = false) MultipartFile file) {
 
         Long userId = 1L;
         var result = matchingServiceImpl.create(userId, matchingDetailDto);
 
-        try{
-            s3Uploader.uploadFile(file);
-        } catch(IOException exception){
-            throw new S3UploadFailException();
+        if(!file.isEmpty()){
+            try{
+                s3Uploader.uploadFile(file);
+            } catch(IOException exception){
+                throw new S3UploadFailException();
+            }
         }
 
         return ResponseEntity.ok(result);
@@ -52,17 +54,31 @@ public class MatchingController {
     @GetMapping("/{matchingId}")
     public ResponseEntity<MatchingDetailDto> getDetailedMatching(
             @PathVariable Long matchingId){
+
         var result = matchingServiceImpl.getDetail(matchingId);
+
         return ResponseEntity.ok(result);
     }
 
     @PatchMapping("/{matchingId}")
     public ResponseEntity<MatchingDetailDto> editMatching(
             @RequestBody MatchingDetailDto matchingDetailDto,
-            @PathVariable Long matchingId){
+            @PathVariable Long matchingId,
+            @RequestParam(value = "file", required = false) MultipartFile file){
 
         Long userId = 1L;
         var result = matchingServiceImpl.update(userId, matchingId, matchingDetailDto);
+
+        // 구장 이미지 변경
+        if(!file.toString().equals(matchingDetailDto.getLocationImg())){
+            try{
+                //TODO : S3에 있는 파일 삭제
+                s3Uploader.uploadFile(file);
+                matchingDetailDto.setLocationImg(file.toString());
+            } catch(IOException exception){
+                throw new S3UploadFailException();
+            }
+        }
 
         return ResponseEntity.ok(result);
     }
@@ -73,14 +89,17 @@ public class MatchingController {
 
         Long userId = 1L;
 
-        matchingServiceImpl.delete(userId, matchingId);
-        return ResponseEntity.ok().build();
+        long deletedMatchingId = matchingServiceImpl.delete(userId, matchingId);
+
+        return ResponseEntity.ok().build(); //TODO: 어디에 담아서 리턴해야할지..
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<Page<MatchingPreviewDto>> getMatchingList(
-            @PageableDefault(page = 1, size = 10) Pageable pageable){
+            @PageableDefault(page = 0, size = 10) Pageable pageable){
+
         var result = matchingServiceImpl.getList(pageable);
+
         return ResponseEntity.ok(result);
     }
 }

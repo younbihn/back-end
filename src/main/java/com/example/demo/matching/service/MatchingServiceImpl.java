@@ -42,7 +42,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public void delete(Long userId, Long matchingId) {
+    public long delete(Long userId, Long matchingId) {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = validateMatchingGivenId(matchingId);
 
@@ -51,6 +51,7 @@ public class MatchingServiceImpl implements MatchingService {
         }
 
         matchingRepository.delete(matching);
+        return matchingId;
     }
 
     @Override
