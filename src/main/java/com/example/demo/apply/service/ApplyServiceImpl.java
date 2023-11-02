@@ -65,7 +65,7 @@ public class ApplyServiceImpl implements ApplyService {
     }
 
     @Override
-    public ApplyDto cancel(long userId, long applyId) {
+    public ApplyDto cancel(long applyId) {
         var apply = applyRepository.findById(applyId)
                 .orElseThrow(() -> new NonExistedApplyException());
 
@@ -74,6 +74,19 @@ public class ApplyServiceImpl implements ApplyService {
         }
 
         apply.setStatus(ApplyStatus.CANCELED);
+
+        return ApplyDto.fromEntity(apply);
+    }
+
+    @Override
+    public ApplyDto accept(long applyId) {
+        var apply = applyRepository.findById(applyId).get();
+
+        if (apply.getStatus().equals(ApplyStatus.CANCELED)) {
+            throw new AlreadyCanceledApplyException();
+        }
+
+        apply.setStatus(ApplyStatus.ACCEPTED);
 
         return ApplyDto.fromEntity(apply);
     }

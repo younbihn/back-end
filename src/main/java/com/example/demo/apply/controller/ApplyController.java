@@ -7,6 +7,7 @@ import com.example.demo.response.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,10 +32,18 @@ public class ApplyController {
     @DeleteMapping("/{apply_id}") // 매칭 참가 신청 취소 api
     public ResponseDto cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
-        long userId = 1;
-
-        var result = applyService.cancel(userId, applyId);
+        applyService.cancel(applyId);
 
         return ResponseUtil.SUCCESS("매칭 참가 신청을 취소하였습니다.", null);
     }
+
+    @PatchMapping("/{apply_id}")
+    public ResponseDto acceptApply(@PathVariable(value = "apply_id") long applyId) {
+
+        applyService.accept(applyId);
+
+        return ResponseUtil.SUCCESS("참가 신청을 수락하였습니다.", null);
+    }
+
+
 }

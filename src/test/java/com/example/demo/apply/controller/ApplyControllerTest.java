@@ -42,7 +42,7 @@ class ApplyControllerTest {
     @Test
     void successCancelApply() throws Exception {
         // given
-        given(applyService.cancel(anyLong(), anyLong()))
+        given(applyService.cancel(anyLong()))
                 .willReturn(ApplyDto.builder()
                         .createTime(Timestamp.valueOf(LocalDateTime.now()))
                         .applyStatus(ApplyStatus.CANCELED)
@@ -50,6 +50,21 @@ class ApplyControllerTest {
         // when
         // then
         mockMvc.perform(MockMvcRequestBuilders.delete("/apply/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    void successAcceptApply() throws Exception {
+        // given
+        given(applyService.accept(anyLong()))
+                .willReturn(ApplyDto.builder()
+                        .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                        .applyStatus(ApplyStatus.ACCEPTED)
+                        .build());
+        // when
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.patch("/apply/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }

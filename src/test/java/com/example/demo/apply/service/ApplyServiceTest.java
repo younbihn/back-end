@@ -19,16 +19,8 @@ import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.NonExistedApplyException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
-import com.example.demo.type.AgeGroup;
 import com.example.demo.type.ApplyStatus;
-import com.example.demo.type.GenderType;
-import com.example.demo.type.MatchingType;
 import com.example.demo.type.RecruitStatus;
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,37 +48,11 @@ class ApplyServiceTest {
         //given
         SiteUser siteUser = SiteUser.builder()
                 .id(1L)
-                .password("1234")
-                .nickname("nick")
-                .email("email@gmail.com")
-                .phoneNumber("010-1234-5678")
-                .gender(GenderType.FEMALE)
-                .ntrp(BigDecimal.valueOf(1.0))
-                .locationSi("안양시")
-                .locationGu("동안구")
-                .ageGroup(AgeGroup.TWENTIES)
-                .createDate(Timestamp.valueOf(LocalDateTime.now()))
-                .isPhoneVerified(true)
                 .build();
 
         Matching matching = Matching.builder()
                 .id(2L)
-                .siteUser(siteUser)
-                .title("경기해요.")
-                .content("경기 내용입니다.")
-                .location("oo 구장")
-                .date(Date.valueOf("2023-11-10"))
-                .startTime(Time.valueOf("15:00:00"))
-                .endTime(Time.valueOf("17:00:00"))
-                .recruitNum(3)
-                .cost(1000)
-                .isReserved(true)
-                .ntrp("3.0~4.0")
-                .age("20~30")
                 .recruitStatus(RecruitStatus.OPEN)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                .matchingType(MatchingType.DOUBLE)
-                .applyNum(0)
                 .build();
 
 
@@ -101,8 +67,6 @@ class ApplyServiceTest {
                         .id(1L)
                         .matching(matching)
                         .siteUser(siteUser)
-                        .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                        .status(ApplyStatus.PENDING)
                         .build());
         ArgumentCaptor<Apply> captor = ArgumentCaptor.forClass(Apply.class);
 
@@ -120,44 +84,17 @@ class ApplyServiceTest {
         //given
         SiteUser siteUser = SiteUser.builder()
                 .id(1L)
-                .password("1234")
-                .nickname("nick")
-                .email("email@gmail.com")
-                .phoneNumber("010-1234-5678")
-                .gender(GenderType.FEMALE)
-                .ntrp(BigDecimal.valueOf(1.0))
-                .locationSi("안양시")
-                .locationGu("동안구")
-                .ageGroup(AgeGroup.TWENTIES)
-                .createDate(Timestamp.valueOf(LocalDateTime.now()))
-                .isPhoneVerified(true)
                 .build();
 
         Matching matching = Matching.builder()
                 .id(2L)
-                .siteUser(siteUser)
-                .title("경기해요.")
-                .content("경기 내용입니다.")
-                .location("oo 구장")
-                .date(Date.valueOf("2023-11-10"))
-                .startTime(Time.valueOf("15:00:00"))
-                .endTime(Time.valueOf("17:00:00"))
-                .recruitNum(3)
-                .cost(1000)
-                .isReserved(true)
-                .ntrp("3.0~4.0")
-                .age("20~30")
                 .recruitStatus(RecruitStatus.OPEN)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                .matchingType(MatchingType.DOUBLE)
-                .applyNum(0)
                 .build();
 
         Apply apply = Apply.builder()
                 .id(1L)
                 .matching(matching)
                 .siteUser(siteUser)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
                 .status(ApplyStatus.PENDING)
                 .build();
 
@@ -186,37 +123,11 @@ class ApplyServiceTest {
         //given
         SiteUser siteUser = SiteUser.builder()
                 .id(1L)
-                .password("1234")
-                .nickname("nick")
-                .email("email@gmail.com")
-                .phoneNumber("010-1234-5678")
-                .gender(GenderType.FEMALE)
-                .ntrp(BigDecimal.valueOf(1.0))
-                .locationSi("안양시")
-                .locationGu("동안구")
-                .ageGroup(AgeGroup.TWENTIES)
-                .createDate(Timestamp.valueOf(LocalDateTime.now()))
-                .isPhoneVerified(true)
                 .build();
 
         Matching matching = Matching.builder()
                 .id(2L)
-                .siteUser(siteUser)
-                .title("경기해요.")
-                .content("경기 내용입니다.")
-                .location("oo 구장")
-                .date(Date.valueOf("2023-11-10"))
-                .startTime(Time.valueOf("15:00:00"))
-                .endTime(Time.valueOf("17:00:00"))
-                .recruitNum(3)
-                .cost(1000)
-                .isReserved(true)
-                .ntrp("3.0~4.0")
-                .age("20~30")
                 .recruitStatus(RecruitStatus.CLOSED)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                .matchingType(MatchingType.DOUBLE)
-                .applyNum(0)
                 .build();
 
         given(siteUserRepository.findById(anyLong()))
@@ -238,44 +149,17 @@ class ApplyServiceTest {
         //given
         SiteUser siteUser = SiteUser.builder()
                 .id(1L)
-                .password("1234")
-                .nickname("nick")
-                .email("email@gmail.com")
-                .phoneNumber("010-1234-5678")
-                .gender(GenderType.FEMALE)
-                .ntrp(BigDecimal.valueOf(1.0))
-                .locationSi("안양시")
-                .locationGu("동안구")
-                .ageGroup(AgeGroup.TWENTIES)
-                .createDate(Timestamp.valueOf(LocalDateTime.now()))
-                .isPhoneVerified(true)
                 .build();
 
         Matching matching = Matching.builder()
                 .id(2L)
-                .siteUser(siteUser)
-                .title("경기해요.")
-                .content("경기 내용입니다.")
-                .location("oo 구장")
-                .date(Date.valueOf("2023-11-10"))
-                .startTime(Time.valueOf("15:00:00"))
-                .endTime(Time.valueOf("17:00:00"))
-                .recruitNum(3)
-                .cost(1000)
-                .isReserved(true)
-                .ntrp("3.0~4.0")
-                .age("20~30")
                 .recruitStatus(RecruitStatus.OPEN)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                .matchingType(MatchingType.DOUBLE)
-                .applyNum(0)
                 .build();
 
         Apply apply = Apply.builder()
                 .id(1L)
                 .matching(matching)
                 .siteUser(siteUser)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
                 .status(ApplyStatus.PENDING)
                 .build();
 
@@ -283,7 +167,7 @@ class ApplyServiceTest {
                 .willReturn(Optional.of(apply));
 
         // when
-        ApplyDto applyDto = applyService.cancel(1L, 1L);
+        ApplyDto applyDto = applyService.cancel(1L);
 
         // then
         assertEquals(ApplyStatus.CANCELED, applyDto.getApplyStatus());
@@ -294,7 +178,7 @@ class ApplyServiceTest {
         // given
         // when
         NonExistedApplyException exception = assertThrows(NonExistedApplyException.class,
-                () -> applyService.cancel(1L, 1L));
+                () -> applyService.cancel(1L));
 
         // then
         assertEquals(exception.getMessage(), "참가 신청 내역이 없습니다. 이미 삭제된 경기로 예상됩니다.");
@@ -305,7 +189,6 @@ class ApplyServiceTest {
         // given
         Apply apply = Apply.builder()
                 .id(1L)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
                 .status(ApplyStatus.CANCELED)
                 .build();
 
@@ -313,10 +196,53 @@ class ApplyServiceTest {
                 .willReturn(Optional.of(apply));
         // when
         AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
-                () -> applyService.cancel(1L, 1L));
+                () -> applyService.cancel(1L));
 
         // then
-        assertEquals(exception.getMessage(),  "이미 참가 신청이 취소된 경기입니다.");
+        assertEquals(exception.getMessage(), "이미 참가 신청이 취소된 경기입니다.");
     }
 
+    @Test
+    void applyAcceptSuccess() {
+        //given
+        SiteUser siteUser = SiteUser.builder()
+                .id(1L)
+                .build();
+
+        Matching matching = Matching.builder()
+                .id(2L)
+                .build();
+
+        Apply apply = Apply.builder()
+                .id(1L)
+                .status(ApplyStatus.PENDING)
+                .build();
+
+        given(applyRepository.findById(anyLong()))
+                .willReturn(Optional.of(apply));
+
+        // when
+        ApplyDto applyDto = applyService.accept(1L);
+
+        // then
+        assertEquals(ApplyStatus.ACCEPTED, applyDto.getApplyStatus());
+    }
+
+    @Test
+    void applyAcceptFailByAlreadyCanceledApply() {
+        // given
+        Apply apply = Apply.builder()
+                .id(1L)
+                .status(ApplyStatus.CANCELED)
+                .build();
+
+        given(applyRepository.findById(anyLong()))
+                .willReturn(Optional.of(apply));
+        // when
+        AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
+                () -> applyService.accept(1L));
+
+        // then
+        assertEquals(exception.getMessage(), "이미 참가 신청이 취소된 경기입니다.");
+    }
 }
