@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.model.MatchingDetailDto;
-import com.example.demo.model.MatchingPreviewDto;
+import com.example.demo.matching.dto.MatchingDetailDto;
+import com.example.demo.matching.dto.MatchingPreviewDto;
 import java.util.List;
 
 public interface MatchingService {
