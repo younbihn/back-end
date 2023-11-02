@@ -9,5 +9,5 @@ public interface ApplyService {
 
     ApplyDto cancel(long applyId);
 
-    void accept(List<Long> appliedList, List<Long> confirmedList, long matchingId);
+    boolean accept(List<Long> appliedList, List<Long> confirmedList, long matchingId);
 }

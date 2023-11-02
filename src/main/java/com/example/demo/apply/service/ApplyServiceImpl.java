@@ -111,7 +111,7 @@ public class ApplyServiceImpl implements ApplyService {
     }
 
     @Override
-    public void accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
+    public boolean accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
         // 신청 내역으로 옮겨진 id 받아와서 전부 상태 변경 및 매칭 확정 수/매칭 상태 변경
         var matching = matchingRepository.findById(matchingId).get();
         var recruitNum = matching.getRecruitNum();
@@ -130,6 +130,8 @@ public class ApplyServiceImpl implements ApplyService {
 
         matching.setConfirmedNum(confirmedNum);
         revieewRecruitStatus(confirmedNum, recruitNum, matching);
+
+        return true;
     }
 
     private static void revieewRecruitStatus(int confirmedNum, Integer recruitNum, Matching matching) {

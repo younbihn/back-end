@@ -8,16 +8,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import com.example.demo.apply.dto.AllLists;
 import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.service.ApplyService;
-import com.example.demo.response.ResponseUtil;
+import com.example.demo.entity.Matching;
+import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.type.ApplyStatus;
+import com.example.demo.type.RecruitStatus;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -59,20 +64,23 @@ class ApplyControllerTest {
                 .andDo(print());
     }
 
-//    @Test
-//    void successAcceptApply() throws Exception {
-//        // given
-//        // when
-//        List<Long> appliedList = new ArrayList<>();
-//        List<Long> confirmedList = new ArrayList<>();
-//        AllLists allLists = new AllLists();
-//        allLists.setAppliedList(appliedList);
-//        allLists.setConfirmedList(confirmedList);
-//        // then
-//        mockMvc.perform(MockMvcRequestBuilders.patch("/apply/matches/1"))
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(appliedList)
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andDo(print());
-//    }
+    @Test
+    void successAcceptApply() throws Exception {
+        // given
+        String request = "{\n"
+                + "\"appliedList\": [1,2],\n"
+                + "\"confirmedList\": [3,4]\n"
+                + "}";
+
+        given(applyService.accept(anyList(), anyList(), anyLong()))
+                .willReturn(true);
+
+        // when
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.patch("/apply/matches/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(request))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
 }
