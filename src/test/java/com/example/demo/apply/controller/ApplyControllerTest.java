@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -63,8 +62,6 @@ class ApplyControllerTest {
 //    @Test
 //    void successAcceptApply() throws Exception {
 //        // given
-//        given(applyService.accept(anyList(), anyList(), anyLong()))
-//                .willReturn(ResponseUtil.SUCCESS("수락 확정을 진행하였습니다.", null));
 //        // when
 //        List<Long> appliedList = new ArrayList<>();
 //        List<Long> confirmedList = new ArrayList<>();
