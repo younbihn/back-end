@@ -5,9 +5,9 @@ import com.example.demo.response.ResponseDto;
 import java.util.List;
 
 public interface ApplyService {
-    ResponseDto apply(long userId, long matchId);
+    ApplyDto apply(long userId, long matchId);
 
-    ResponseDto cancel(long applyId);
+    ApplyDto cancel(long applyId);
 
-    ResponseDto accept(List<Long> appliedList, List<Long> confirmedList, long matchingId);
+    void accept(List<Long> appliedList, List<Long> confirmedList, long matchingId);
 }

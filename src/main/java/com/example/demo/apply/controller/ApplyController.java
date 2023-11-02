@@ -26,20 +26,17 @@ public class ApplyController {
     public ResponseDto apply(@PathVariable(value = "match_id") long matchingId) {
 
         long userId = 1; // 로그인 구현 전 임시로 부여
-        var result = applyService.apply(userId, matchingId);
-        if (result.getStatus().equals(ResponseStatus.FAILURE)) {
-            return result;
-        }
+
+        applyService.apply(userId, matchingId);
+
         return ResponseUtil.SUCCESS("매칭 참가 신청에 성공하였습니다.", null);
     }
 
     @DeleteMapping("/{apply_id}") // 매칭 참가 신청 취소 api => 경기 확정
     public ResponseDto cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
-        var result = applyService.cancel(applyId);
-        if (result.getStatus().equals(ResponseStatus.FAILURE)) {
-            return result;
-        }
+        applyService.cancel(applyId);
+
         return ResponseUtil.SUCCESS("매칭 참가 신청을 취소하였습니다.", null);
     }
 
@@ -50,10 +47,8 @@ public class ApplyController {
         List<Long> appliedList = allLists.getAppliedList();
         List<Long> confirmedList = allLists.getConfirmedList();
 
-        var result = applyService.accept(appliedList, confirmedList, matchingId);
-        if (result.getStatus().equals(ResponseStatus.FAILURE)) {
-            return result;
-        }
+        applyService.accept(appliedList, confirmedList, matchingId);
+
         return ResponseUtil.SUCCESS("수락 확정을 진행하였습니다.", null);
     }
 }

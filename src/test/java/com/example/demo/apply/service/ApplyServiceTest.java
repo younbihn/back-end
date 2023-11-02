@@ -14,6 +14,8 @@ import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.exception.impl.AlreadyCanceledApplyException;
+import com.example.demo.exception.impl.AlreadyExistedApplyException;
+import com.example.demo.exception.impl.CancellationOnGameDayException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.NonExistedApplyException;
 import com.example.demo.matching.repository.MatchingRepository;
@@ -74,12 +76,12 @@ class ApplyServiceTest {
         ArgumentCaptor<Apply> captor = ArgumentCaptor.forClass(Apply.class);
 
         // when
-        ResponseDto<ApplyDto> applyDto = applyService.apply(1L, 2L);
+        ApplyDto applyDto = applyService.apply(1L, 2L);
 
         // then
         verify(applyRepository, times(1)).save(captor.capture()); // save 메서드가 한 번 실행되는 지 검증
-        assertEquals(1L, applyDto.getData().getSiteUser().getId());
-        assertEquals(2L, applyDto.getData().getMatching().getId());
+        assertEquals(1L, applyDto.getSiteUser().getId());
+        assertEquals(2L, applyDto.getMatching().getId());
     }
 
     @Test
@@ -114,10 +116,11 @@ class ApplyServiceTest {
                 .willReturn(Optional.of(apply));
 
         // when
-        ResponseDto<ApplyDto> applyDto = applyService.apply(1L, 2L);
+        AlreadyExistedApplyException exception = assertThrows(AlreadyExistedApplyException.class,
+                () -> applyService.apply(1L, 2L));
 
         // then
-        assertEquals("이미 신청한 매칭 내역이 존재합니다.", applyDto.getMessage());
+        assertEquals(exception.getMessage(), "이미 신청한 매칭 내역이 존재합니다.");
     }
 
     @Test
@@ -171,10 +174,10 @@ class ApplyServiceTest {
                 .willReturn(Optional.of(matching));
 
         // when
-        ResponseDto<ApplyDto> applyDto = applyService.cancel(1L);
+        ApplyDto applyDto = applyService.cancel(1L);
 
         // then
-        assertEquals(ApplyStatus.CANCELED, applyDto.getData().getApplyStatus());
+        assertEquals(ApplyStatus.CANCELED, applyDto.getApplyStatus());
     }
 
     @Test
@@ -224,11 +227,13 @@ class ApplyServiceTest {
                         .recruitStatus(RecruitStatus.CLOSED)
                         .date(Date.valueOf(LocalDate.now()))
                         .build()));
+
         // when
-        ResponseDto<ApplyDto> applyDto = applyService.cancel(1L);
+        CancellationOnGameDayException exception = assertThrows(CancellationOnGameDayException.class,
+                () -> applyService.cancel(1L));
 
         // then
-        assertEquals("매칭 당일에는 매칭 취소가 불가능합니다.", applyDto.getMessage());
+        assertEquals(exception.getMessage(), "경기 당일 혹은 그 이후에는 참여 취소가 불가능합니다.");
     }
 
     @Test
@@ -259,9 +264,9 @@ class ApplyServiceTest {
                         .build()));
 
         // when
-        ResponseDto<Object> applyDto = applyService.accept(appliedList, confirmedList, 1L);
+        applyService.accept(appliedList, confirmedList, 1L);
 
         // then
-        assertEquals("수락 확정을 진행하였습니다.", applyDto.getMessage());
+        verify(applyRepository, times(2)).findById(anyLong());
     }
 }

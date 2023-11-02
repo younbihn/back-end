@@ -44,6 +44,6 @@ public class MatchingController {
 
         Long userId = 1L;
 
-        return matchingService.getApplyList(userId, matchingId);
+        return ResponseUtil.SUCCESS("매칭 리스트 조회에 성공하였습니다.", matchingService.getApplyList(userId, matchingId));
     }
 }

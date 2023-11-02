@@ -11,7 +11,9 @@ import com.example.demo.matching.service.MatchingService;
 import com.example.demo.response.ResponseUtil;
 import com.example.demo.type.RecruitStatus;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -34,11 +36,9 @@ class MatchingControllerTest {
     @Test
     void successConfirmMatching() throws Exception {
         // given
-        List<ApplyListResponseDto> list = new ArrayList<>();
+        Map<String, String> result = new HashMap();
         given(matchingService.getApplyList(anyLong(), anyLong()))
-                .willReturn(ResponseUtil.SUCCESS("매칭 확정에 성공하였습니다.",
-                        list)
-                );
+                .willReturn(result);
 
         // when
         // then

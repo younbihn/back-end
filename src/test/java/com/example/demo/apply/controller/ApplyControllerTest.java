@@ -35,9 +35,9 @@ class ApplyControllerTest {
     void successApply() throws Exception {
         // given
         given(applyService.apply(anyLong(), anyLong()))
-                .willReturn(ResponseUtil.SUCCESS("매칭 신청에 성공하였습니다.", ApplyDto.builder()
+                .willReturn(ApplyDto.builder()
                         .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                        .build()));
+                        .build());
         // when
         // then
         mockMvc.perform(MockMvcRequestBuilders.post("/apply/matches/1"))
@@ -49,10 +49,10 @@ class ApplyControllerTest {
     void successCancelApply() throws Exception {
         // given
         given(applyService.cancel(anyLong()))
-                .willReturn(ResponseUtil.SUCCESS("매칭 참가 신청을 취소하였습니다.", ApplyDto.builder()
+                .willReturn(ApplyDto.builder()
                         .createTime(Timestamp.valueOf(LocalDateTime.now()))
                         .applyStatus(ApplyStatus.CANCELED)
-                        .build()));
+                        .build());
         // when
         // then
         mockMvc.perform(MockMvcRequestBuilders.delete("/apply/1"))
