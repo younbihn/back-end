@@ -5,6 +5,7 @@ import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.service.MatchingService;
 import com.example.demo.response.ResponseDto;
 import com.example.demo.response.ResponseUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,12 +40,10 @@ public class MatchingController {
     }
 
     @GetMapping("/{matching_id}/apply")
-    public ResponseDto applyList(@PathVariable(value = "matching_id") long matchingId) {
+    public ResponseDto applyList(@PathVariable(value = "matching_id") long matchingId) throws JsonProcessingException {
 
         Long userId = 1L;
 
-        var applyList = matchingService.getApplyList(userId, matchingId);
-
-        return ResponseUtil.SUCCESS("매칭 신청 내역을 불러왔습니다.", applyList);
+        return matchingService.getApplyList(userId, matchingId);
     }
 }

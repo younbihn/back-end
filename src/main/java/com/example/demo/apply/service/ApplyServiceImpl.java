@@ -91,8 +91,10 @@ public class ApplyServiceImpl implements ApplyService {
     @Override
     public ResponseDto accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
         // 신청 내역으로 옮겨진 id 받아와서 전부 상태 변경 및 매칭 확정 수/매칭 상태 변경
-        var recruitNum = matchingRepository.findById(matchingId).get().getRecruitNum() - 1;
-        if (recruitNum < confirmedList.size()) {
+        var matching = matchingRepository.findById(matchingId).get();
+        var recruitNum = matching.getRecruitNum() - 1;
+        var confirmedNum = confirmedList.size();
+        if (recruitNum < confirmedNum) {
             return ResponseUtil.FAILURE("모집 인원보다 많은 인원을 수락할 수 없습니다.", null);
         }
         for (long applyId : appliedList) {
@@ -103,6 +105,7 @@ public class ApplyServiceImpl implements ApplyService {
             var apply = applyRepository.findById(confirmId).get();
             apply.setStatus(ApplyStatus.ACCEPTED);
         }
+        matching.setConfirmedNum(confirmedNum + 1);
         return ResponseUtil.SUCCESS("수락 확정을 진행하였습니다.", null);
     }
 }

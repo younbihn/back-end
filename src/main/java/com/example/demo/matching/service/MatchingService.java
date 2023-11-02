@@ -1,9 +1,10 @@
 package com.example.demo.matching.service;
 
-import com.example.demo.matching.dto.ApplyListResponseDto;
+import com.example.demo.matching.dto.ApplyListResponseDto.ApplyListResponseDtoBuilder;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.response.ResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 
 public interface MatchingService {
@@ -13,5 +14,5 @@ public interface MatchingService {
     List<MatchingPreviewDto> getList();
     MatchingDetailDto getDetail(Long matchingId);
 
-    ResponseDto<List<ApplyListResponseDto>> getApplyList(Long userId, long matchId);
+    ResponseDto getApplyList(long userId, long matchId) throws JsonProcessingException;
 }
