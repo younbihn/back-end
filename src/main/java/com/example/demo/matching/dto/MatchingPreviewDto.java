@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class MatchingPreviewDto {
-    boolean isReserved;
+    private boolean isReserved;
     private MatchingType matchingType;
     private String ntrp;
     private String title;

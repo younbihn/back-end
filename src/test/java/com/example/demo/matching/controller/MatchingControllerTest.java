@@ -2,6 +2,7 @@ package com.example.demo.matching.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,43 +53,13 @@ class MatchingControllerTest { //TODO: 공통 응답 확정되면 응답 형태 
     @Autowired
     ObjectMapper objectMapper;
 
-    MatchingDetailDto matchingDetailDto = MatchingDetailDto.builder()
-            .id(1L)
-            .creatorUserId(2L)
-            .title("제목")
-            .content("본문")
-            .location("장소")
-            .locationImg("구장 이미지 주소")
-            .date(LocalDate.now())
-            .startTime(LocalTime.of(10, 0))
-            .endTime(LocalTime.of(12, 0))
-            .recruitNum(5)
-            .cost(5000)
-            .isReserved(false)
-            .ntrp("Developer")
-            .ageGroup("TWENTIES")
-            .recruitStatus(RecruitStatus.OPEN)
-            .matchingType(MatchingType.SINGLE)
-            .applyNum(2)
-            .createTime(LocalDateTime.now())
-            .build();
-
-    MatchingPreviewDto matchingPreviewDto = MatchingPreviewDto.builder()
-            .isReserved(true)
-            .matchingType(MatchingType.SINGLE)  // MatchingType에 맞는 값을 설정해주세요.
-            .ntrp("ntrp")
-            .title("제목")
-            .matchingStartDateTime("시작 날짜")
-            .build();
-
     @Test
-    @DisplayName("매칭글 등록")
+    @DisplayName("매칭글 등록 - 구장 이미지 없는 경우")
     public void createMatchingTest() throws Exception {
         //given
-        given(matchingService.create(1L, any(MatchingDetailDto.class)))
+        MatchingDetailDto matchingDetailDto = makeMatchingDetailDto();
+        given(matchingService.create(anyLong(), any(MatchingDetailDto.class)))
                 .willReturn(matchingDetailDto);
-        given(s3Uploader.uploadFile(any()))
-                .willReturn(anyString());
         String content = objectMapper.writeValueAsString(matchingDetailDto);
 
         //when
@@ -102,57 +74,45 @@ class MatchingControllerTest { //TODO: 공통 응답 확정되면 응답 형태 
     @DisplayName("매칭글 조회")
     public void getDetailedMatchingTest() throws Exception {
         //given
+        MatchingDetailDto matchingDetailDto = makeMatchingDetailDto();
         given(matchingService.getDetail(1L))
                 .willReturn(matchingDetailDto);
         //when
         //then
         mockMvc.perform(get("/api/matches/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").exists())
-                .andExpect(jsonPath("$.content").exists())
-                .andExpect(jsonPath("$.location").exists())
-                .andExpect(jsonPath("$.locationImg").exists())
-                .andExpect(jsonPath("$.date").exists())
-                .andExpect(jsonPath("$.startTime").exists())
-                .andExpect(jsonPath("$.endTime").exists())
-                .andExpect(jsonPath("$.recruitNum").exists())
-                .andExpect(jsonPath("$.cost").exists())
-                .andExpect(jsonPath("$.isReserved").exists())
-                .andExpect(jsonPath("$.ntrp").exists())
-                .andExpect(jsonPath("$.ageGroup").exists())
-                .andExpect(jsonPath("$.recruitStatus").exists())
-                .andExpect(jsonPath("$.ageGroup").exists())
-                .andExpect(jsonPath("$.matchingType").exists())
-                .andExpect(jsonPath("$.applyNum").exists());
+                .andExpect(jsonPath("$.title").value(matchingDetailDto.getTitle()))
+                .andExpect(jsonPath("$.content").value(matchingDetailDto.getContent()))
+                .andExpect(jsonPath("$.location").value(matchingDetailDto.getLocation()))
+                .andExpect(jsonPath("$.locationImg").value(matchingDetailDto.getLocationImg()))
+                .andExpect(jsonPath("$.date").value(matchingDetailDto.getDate().toString()))
+                .andExpect(jsonPath("$.startTime").value(matchingDetailDto.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))))
+                .andExpect(jsonPath("$.endTime").value(matchingDetailDto.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))))
+                .andExpect(jsonPath("$.recruitNum").value(matchingDetailDto.getRecruitNum()))
+                .andExpect(jsonPath("$.cost").value(matchingDetailDto.getCost()))
+                .andExpect(jsonPath("$.isReserved").value(matchingDetailDto.getIsReserved()))
+                .andExpect(jsonPath("$.ntrp").value(matchingDetailDto.getNtrp()))
+                .andExpect(jsonPath("$.ageGroup").value(matchingDetailDto.getAgeGroup()))
+                .andExpect(jsonPath("$.recruitStatus").value(matchingDetailDto.getRecruitStatus().name()))
+                .andExpect(jsonPath("$.matchingType").value(matchingDetailDto.getMatchingType().name()))
+                .andExpect(jsonPath("$.applyNum").value(matchingDetailDto.getApplyNum()));
     }
 
     @Test
     @DisplayName("매칭글 수정 - 구장 이미지 바꾸지 않은 경우")
     public void editMatchingTest() throws Exception {
         //given
-        given(matchingService.update(1L, 1L, any(MatchingDetailDto.class)))
+        MatchingDetailDto matchingDetailDto = makeMatchingDetailDto();
+        given(matchingService.update(anyLong(), anyLong(), any(MatchingDetailDto.class)))
                 .willReturn(matchingDetailDto);
+        String content = objectMapper.writeValueAsString(matchingDetailDto);
 
         //when
         //then
-        mockMvc.perform(patch("/api/matches/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").exists())
-                .andExpect(jsonPath("$.content").exists())
-                .andExpect(jsonPath("$.location").exists())
-                .andExpect(jsonPath("$.locationImg").exists())
-                .andExpect(jsonPath("$.date").exists())
-                .andExpect(jsonPath("$.startTime").exists())
-                .andExpect(jsonPath("$.endTime").exists())
-                .andExpect(jsonPath("$.recruitNum").exists())
-                .andExpect(jsonPath("$.cost").exists())
-                .andExpect(jsonPath("$.isReserved").exists())
-                .andExpect(jsonPath("$.ntrp").exists())
-                .andExpect(jsonPath("$.ageGroup").exists())
-                .andExpect(jsonPath("$.recruitStatus").exists())
-                .andExpect(jsonPath("$.ageGroup").exists())
-                .andExpect(jsonPath("$.matchingType").exists())
-                .andExpect(jsonPath("$.applyNum").exists());
+        mockMvc.perform(patch("/api/matches/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -174,6 +134,7 @@ class MatchingControllerTest { //TODO: 공통 응답 확정되면 응답 형태 
         int size = 1;
         Pageable pageable = PageRequest.of(page, size);
         ArrayList<MatchingPreviewDto> arrayList = new ArrayList<>();
+        MatchingPreviewDto matchingPreviewDto = makeMatchingPreviewDto();
         arrayList.add(matchingPreviewDto);
         Page<MatchingPreviewDto> pages = new PageImpl<>(arrayList, pageable, 1);
 
@@ -184,10 +145,43 @@ class MatchingControllerTest { //TODO: 공통 응답 확정되면 응답 형태 
                         .param("page", String.valueOf(page))
                         .param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].isReserved").value(matchingPreviewDto.getTitle()))
-                .andExpect(jsonPath("$.content[0].matchingType").value(matchingPreviewDto.getMatchingType()))
                 .andExpect(jsonPath("$.content[0].ntrp").value(matchingPreviewDto.getNtrp()))
                 .andExpect(jsonPath("$.content[0].title").value(matchingPreviewDto.getTitle()))
-                .andExpect(jsonPath("$.content[0].matchingStartDateTime").value(matchingPreviewDto.getMatchingStartDateTime()));
+                .andExpect(jsonPath("$.content[0].matchingStartDateTime").value(matchingPreviewDto.getMatchingStartDateTime()))
+                .andExpect(jsonPath("$.content[0].reserved").value(matchingPreviewDto.isReserved()))
+                .andExpect(jsonPath("$.content[0].matchingType").value(matchingPreviewDto.getMatchingType().name()));
+    }
+
+    public MatchingDetailDto makeMatchingDetailDto(){
+        return MatchingDetailDto.builder()
+                .id(1L)
+                .creatorUserId(2L)
+                .title("제목")
+                .content("본문")
+                .location("장소")
+                .locationImg("구장 이미지 주소")
+                .date(LocalDate.now())
+                .startTime(LocalTime.of(10,0))
+                .endTime(LocalTime.of(12, 0))
+                .recruitNum(5)
+                .cost(5000)
+                .isReserved(false)
+                .ntrp("Developer")
+                .ageGroup("TWENTIES")
+                .recruitStatus(RecruitStatus.OPEN)
+                .matchingType(MatchingType.SINGLE)
+                .applyNum(2)
+                .createTime(LocalDateTime.now())
+                .build();
+    }
+
+    public MatchingPreviewDto makeMatchingPreviewDto(){
+        return MatchingPreviewDto.builder()
+                .isReserved(true)
+                .matchingType(MatchingType.SINGLE)
+                .ntrp("ntrp")
+                .title("제목")
+                .matchingStartDateTime("시작 날짜")
+                .build();
     }
 }

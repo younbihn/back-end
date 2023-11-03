@@ -40,7 +40,7 @@ public class MatchingController {
         Long userId = 1L;
         var result = matchingServiceImpl.create(userId, matchingDetailDto);
 
-        if(!file.isEmpty()){
+        if(file != null){
             try{
                 s3Uploader.uploadFile(file);
             } catch(IOException exception){
@@ -70,7 +70,8 @@ public class MatchingController {
         var result = matchingServiceImpl.update(userId, matchingId, matchingDetailDto);
 
         // 구장 이미지 변경
-        if(!file.toString().equals(matchingDetailDto.getLocationImg())){
+        //TODO: 이미 존재하는 이미지인지 검증하는 로직이 이게 맞나..?
+        if(file!=null && !file.toString().equals(matchingDetailDto.getLocationImg())){
             try{
                 //TODO : S3에 있는 파일 삭제
                 s3Uploader.uploadFile(file);
@@ -91,7 +92,7 @@ public class MatchingController {
 
         long deletedMatchingId = matchingServiceImpl.delete(userId, matchingId);
 
-        return ResponseEntity.ok().build(); //TODO: 어디에 담아서 리턴해야할지..
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/list")
