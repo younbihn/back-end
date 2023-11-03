@@ -176,10 +176,10 @@ class ApplyServiceTest {
                 .willReturn(Optional.of(matching));
 
         // when
-        ApplyDto applyDto = applyService.cancel(1L);
+        Apply canceldApply = applyService.cancel(1L);
 
         // then
-        assertEquals(ApplyStatus.CANCELED, applyDto.getApplyStatus());
+        assertEquals(ApplyStatus.CANCELED, canceldApply.getStatus());
     }
 
     @Test

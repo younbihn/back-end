@@ -1,12 +1,12 @@
 package com.example.demo.matching.controller;
 
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.service.MatchingService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,12 +37,13 @@ public class MatchingController {
         return s3Uploader.uploadFile(file);
     }
 
+    @SneakyThrows
     @GetMapping("/{matching_id}/apply")
-    public ResponseEntity<Map<String, String>> applyList(@PathVariable(value = "matching_id") long matchingId) throws JsonProcessingException {
+    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId) {
 
         Long userId = 1L;
 
-        var result = matchingService.getApplyList(userId, matchingId);
+        var result = matchingService.getApplyContents(userId, matchingId);
 
         return ResponseEntity.ok(result);
     }

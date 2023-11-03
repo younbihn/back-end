@@ -2,16 +2,15 @@ package com.example.demo.matching.service;
 
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Matching;
-import com.example.demo.matching.dto.ApplyListResponseDto;
+import com.example.demo.exception.impl.ApplyNotFoundException;
+import com.example.demo.matching.dto.ApplyContents;
+import com.example.demo.matching.dto.ApplyMember;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.type.ApplyStatus;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
+import com.example.demo.util.FindEntityUtils;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ public class MatchingServiceImpl implements MatchingService {
 
     private final MatchingRepository matchingRepository;
     private final ApplyRepository applyRepository;
+    private final FindEntityUtils findEntityUtils;
 
     @Override
     public MatchingDetailDto create(Long userId, MatchingDetailDto matchingDetailDto) {
@@ -52,51 +52,56 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public Map<String, String> getApplyList(long userId, long matchingId) throws JsonProcessingException {
-        var matching = matchingRepository.findById(matchingId).get();
+    public ApplyContents getApplyContents(long userId, long matchingId) {
+        var matching = findEntityUtils.findMatching(matchingId);
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = matching.getConfirmedNum();
         var applyNum = applyRepository.countByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING).get();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, String> result = new HashMap<>();
-
-        String recruitNumber = objectMapper.writeValueAsString(recruitNum);
-        String confirmedNumber = objectMapper.writeValueAsString(confirmedNum);
-        String applyNumber = objectMapper.writeValueAsString(applyNum);
+        var appliedMembers = findAppliedMembers(matchingId);
+        var confirmedMembers = findConfirmedMembers(matchingId);
 
         if (isOrganizer(userId, matching)) {
-            var resultsForAdmin = applyRepository.findByMatching_Id(matchingId)
-                    .get().stream().map((apply)
-                            -> ApplyListResponseDto.builder()
-                            .applyId(apply.getId())
-                            .siteUserId(apply.getSiteUser().getId())
-                            .nickname(apply.getSiteUser().getNickname())
-                            .applyStatus(apply.getStatus())
-                            .build()).collect(Collectors.toList());
+            var applyContentsForOrganizer = ApplyContents.builder()
+                    .applyNum(applyNum)
+                    .recruitNum(recruitNum)
+                    .confirmedNum(confirmedNum)
+                    .appliedMembers(appliedMembers)
+                    .confirmedMembers(confirmedMembers)
+                    .build();
 
-                result.put("applyListForAdmin", objectMapper.writeValueAsString(resultsForAdmin));
-                result.put("recruitNum", recruitNumber);
-                result.put("confirmedNum", confirmedNumber);
-                result.put("applyNum", applyNumber);
+            return applyContentsForOrganizer;
+        }
 
-                return result;
-            }
+        var applyContentsForUser = ApplyContents.builder()
+                .recruitNum(recruitNum)
+                .confirmedNum(confirmedNum)
+                .confirmedMembers(confirmedMembers)
+                .build();
 
-        var applyListForUser = applyRepository.findByMatching_IdAndStatus(matchingId, ApplyStatus.ACCEPTED)
+            return applyContentsForUser;
+        }
+
+    private List<ApplyMember> findConfirmedMembers(long matchingId) {
+        return applyRepository.findByMatching_IdAndStatus(matchingId, ApplyStatus.ACCEPTED)
                 .get().stream().map((apply)
-                        -> ApplyListResponseDto.builder()
+                        -> ApplyMember.builder()
                         .applyId(apply.getId())
                         .siteUserId(apply.getSiteUser().getId())
                         .nickname(apply.getSiteUser().getNickname())
                         .build()).collect(Collectors.toList());
+    }
 
-            result.put("applyListForUser", objectMapper.writeValueAsString(applyListForUser));
-            result.put("recruitNum", recruitNumber);
-            result.put("confirmedNum", confirmedNumber);
-
-            return result;
-        }
+    private List<ApplyMember> findAppliedMembers(long matchingId) {
+        return applyRepository.findByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING)
+                .orElseThrow(() -> new ApplyNotFoundException())
+                .stream().map((apply)
+                        -> ApplyMember.builder()
+                        .applyId(apply.getId())
+                        .siteUserId(apply.getSiteUser().getId())
+                        .nickname(apply.getSiteUser().getNickname())
+                        .build()).collect(Collectors.toList());
+    }
 
     private static boolean isOrganizer(long userId, Matching matching) {
         return matching.getSiteUser().getId() == userId;

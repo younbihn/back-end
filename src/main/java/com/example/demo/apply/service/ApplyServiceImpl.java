@@ -18,6 +18,7 @@ import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
+import com.example.demo.util.FindEntityUtils;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,12 +36,12 @@ public class ApplyServiceImpl implements ApplyService {
 
     private final ApplyRepository applyRepository;
     private final MatchingRepository matchingRepository;
-    private final SiteUserRepository siteUserRepository;
+    private final FindEntityUtils findEntityUtils;
 
     @Override
     public Apply apply(long userId, long matchingId) {
-        var user = findUser(userId);
-        var matching = findMatching(matchingId);
+        var user = findEntityUtils.findUser(userId);
+        var matching = findEntityUtils.findMatching(matchingId);
 
         validateRecruitStatus(matching); // 매칭 상태 검사
 
@@ -58,16 +59,6 @@ public class ApplyServiceImpl implements ApplyService {
                 .build();
 
         return applyRepository.save(Apply.fromDto(applyDto));
-    }
-
-    private Matching findMatching(long matchingId) {
-        return matchingRepository.findById(matchingId).orElseThrow(
-                () -> new MatchingNotFoundException());
-    }
-
-    private SiteUser findUser(long userId) {
-        return siteUserRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException());
     }
 
     private boolean isAlreadyExisted(long userId, long matchingId) {
@@ -89,7 +80,7 @@ public class ApplyServiceImpl implements ApplyService {
 
     @Override
     public Apply cancel(long applyId) {
-        var apply = findApply(applyId);
+        var apply = findEntityUtils.findApply(applyId);
 
         validateCancelDuplication(apply); // 취소 중복 검사
 
@@ -108,10 +99,7 @@ public class ApplyServiceImpl implements ApplyService {
         return apply;
     }
 
-    private Apply findApply(long applyId) {
-        return applyRepository.findById(applyId)
-                .orElseThrow(() -> new ApplyNotFoundException());
-    }
+
 
     private static void checkMatchingClosed(Matching matching) {
         if (matching.getRecruitStatus().equals(RecruitStatus.CLOSED)) {

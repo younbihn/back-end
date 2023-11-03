@@ -5,9 +5,8 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.service.MatchingService;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,9 +29,8 @@ class MatchingControllerTest {
     @Test
     void successConfirmMatching() throws Exception {
         // given
-        Map<String, String> result = new HashMap();
-        given(matchingService.getApplyList(anyLong(), anyLong()))
-                .willReturn(result);
+        given(matchingService.getApplyContents(anyLong(), anyLong()))
+                .willReturn(ApplyContents.builder().build());
 
         // when
         // then
