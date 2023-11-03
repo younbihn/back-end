@@ -16,4 +16,13 @@ public class ApplyDto {
     private SiteUser siteUser;
     private Timestamp createTime;
     private ApplyStatus applyStatus;
+
+    public static ApplyDto fromEntity(Apply apply) {
+        return ApplyDto.builder()
+                .matching(apply.getMatching())
+                .siteUser(apply.getSiteUser())
+                .createTime(apply.getCreateTime())
+                .applyStatus(apply.getStatus())
+                .build();
+    }
 }

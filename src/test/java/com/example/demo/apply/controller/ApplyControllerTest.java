@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.service.ApplyService;
+import com.example.demo.entity.Apply;
+import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.type.ApplyStatus;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -31,8 +33,8 @@ class ApplyControllerTest {
     void successApply() throws Exception {
         // given
         given(applyService.apply(anyLong(), anyLong()))
-                .willReturn(ApplyDto.builder()
-                        .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                .willReturn(Apply.builder()
+                        .status(ApplyStatus.PENDING)
                         .build());
         // when
         // then
@@ -45,9 +47,8 @@ class ApplyControllerTest {
     void successCancelApply() throws Exception {
         // given
         given(applyService.cancel(anyLong()))
-                .willReturn(ApplyDto.builder()
-                        .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                        .applyStatus(ApplyStatus.CANCELED)
+                .willReturn(Apply.builder()
+                        .status(ApplyStatus.CANCELED)
                         .build());
         // when
         // then
@@ -63,9 +64,6 @@ class ApplyControllerTest {
                 + "\"appliedList\": [1,2],\n"
                 + "\"confirmedList\": [3,4]\n"
                 + "}";
-
-        given(applyService.accept(anyList(), anyList(), anyLong()))
-                .willReturn(true);
 
         // when
         // then

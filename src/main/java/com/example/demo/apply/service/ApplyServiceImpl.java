@@ -4,27 +4,19 @@ import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
-import com.example.demo.entity.SiteUser;
 import com.example.demo.exception.impl.AlreadyCanceledApplyException;
 import com.example.demo.exception.impl.AlreadyClosedMatchingException;
 import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
-import com.example.demo.exception.impl.ApplyNotFoundException;
-import com.example.demo.exception.impl.MatchingNotFoundException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
-import com.example.demo.exception.impl.UserNotFoundException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
-import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
 import com.example.demo.util.FindEntityUtils;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,13 +79,13 @@ public class ApplyServiceImpl implements ApplyService {
         var matching = apply.getMatching();
 
         validateYourOwnPosting(matching, apply);
+        validateMatchingClosed(matching);
 
         if (RecruitStatus.FULL.equals(matching.getRecruitStatus())) {
             //TODO: 패널티 부여
             apply.setStatus(ApplyStatus.CANCELED);
             return apply;
         }
-        checkMatchingClosed(matching);
 
         apply.setStatus(ApplyStatus.CANCELED);
         return apply;
@@ -101,7 +93,7 @@ public class ApplyServiceImpl implements ApplyService {
 
 
 
-    private static void checkMatchingClosed(Matching matching) {
+    private static void validateMatchingClosed(Matching matching) {
         if (matching.getRecruitStatus().equals(RecruitStatus.CLOSED)) {
             throw new AlreadyClosedMatchingException();
         }
@@ -120,7 +112,7 @@ public class ApplyServiceImpl implements ApplyService {
     }
 
     @Override
-    public void accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
+    public Matching accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
         var matching = matchingRepository.findById(matchingId).get();
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = confirmedList.size();
@@ -136,6 +128,8 @@ public class ApplyServiceImpl implements ApplyService {
                         -> applyRepository.findById(confirmedId).get().setStatus(ApplyStatus.ACCEPTED));
 
         matching.setConfirmedNum(confirmedNum);
+
+        return matching;
     }
 
     private static void validateOverRecruitNumber(int recruitNum, int confirmedNum) {
