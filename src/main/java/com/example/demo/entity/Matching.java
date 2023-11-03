@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.RecruitStatus;
 import jakarta.persistence.Column;
@@ -11,13 +12,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
+@DynamicInsert
 public class Matching {
 
     @Id
@@ -64,6 +75,7 @@ public class Matching {
     @Column(name = "AGE", length = 50)
     private String age; // 사용자가 범위를 입력할 수 있으므로 string
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "RECRUIT_STATUS", length = 50)
     private RecruitStatus recruitStatus;
 
@@ -71,12 +83,31 @@ public class Matching {
     @Column(name = "MATCHING_TYPE", length = 50)
     private MatchingType matchingType;
 
-    @Column(name = "APPLY_NUM", columnDefinition = "INT DEFAULT 0")
-    private Integer applyNum;
+    @Column(name = "CONFIRMED_NUM") // default 값 1 들어감.
+    private Integer confirmedNum;
 
     @Column(name = "CREATE_TIME", nullable = false)
     private Timestamp createTime;
 
-    @OneToMany(mappedBy = "matching")
-    private List<Confirm> confirms; // 확정 인원 목록 - 채팅방 만들 때 사용
+    public static Matching fromDto(MatchingDetailDto matchingDetailDto, SiteUser siteUser) {
+        return Matching.builder()
+                .siteUser(siteUser)
+                .title(matchingDetailDto.getTitle())
+                .content(matchingDetailDto.getContent())
+                .location(matchingDetailDto.getLocation())
+                .locationImg(matchingDetailDto.getLocationImg()) // TODO: S3 연동
+                .date(Date.valueOf(matchingDetailDto.getDate()))
+                .startTime(Time.valueOf(matchingDetailDto.getStartTime()))
+                .endTime(Time.valueOf(matchingDetailDto.getEndTime()))
+                .recruitNum(matchingDetailDto.getRecruitNum())
+                .cost(matchingDetailDto.getCost())
+                .isReserved(matchingDetailDto.getIsReserved())
+                .ntrp(matchingDetailDto.getNtrp())
+                .age(matchingDetailDto.getAgeGroup())
+                .recruitStatus(matchingDetailDto.getRecruitStatus())
+                .matchingType(matchingDetailDto.getMatchingType())
+                .confirmedNum(matchingDetailDto.getConfirmedNum())
+                .createTime(Timestamp.valueOf(matchingDetailDto.getCreateTime()))
+                .build();
+    }
 }

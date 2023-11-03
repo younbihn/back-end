@@ -1,12 +1,18 @@
 spring:
   profiles:
-    active: db
+    active: local
+    group:
+      local:
+        - s3
+        - db
+      # dev
+      # prod
 
   jpa:
     hibernate:
       ddl-auto: none
     generate-ddl: false
-    show-sql: false
+    show-sql: true
     database: mysql
     defer-datasource-initialization: true
 

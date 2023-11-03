@@ -14,8 +14,16 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "SITE_USER")
 public class SiteUser {
 
