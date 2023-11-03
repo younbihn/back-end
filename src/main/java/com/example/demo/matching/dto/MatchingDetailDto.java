@@ -27,6 +27,7 @@ public class MatchingDetailDto {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
+    private LocalDateTime recruitDueDate;
     private Integer recruitNum;
     private Integer cost;
     private Boolean isReserved;
@@ -48,6 +49,7 @@ public class MatchingDetailDto {
                 .date(matching.getDate().toLocalDate())
                 .startTime(matching.getStartTime().toLocalTime())
                 .endTime(matching.getEndTime().toLocalTime())
+                .recruitDueDate(matching.getRecruitDueDate().toLocalDateTime())
                 .recruitNum(matching.getRecruitNum())
                 .cost(matching.getCost())
                 .isReserved(matching.getIsReserved())
