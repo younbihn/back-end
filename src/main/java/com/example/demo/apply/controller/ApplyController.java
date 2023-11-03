@@ -1,6 +1,6 @@
 package com.example.demo.apply.controller;
 
-import com.example.demo.apply.dto.AllLists;
+import com.example.demo.apply.dto.AppliedListAndConfiredList;
 import com.example.demo.apply.service.ApplyService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,32 +23,32 @@ public class ApplyController {
     private final ApplyService applyService;
 
     @PostMapping("/matches/{match_id}") // 매칭 참가 신청 api
-    public ResponseEntity<HttpStatus> apply(@PathVariable(value = "match_id") long matchingId) {
+    public BodyBuilder apply(@PathVariable(value = "match_id") long matchingId) {
 
         long userId = 1; // 로그인 구현 전 임시로 부여
 
-        var result = applyService.apply(userId, matchingId);
+        applyService.apply(userId, matchingId);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok();
     }
 
     @DeleteMapping("/{apply_id}") // 매칭 참가 신청 취소 api => 경기 확정
-    public ResponseEntity<HttpStatus> cancelApply(@PathVariable(value = "apply_id") long applyId) {
+    public BodyBuilder cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
         applyService.cancel(applyId);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok();
     }
 
     @PatchMapping("/matches/{matching_id}") // 참가 신청 수락 api
-    public ResponseEntity<HttpStatus> acceptApply(@RequestBody AllLists allLists,
+    public BodyBuilder acceptApply(@RequestBody AppliedListAndConfiredList appliedListAndConfiredList,
                                    @PathVariable(value = "matching_id") long matchingId) {
 
-        List<Long> appliedList = allLists.getAppliedList();
-        List<Long> confirmedList = allLists.getConfirmedList();
+        List<Long> appliedList = appliedListAndConfiredList.getAppliedList();
+        List<Long> confirmedList = appliedListAndConfiredList.getConfirmedList();
 
         applyService.accept(appliedList, confirmedList, matchingId);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok();
     }
 }

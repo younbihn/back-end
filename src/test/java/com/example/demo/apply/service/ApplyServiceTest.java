@@ -17,7 +17,7 @@ import com.example.demo.exception.impl.AlreadyCanceledApplyException;
 import com.example.demo.exception.impl.AlreadyClosedMatchingException;
 import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
-import com.example.demo.exception.impl.NonExistedApplyException;
+import com.example.demo.exception.impl.ApplyNotFoundException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
@@ -186,7 +186,7 @@ class ApplyServiceTest {
     void applyCancelFailByNonExistedApply() {
         // given
         // when
-        NonExistedApplyException exception = assertThrows(NonExistedApplyException.class,
+        ApplyNotFoundException exception = assertThrows(ApplyNotFoundException.class,
                 () -> applyService.cancel(1L));
 
         // then

@@ -4,12 +4,15 @@ import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
+import com.example.demo.entity.SiteUser;
 import com.example.demo.exception.impl.AlreadyCanceledApplyException;
 import com.example.demo.exception.impl.AlreadyClosedMatchingException;
 import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
-import com.example.demo.exception.impl.NonExistedApplyException;
+import com.example.demo.exception.impl.ApplyNotFoundException;
+import com.example.demo.exception.impl.MatchingNotFoundException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
+import com.example.demo.exception.impl.UserNotFoundException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
@@ -19,6 +22,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,67 +38,79 @@ public class ApplyServiceImpl implements ApplyService {
     private final SiteUserRepository siteUserRepository;
 
     @Override
-    public ApplyDto apply(long userId, long matchingId) {
-        var user = siteUserRepository.findById(userId);
-        var matching = matchingRepository.findById(matchingId);
+    public Apply apply(long userId, long matchingId) {
+        var user = findUser(userId);
+        var matching = findMatching(matchingId);
 
-        checkRecruitStatus(matching); // 매칭 상태 검사
+        validateRecruitStatus(matching); // 매칭 상태 검사
 
         if (isAlreadyExisted(userId, matchingId)) { // 신청 중복 검사
             var existApply = applyRepository.findBySiteUser_IdAndMatching_Id(userId, matchingId).get();
-            checkApplyDuplication(existApply);
+            validateApplyDuplication(existApply);
             existApply.setStatus(ApplyStatus.PENDING); // 취소 신청 내역 있을 경우 상태만 변경
-            return ApplyDto.fromEntity(existApply);
+            return existApply;
         }
 
         var applyDto = ApplyDto.builder()
-                .matching(matching.get())
-                .siteUser(user.get())
+                .matching(matching)
+                .siteUser(user)
                 .createTime(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
 
-        var apply = applyRepository.save(Apply.fromDto(applyDto));
-        return ApplyDto.fromEntity(apply);
+        return applyRepository.save(Apply.fromDto(applyDto));
+    }
+
+    private Matching findMatching(long matchingId) {
+        return matchingRepository.findById(matchingId).orElseThrow(
+                () -> new MatchingNotFoundException());
+    }
+
+    private SiteUser findUser(long userId) {
+        return siteUserRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException());
     }
 
     private boolean isAlreadyExisted(long userId, long matchingId) {
         return applyRepository.existsBySiteUser_IdAndMatching_Id(userId, matchingId);
     }
 
-    private static void checkApplyDuplication(Apply existApply) {
+    private static void validateApplyDuplication(Apply existApply) {
 
         if (!existApply.getStatus().equals(ApplyStatus.CANCELED)) {
             throw new AlreadyExistedApplyException();
         }
     }
 
-    private static void checkRecruitStatus(Optional<Matching> matching) {
-        if (matching.get().getRecruitStatus().equals(RecruitStatus.CLOSED)) {
+    private static void validateRecruitStatus(Matching matching) {
+        if (matching.getRecruitStatus().equals(RecruitStatus.CLOSED)) {
             throw new ClosedMatchingException();
         }
     }
 
     @Override
-    public ApplyDto cancel(long applyId) {
-        var apply = applyRepository.findById(applyId)
-                .orElseThrow(() -> new NonExistedApplyException());
+    public Apply cancel(long applyId) {
+        var apply = findApply(applyId);
 
-        checkCancelDuplication(apply); // 취소 중복 검사
+        validateCancelDuplication(apply); // 취소 중복 검사
 
-        var matchingId = apply.getMatching().getId();
-        var matching = matchingRepository.findById(matchingId).get();
+        var matching = apply.getMatching();
 
-        checkYourOwnPosting(matching, apply);
+        validateYourOwnPosting(matching, apply);
 
-        if (matching.getRecruitStatus().equals(RecruitStatus.FULL)) {
+        if (RecruitStatus.FULL.equals(matching.getRecruitStatus())) {
             //TODO: 패널티 부여
             apply.setStatus(ApplyStatus.CANCELED);
-            return ApplyDto.fromEntity(apply);
+            return apply;
         }
         checkMatchingClosed(matching);
 
         apply.setStatus(ApplyStatus.CANCELED);
-        return ApplyDto.fromEntity(apply);
+        return apply;
+    }
+
+    private Apply findApply(long applyId) {
+        return applyRepository.findById(applyId)
+                .orElseThrow(() -> new ApplyNotFoundException());
     }
 
     private static void checkMatchingClosed(Matching matching) {
@@ -102,41 +119,38 @@ public class ApplyServiceImpl implements ApplyService {
         }
     }
 
-    private static void checkYourOwnPosting(Matching matching, Apply apply) {
+    private static void validateYourOwnPosting(Matching matching, Apply apply) {
         if (matching.getSiteUser().getId() == apply.getSiteUser().getId()) {
             throw new YourOwnPostingCancelException();
         }
     }
 
-    private static void checkCancelDuplication(Apply apply) {
+    private static void validateCancelDuplication(Apply apply) {
         if (apply.getStatus().equals(ApplyStatus.CANCELED)) {
             throw new AlreadyCanceledApplyException();
         }
     }
 
     @Override
-    public boolean accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
+    public void accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
         var matching = matchingRepository.findById(matchingId).get();
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = confirmedList.size();
 
-        checkOverRecruitNumber(recruitNum, confirmedNum);
+        validateOverRecruitNumber(recruitNum, confirmedNum);
 
-        for (long applyId : appliedList) {
-            var apply = applyRepository.findById(applyId).get();
-            apply.setStatus(ApplyStatus.PENDING);
-        }
-        for (long confirmId : confirmedList) {
-            var apply = applyRepository.findById(confirmId).get();
-            apply.setStatus(ApplyStatus.ACCEPTED);
-        }
+        appliedList.stream()
+                .forEach(applyId
+                        -> applyRepository.findById(applyId).get().setStatus(ApplyStatus.PENDING));
+
+        confirmedList.stream()
+                .forEach(confirmedId
+                        -> applyRepository.findById(confirmedId).get().setStatus(ApplyStatus.ACCEPTED));
 
         matching.setConfirmedNum(confirmedNum);
-
-        return true;
     }
 
-    private static void checkOverRecruitNumber(int recruitNum, int confirmedNum) {
+    private static void validateOverRecruitNumber(int recruitNum, int confirmedNum) {
         if (confirmedNum > recruitNum) {
             throw new OverRecruitNumberException();
         }
