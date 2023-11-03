@@ -24,8 +24,8 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     public MatchingDetailDto create(Long userId, MatchingDetailDto matchingDetailDto) {
         SiteUser siteUser = validateUserGivenId(userId);
-        matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
-        return matchingDetailDto;
+        Matching matching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
+        return MatchingDetailDto.fromEntity(matching);
     }
 
     @Override
@@ -37,8 +37,8 @@ public class MatchingServiceImpl implements MatchingService {
             throw new NoPermissionToEditAndDeleteMatching();
         }
 
-        matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
-        return matchingDetailDto;
+        Matching savedMatching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
+        return MatchingDetailDto.fromEntity(savedMatching);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MatchingServiceImpl implements MatchingService {
         return MatchingDetailDto.fromEntity(matching);
     }
 
-    private SiteUser validateUserGivenId(Long userId){
+    public SiteUser validateUserGivenId(Long userId){
         SiteUser siteUser = siteUserRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException());
         return siteUser;

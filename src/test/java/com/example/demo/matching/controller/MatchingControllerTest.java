@@ -152,7 +152,7 @@ class MatchingControllerTest { //TODO: 공통 응답 확정되면 응답 형태 
                 .andExpect(jsonPath("$.content[0].matchingType").value(matchingPreviewDto.getMatchingType().name()));
     }
 
-    public MatchingDetailDto makeMatchingDetailDto(){
+    private MatchingDetailDto makeMatchingDetailDto(){
         return MatchingDetailDto.builder()
                 .id(1L)
                 .creatorUserId(2L)
@@ -175,7 +175,7 @@ class MatchingControllerTest { //TODO: 공통 응답 확정되면 응답 형태 
                 .build();
     }
 
-    public MatchingPreviewDto makeMatchingPreviewDto(){
+    private MatchingPreviewDto makeMatchingPreviewDto(){
         return MatchingPreviewDto.builder()
                 .isReserved(true)
                 .matchingType(MatchingType.SINGLE)
