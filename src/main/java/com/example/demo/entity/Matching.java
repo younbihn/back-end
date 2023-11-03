@@ -46,7 +46,6 @@ public class Matching {
     @Column(name = "LOCATION", length = 255, nullable = false)
     private String location;
 
-    //TODO : 이미지 S3로 저장하도록 수정해야 함
     @Column(name = "LOCATION_IMG", length = 1023)
     private String locationImg;
 
@@ -58,6 +57,9 @@ public class Matching {
 
     @Column(name = "END_TIME", nullable = false)
     private Time endTime;
+
+    @Column(name = "RECRUIT_DUE_DATE", nullable = false)
+    private Timestamp recruitDueDate;
 
     @Column(name = "RECRUIT_NUM", nullable = false)
     private Integer recruitNum;

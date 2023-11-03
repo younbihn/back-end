@@ -40,6 +40,7 @@ CREATE TABLE `MATCHING`
     `DATE`           DATE NULL COMMENT 'YYYY-MM-DD',
     `START_TIME`     TIME         NOT NULL COMMENT 'HH:MM:SS',
     `END_TIME`       TIME         NOT NULL COMMENT 'HH:MM:SS',
+    `RECRUIT_DUE_DATE` TIMESTAMP NOT NULL,
     `RECRUIT_NUM`    INT          NOT NULL,
     `COST`           INT          NOT NULL,
     `IS_RESERVED`    BOOL NULL DEFAULT 0 COMMENT 'true = 1 / false = 0',
