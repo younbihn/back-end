@@ -50,8 +50,6 @@ class ApplyServiceTest {
 
     @Mock
     private ApplyRepository applyRepository;
-    @Mock
-    private Apply applyMock;
 
     @Mock
     private MatchingRepository matchingRepository;
