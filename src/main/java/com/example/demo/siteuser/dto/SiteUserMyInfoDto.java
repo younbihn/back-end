@@ -12,30 +12,34 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SiteUserInfoDto{
+public class SiteUserMyInfoDto {
     private Long id;
-    private String profileImg;
     private String nickname;
-    private String locationSi;
-    private String locationGu;
-    private BigDecimal ntrp;
-    private GenderType gender;
+    private String email;
+    private String phoneNumber;
     private Integer mannerScore;
     private Integer penaltyScore;
+    private GenderType gender;
+    private BigDecimal ntrp;
+    private String locationSi;
+    private String locationGu;
     private AgeGroup ageGroup;
+    private String profileImg;
 
-    public static SiteUserInfoDto fromEntity(SiteUser siteUser) {
-        return SiteUserInfoDto.builder()
+    public static SiteUserMyInfoDto fromEntity(SiteUser siteUser) {
+        return SiteUserMyInfoDto.builder()
                 .id(siteUser.getId())
-                .profileImg(siteUser.getProfileImg())
                 .nickname(siteUser.getNickname())
-                .locationSi(siteUser.getLocationSi())
-                .locationGu(siteUser.getLocationGu())
-                .ntrp(siteUser.getNtrp())
-                .gender(siteUser.getGender())
+                .email(siteUser.getEmail())
+                .phoneNumber(siteUser.getPhoneNumber())
                 .mannerScore(siteUser.getMannerScore())
                 .penaltyScore(siteUser.getPenaltyScore())
+                .gender(siteUser.getGender())
+                .ntrp(siteUser.getNtrp())
+                .locationSi(siteUser.getLocationSi())
+                .locationGu(siteUser.getLocationGu())
                 .ageGroup(siteUser.getAgeGroup())
+                .profileImg(siteUser.getProfileImg())
                 .build();
     }
 }

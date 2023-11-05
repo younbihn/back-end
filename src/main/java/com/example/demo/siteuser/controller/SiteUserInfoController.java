@@ -1,6 +1,7 @@
 package com.example.demo.siteuser.controller;
 
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
+import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import com.example.demo.siteuser.service.SiteUserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,17 @@ public class SiteUserInfoController {
 
         if (siteUserInfoDto != null) {
             return new ResponseEntity<>(siteUserInfoDto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/my-page/{userId}")
+    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfo(@PathVariable(value = "userId") Long userId) {
+        SiteUserMyInfoDto siteUserMyInfoDto = siteUserInfoService.getSiteUserMyInfoById(userId);
+
+        if (siteUserMyInfoDto != null) {
+            return new ResponseEntity<>(siteUserMyInfoDto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
