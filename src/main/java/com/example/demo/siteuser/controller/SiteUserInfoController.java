@@ -17,7 +17,7 @@ public class SiteUserInfoController {
     private final SiteUserInfoService siteUserInfoService;
 
     @GetMapping("/profile/{userid}")
-    public ResponseEntity<SiteUserInfoDto> getSiteUserInfo(@PathVariable Long userId) {
+    public ResponseEntity<SiteUserInfoDto> getSiteUserInfo(@PathVariable(value = "userid") Long userId) {
         SiteUserInfoDto siteUserInfoDto = siteUserInfoService.getSiteUserInfoById(userId);
 
         if (siteUserInfoDto != null) {
