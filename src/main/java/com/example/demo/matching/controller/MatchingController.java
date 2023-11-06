@@ -35,7 +35,7 @@ public class MatchingController {
     private final S3Uploader s3Uploader;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> createMatching (
+    public ResponseEntity createMatching (
             @RequestBody MatchingDetailDto matchingDetailDto,
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
@@ -50,7 +50,7 @@ public class MatchingController {
             }
         }
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{matchingId}")
@@ -63,13 +63,13 @@ public class MatchingController {
     }
 
     @PatchMapping("/{matchingId}")
-    public ResponseEntity<MatchingDetailDto> editMatching(
+    public ResponseEntity editMatching(
             @RequestBody MatchingDetailDto matchingDetailDto,
             @PathVariable Long matchingId,
             @RequestParam(value = "file", required = false) MultipartFile file){
 
         Long userId = 1L;
-        var result = matchingServiceImpl.update(userId, matchingId, matchingDetailDto);
+        matchingServiceImpl.update(userId, matchingId, matchingDetailDto);
 
         // 구장 이미지 변경
         //TODO: 이미 존재하는 이미지인지 검증하는 로직이 이게 맞나..?
@@ -83,7 +83,7 @@ public class MatchingController {
             }
         }
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{matchingId}")
@@ -92,7 +92,7 @@ public class MatchingController {
 
         Long userId = 1L;
 
-        long deletedMatchingId = matchingServiceImpl.delete(userId, matchingId);
+        matchingServiceImpl.delete(userId, matchingId);
 
         return ResponseEntity.ok().build();
     }

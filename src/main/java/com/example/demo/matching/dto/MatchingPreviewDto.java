@@ -2,6 +2,7 @@ package com.example.demo.matching.dto;
 
 import com.example.demo.entity.Matching;
 import com.example.demo.type.MatchingType;
+import com.example.demo.type.Ntrp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import lombok.Setter;
 public class MatchingPreviewDto {
     private boolean isReserved;
     private MatchingType matchingType;
-    private String ntrp;
+    private Ntrp ntrp;
     private String title;
     private String matchingStartDateTime;
 
@@ -25,7 +26,8 @@ public class MatchingPreviewDto {
                 .matchingType(matching.getMatchingType())
                 .ntrp(matching.getNtrp())
                 .title(matching.getTitle())
-                .matchingStartDateTime(matching.getDate().toString() + matching.getStartTime().toString())
+                .matchingStartDateTime(matching.getDate().toString()
+                        + " "+ matching.getStartTime().toString())
                 .build();
     }
 }

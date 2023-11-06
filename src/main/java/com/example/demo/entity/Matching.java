@@ -1,10 +1,13 @@
 package com.example.demo.entity;
 
 import com.example.demo.matching.dto.MatchingDetailDto;
+import com.example.demo.type.AgeGroup;
 import com.example.demo.type.MatchingType;
+import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -13,20 +16,29 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Matching {
 
     @Id
@@ -49,17 +61,17 @@ public class Matching {
     @Column(name = "LOCATION_IMG", length = 1023)
     private String locationImg;
 
-    @Column(name = "DATE")
-    private Date date;
+    @Column(name = "DATE", nullable = false) // yyyy-MM-dd
+    private LocalDate date;
 
-    @Column(name = "START_TIME", nullable = false)
-    private Time startTime;
+    @Column(name = "START_TIME", nullable = false) // HH:mm
+    private LocalTime startTime;
 
-    @Column(name = "END_TIME", nullable = false)
-    private Time endTime;
+    @Column(name = "END_TIME", nullable = false) // HH:mm
+    private LocalTime endTime;
 
-    @Column(name = "RECRUIT_DUE_DATE", nullable = false)
-    private Timestamp recruitDueDate;
+    @Column(name = "RECRUIT_DUE_DATE", nullable = false) // yyyy-MM-dd HH:mm
+    private LocalDateTime recruitDueDate;
 
     @Column(name = "RECRUIT_NUM", nullable = false)
     private Integer recruitNum;
@@ -70,38 +82,64 @@ public class Matching {
     @Column(name = "IS_RESERVED", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean isReserved;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "NTRP", length = 50)
-    private String ntrp; // 사용자가 범위를 입력할 수 있으므로 string
+    private Ntrp ntrp;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "AGE", length = 50)
-    private String age; // 사용자가 범위를 입력할 수 있으므로 string
+    private AgeGroup age;
 
-    @Column(name = "RECRUIT_STATUS", length = 50)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "RECRUIT_STATUS", length = 50, columnDefinition = "DEFAULT 'OPEN'")
     private RecruitStatus recruitStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "MATCHING_TYPE", length = 50)
     private MatchingType matchingType;
 
-    @Column(name = "APPLY_NUM", columnDefinition = "INT DEFAULT 0")
+    @Column(name = "APPLY_NUM", columnDefinition = "INT DEFAULT 1")
     private Integer applyNum;
 
-    @Column(name = "CREATE_TIME", nullable = false)
-    private Timestamp createTime;
+    @CreatedDate
+    @Column(name = "CREATE_TIME") // yyyy-MM-dd HH:mm
+    private LocalDateTime createTime;
 
-    @OneToMany(mappedBy = "matching")
-    private List<Confirm> confirms; // 확정 인원 목록 - 채팅방 만들 때 사용
+    @PrePersist
+    public void prePersist() {
+        if(recruitStatus == null){
+            recruitStatus = RecruitStatus.OPEN;
+        }
+        if(applyNum == null){
+            applyNum = 1;
+        }
+        if(isReserved == null){
+            applyNum = 0;
+        }
+    }
 
     public static Matching fromDto(MatchingDetailDto matchingDetailDto, SiteUser siteUser) {
+        // 시간 파싱
+        DateTimeFormatter formForDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formForTime = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter formForDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalDate date = LocalDate.parse(matchingDetailDto.getDate(), formForDate);
+        LocalTime startTime = LocalTime.parse(matchingDetailDto.getStartTime(), formForTime);
+        LocalTime endTime = LocalTime.parse(matchingDetailDto.getEndTime(), formForTime);
+        LocalDateTime recruitDueDate = LocalDateTime
+                .parse(matchingDetailDto.getRecruitDueDate(), formForDateTime);
+
         return Matching.builder()
                 .siteUser(siteUser)
                 .title(matchingDetailDto.getTitle())
                 .content(matchingDetailDto.getContent())
                 .location(matchingDetailDto.getLocation())
-                .locationImg(matchingDetailDto.getLocationImg()) // TODO: S3 연동
-                .date(Date.valueOf(matchingDetailDto.getDate()))
-                .startTime(Time.valueOf(matchingDetailDto.getStartTime()))
-                .endTime(Time.valueOf(matchingDetailDto.getEndTime()))
+                .locationImg(matchingDetailDto.getLocationImg())
+                .date(date)
+                .startTime(startTime)
+                .endTime(endTime)
+                .recruitDueDate(recruitDueDate)
                 .recruitNum(matchingDetailDto.getRecruitNum())
                 .cost(matchingDetailDto.getCost())
                 .isReserved(matchingDetailDto.getIsReserved())
@@ -110,7 +148,25 @@ public class Matching {
                 .recruitStatus(matchingDetailDto.getRecruitStatus())
                 .matchingType(matchingDetailDto.getMatchingType())
                 .applyNum(matchingDetailDto.getApplyNum())
-                .createTime(Timestamp.valueOf(matchingDetailDto.getCreateTime()))
                 .build();
+    }
+
+    // setter 없이 Matching 수정하기 위한 메서드
+    public void update(Matching matching){
+        this.title = matching.getTitle();
+        this.content = matching.getContent();
+        this.location = matching.getLocation();
+        this.locationImg = matching.getLocationImg();
+        this.date = matching.getDate();
+        this.startTime = matching.getStartTime();
+        this.endTime = matching.getEndTime();
+        this.recruitDueDate = matching.getRecruitDueDate();
+        this.recruitNum = matching.getRecruitNum();
+        this.cost = matching.getCost();
+        this.isReserved = matching.getIsReserved();
+        this.ntrp = matching.getNtrp();
+        this.age = matching.getAge();
+        this.matchingType = matching.getMatchingType();
+        this.applyNum = matching.getApplyNum();
     }
 }

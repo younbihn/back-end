@@ -7,9 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface MatchingService {
-    public MatchingDetailDto create(Long userId, MatchingDetailDto matchingDetailDto);
-    public MatchingDetailDto update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto);
-    public long delete(Long userId, Long matchingId);
+    public void create(Long userId, MatchingDetailDto matchingDetailDto);
+    public void update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto);
+    public void delete(Long userId, Long matchingId);
     public Page<MatchingPreviewDto> getList(Pageable pageable);
     public MatchingDetailDto getDetail(Long matchingId);
 }

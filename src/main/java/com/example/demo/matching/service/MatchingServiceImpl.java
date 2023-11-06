@@ -22,14 +22,13 @@ public class MatchingServiceImpl implements MatchingService {
     private final SiteUserRepository siteUserRepository;
 
     @Override
-    public MatchingDetailDto create(Long userId, MatchingDetailDto matchingDetailDto) {
+    public void create(Long userId, MatchingDetailDto matchingDetailDto) {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
-        return MatchingDetailDto.fromEntity(matching);
     }
 
     @Override
-    public MatchingDetailDto update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto) {
+    public void update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto) {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = validateMatchingGivenId(matchingId);
 
@@ -37,21 +36,28 @@ public class MatchingServiceImpl implements MatchingService {
             throw new NoPermissionToEditAndDeleteMatching();
         }
 
-        Matching savedMatching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
-        return MatchingDetailDto.fromEntity(savedMatching);
+        //TODO : 매칭 글 수정 시 신청자들에게 알림
+
+        matching.update(Matching.fromDto(matchingDetailDto, siteUser));
+        Matching savedMatching = matchingRepository.save(matching);
     }
 
     @Override
-    public long delete(Long userId, Long matchingId) {
+    public void delete(Long userId, Long matchingId) {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = validateMatchingGivenId(matchingId);
 
         if(!isUserMadeThisMatching(matchingId, siteUser)){
             throw new NoPermissionToEditAndDeleteMatching();
+        }
+
+        //TODO : 신청자 존재하는데 매칭 글 삭제 시 신청자들에게 알림
+        //TODO : 신청자 존재하는데 매칭 글 삭제 시 패널티 부여
+        if (matching.getApplyNum()>0) {
+            //TODO : 매칭에 신청한 유저들의 매칭 해제
         }
 
         matchingRepository.delete(matching);
-        return matchingId;
     }
 
     @Override
