@@ -1,21 +1,27 @@
 package com.example.demo.siteuser.controller;
 
+import com.example.demo.matching.repository.MatchingRepository;
+import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import com.example.demo.siteuser.service.SiteUserInfoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
 public class SiteUserInfoController {
     private final SiteUserInfoService siteUserInfoService;
+
+    @Autowired
+    private SiteUserRepository siteUserRepository;
+    @Autowired
+    private MatchingRepository matchingRepository;
 
     @GetMapping("/profile/{userid}")
     public ResponseEntity<SiteUserInfoDto> getSiteUserInfo(@PathVariable(value = "userid") Long userId) {

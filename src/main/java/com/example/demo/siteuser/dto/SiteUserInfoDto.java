@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class SiteUserInfoDto{
-    private Long id;
     private String profileImg;
     private String nickname;
     private String locationSi;
@@ -26,7 +25,6 @@ public class SiteUserInfoDto{
 
     public static SiteUserInfoDto fromEntity(SiteUser siteUser) {
         return SiteUserInfoDto.builder()
-                .id(siteUser.getId())
                 .profileImg(siteUser.getProfileImg())
                 .nickname(siteUser.getNickname())
                 .locationSi(siteUser.getLocationSi())

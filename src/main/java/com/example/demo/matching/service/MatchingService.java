@@ -1,7 +1,10 @@
 package com.example.demo.matching.service;
 
+import com.example.demo.entity.SiteUser;
 import com.example.demo.matching.dto.MatchingDetailDto;
+import com.example.demo.matching.dto.MatchingMyHostedDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
+
 import java.util.List;
 
 public interface MatchingService {
@@ -10,4 +13,5 @@ public interface MatchingService {
     public void delete(Long matchingId);
     public List<MatchingPreviewDto> getList();
     public MatchingDetailDto getDetail(Long matchingId);
+    MatchingMyHostedDto getBySiteUser(SiteUser siteUser);
 }

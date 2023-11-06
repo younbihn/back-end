@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class SiteUserMyInfoDto {
-    private Long id;
     private String nickname;
     private String email;
     private String phoneNumber;
@@ -28,7 +27,6 @@ public class SiteUserMyInfoDto {
 
     public static SiteUserMyInfoDto fromEntity(SiteUser siteUser) {
         return SiteUserMyInfoDto.builder()
-                .id(siteUser.getId())
                 .nickname(siteUser.getNickname())
                 .email(siteUser.getEmail())
                 .phoneNumber(siteUser.getPhoneNumber())
