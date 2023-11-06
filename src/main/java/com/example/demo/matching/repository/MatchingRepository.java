@@ -5,8 +5,10 @@ import com.example.demo.entity.SiteUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
-    Matching findBySiteUser(SiteUser siteUser);
+    List<Matching> findBySiteUser(SiteUser siteUser);
 }

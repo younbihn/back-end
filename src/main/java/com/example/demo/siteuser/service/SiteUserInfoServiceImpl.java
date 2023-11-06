@@ -1,13 +1,10 @@
 package com.example.demo.siteuser.service;
 
-import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
-import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

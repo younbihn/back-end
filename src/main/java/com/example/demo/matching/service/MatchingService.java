@@ -13,5 +13,5 @@ public interface MatchingService {
     public void delete(Long matchingId);
     public List<MatchingPreviewDto> getList();
     public MatchingDetailDto getDetail(Long matchingId);
-    MatchingMyHostedDto getBySiteUser(SiteUser siteUser);
+    List<MatchingMyHostedDto> getBySiteUser(SiteUser siteUser);
 }

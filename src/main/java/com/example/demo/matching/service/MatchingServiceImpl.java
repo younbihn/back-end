@@ -7,6 +7,7 @@ import com.example.demo.matching.dto.MatchingMyHostedDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.repository.MatchingRepository;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -44,13 +45,15 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public MatchingMyHostedDto getBySiteUser(SiteUser siteUser) {
-        Matching matching = matchingRepository.findBySiteUser(siteUser);
+    public List<MatchingMyHostedDto> getBySiteUser(SiteUser siteUser) {
+        List<Matching> matchingList = matchingRepository.findBySiteUser(siteUser);
 
-        if (matching != null) {
-            return MatchingMyHostedDto.fromEntity(matching);
+        if (matchingList != null && !matchingList.isEmpty()) {
+            return matchingList.stream()
+                    .map(MatchingMyHostedDto::fromEntity)
+                    .collect(Collectors.toList());
         } else {
-            throw new EntityNotFoundException("User not found with ID: " + siteUser);
+            throw new EntityNotFoundException("No matching data found for user with ID: " + siteUser.getId());
         }
     }
 }

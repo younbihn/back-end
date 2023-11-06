@@ -1,7 +1,5 @@
 package com.example.demo.matching.controller;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.matching.dto.MatchingDetailDto;
@@ -11,7 +9,6 @@ import com.example.demo.matching.service.MatchingServiceImpl;
 import java.io.IOException;
 import java.util.List;
 
-import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,12 +35,12 @@ public class MatchingController {
         return s3Uploader.uploadFile(file);
     }
 
-    @GetMapping("/hosted/{siteUser}")
-    public ResponseEntity<MatchingMyHostedDto> getBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
-        MatchingMyHostedDto matchingMyHostedDto = matchingService.getBySiteUser(siteUser);
+    @GetMapping("/api/users/my-page/hosted/{siteUser}")
+    public ResponseEntity<List<MatchingMyHostedDto>> getBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
+        List<MatchingMyHostedDto> matchingMyHostedDtos = matchingService.getBySiteUser(siteUser);
 
-        if (matchingMyHostedDto != null) {
-            return new ResponseEntity<>(matchingMyHostedDto, HttpStatus.OK);
+        if (!matchingMyHostedDtos.isEmpty()) {
+            return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

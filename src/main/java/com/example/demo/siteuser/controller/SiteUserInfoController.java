@@ -23,8 +23,8 @@ public class SiteUserInfoController {
     @Autowired
     private MatchingRepository matchingRepository;
 
-    @GetMapping("/profile/{userid}")
-    public ResponseEntity<SiteUserInfoDto> getSiteUserInfo(@PathVariable(value = "userid") Long userId) {
+    @GetMapping("/profile/{siteUser}")
+    public ResponseEntity<SiteUserInfoDto> getSiteUserInfo(@PathVariable(value = "siteUser") Long userId) {
         SiteUserInfoDto siteUserInfoDto = siteUserInfoService.getSiteUserInfoById(userId);
 
         if (siteUserInfoDto != null) {
@@ -34,8 +34,8 @@ public class SiteUserInfoController {
         }
     }
 
-    @GetMapping("/my-page/{userId}")
-    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfo(@PathVariable(value = "userId") Long userId) {
+    @GetMapping("/my-page/{siteUser}")
+    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfo(@PathVariable(value = "siteUser") Long userId) {
         SiteUserMyInfoDto siteUserMyInfoDto = siteUserInfoService.getSiteUserMyInfoById(userId);
 
         if (siteUserMyInfoDto != null) {
