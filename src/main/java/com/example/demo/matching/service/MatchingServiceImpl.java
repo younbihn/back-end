@@ -34,13 +34,13 @@ public class MatchingServiceImpl implements MatchingService {
     private final SiteUserRepository siteUserRepository;
 
     @Override
-    public void create(Long userId, MatchingDetailDto matchingDetailDto) {
+    public Matching create(Long userId, MatchingDetailDto matchingDetailDto) {
         SiteUser siteUser = validateUserGivenId(userId);
-        Matching matching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
+        return matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
     }
 
     @Override
-    public void update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto) {
+    public Matching update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto) {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = validateMatchingGivenId(matchingId);
 
@@ -51,7 +51,7 @@ public class MatchingServiceImpl implements MatchingService {
         //TODO : 매칭 글 수정 시 신청자들에게 알림
 
         matching.update(Matching.fromDto(matchingDetailDto, siteUser));
-        Matching savedMatching = matchingRepository.save(matching);
+        return matchingRepository.save(matching);
     }
 
     @Override

@@ -26,6 +26,8 @@ public class MatchingDetailDto {
     private String title;
     private String content;
     private String location;
+    private Double lat;
+    private Double lon;
     private String locationImg;
     private String date;
     private String startTime;
@@ -39,7 +41,7 @@ public class MatchingDetailDto {
     private RecruitStatus recruitStatus;
     private MatchingType matchingType;
     private Integer confirmedNum;
-    private LocalDateTime createTime;
+    private String createTime;
 
     public static MatchingDetailDto fromEntity(Matching matching) {
         return MatchingDetailDto.builder()
@@ -48,6 +50,8 @@ public class MatchingDetailDto {
                 .title(matching.getTitle())
                 .content(matching.getContent())
                 .location(matching.getLocation())
+                .lat(matching.getLat())
+                .lon(matching.getLon())
                 .locationImg(matching.getLocationImg())
                 .date(matching.getDate().toString())
                 .startTime(matching.getStartTime().toString())
@@ -61,7 +65,7 @@ public class MatchingDetailDto {
                 .ageGroup(matching.getAge())
                 .recruitStatus(matching.getRecruitStatus())
                 .matchingType(matching.getMatchingType())
-                .createTime(matching.getCreateTime())
+                .createTime(matching.getCreateTime().toString())
                 .build();
     }
 }
