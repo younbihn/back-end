@@ -167,7 +167,6 @@ class MatchingServiceImplTest {
                 .startTime("10:00")
                 .endTime("12:00")
                 .recruitDueDate("2023-11-10 23:00")
-                .createTime(LocalDateTime.now())
                 .recruitNum(5)
                 .cost(5000)
                 .isReserved(false)
