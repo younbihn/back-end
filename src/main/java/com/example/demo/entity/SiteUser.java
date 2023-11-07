@@ -19,12 +19,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "SITE_USER")
+@Builder
+@Entity
 public class SiteUser {
 
     @Id

@@ -3,15 +3,15 @@ package com.example.demo.exception.impl;
 import com.example.demo.exception.AbsctractException;
 import org.springframework.http.HttpStatus;
 
-public class UserNotFoundException extends AbsctractException {
+public class NoPermissionToEditAndDeleteMatching extends AbsctractException {
 
     @Override
     public int getStatusCode() {
-        return HttpStatus.NOT_FOUND.value();
+        return HttpStatus.FORBIDDEN.value();
     }
 
     @Override
     public String getMessage() {
-        return "사용자를 찾을 수 없습니다.";
+        return "매칭글을 수정할 권한이 없습니다.";
     }
 }

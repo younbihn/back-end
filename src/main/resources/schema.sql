@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE IF EXISTS SITE_USER;
 DROP TABLE IF EXISTS MATCHING;
 DROP TABLE IF EXISTS AUTH_DATA;
@@ -28,25 +30,25 @@ CREATE TABLE `SITE_USER`
 
 CREATE TABLE `MATCHING`
 (
-    `ID`               BIGINT        NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `SITE_USER_ID`     BIGINT        NOT NULL,
-    `TITLE`            varchar(50)   NOT NULL,
-    `CONTENT`          varchar(1023) NULL,
-    `LOCATION`         varchar(255)  NOT NULL,
-    `LOCATION_IMG`     varchar(1023) NULL,
-    `DATE`             DATE          NULL COMMENT 'YYYY-MM-DD',
-    `START_TIME`       TIME          NOT NULL COMMENT 'HH:MM:SS',
-    `END_TIME`         TIME          NOT NULL COMMENT 'HH:MM:SS',
-    `RECRUIT_NUM`      INT           NOT NULL,
-    `COST`             INT           NOT NULL,
-    `IS_RESERVED`      BOOL          NULL DEFAULT 0 COMMENT 'true = 1 / false = 0',
-    `NTRP`             VARCHAR(50)   NULL COMMENT '등록자가 범위를 입력할 수 있으므로',
-    `AGE`              VARCHAR(50)   NULL COMMENT '등록자가 범위를 입력할 수 있으므로',
-    `RECRUIT_STATUS`   VARCHAR(50)   NULL,
-    `CREATE_TIME`      TIMESTAMP     NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS',
-    `MATCHING_TYPE`    VARCHAR(50)   NULL COMMENT 'SINGLE, DOUBLE, MIXED_DOUBLE, OTHER',
-    `CONFIRMED_NUM`    INT           NULL DEFAULT 1,
-    `DEAD_LINE`        TIMESTAMP     NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS'
+    `ID`             BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `SITE_USER_ID`   BIGINT       NOT NULL,
+    `TITLE`          varchar(50)  NOT NULL,
+    `CONTENT`        varchar(1023) NULL,
+    `LOCATION`       varchar(255) NOT NULL,
+    `LOCATION_IMG`   varchar(1023) NULL,
+    `DATE`           DATE         NOT NULL COMMENT 'YYYY-MM-DD',
+    `START_TIME`     TIME         NOT NULL COMMENT 'HH:MM:SS',
+    `END_TIME`       TIME         NOT NULL COMMENT 'HH:MM:SS',
+    `RECRUIT_DUE_DATE` TIMESTAMP NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS',
+    `RECRUIT_NUM`    INT          NOT NULL,
+    `COST`           INT          NOT NULL,
+    `IS_RESERVED`    BOOL DEFAULT 0 COMMENT 'true = 1 / false = 0',
+    `NTRP`           VARCHAR(50) NOT NULL,
+    `AGE`            VARCHAR(50) NOT NULL,
+    `RECRUIT_STATUS` VARCHAR(50) DEFAULT 'OPEN',
+    `CREATE_TIME`    TIMESTAMP   COMMENT 'YYYY-MM-DD HH:MM:SS',
+    `MATCHING_TYPE`  VARCHAR(50) NOT NULL COMMENT 'SINGLE, DOUBLE, MIXED_DOUBLE, OTHER',
+    `APPLY_NUM`      INT DEFAULT 1
 );
 
 CREATE TABLE `AUTH_DATA`

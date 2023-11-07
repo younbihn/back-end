@@ -1,7 +1,9 @@
 package com.example.demo.matching.dto;
 
 import com.example.demo.entity.Matching;
+import com.example.demo.type.AgeGroup;
 import com.example.demo.type.MatchingType;
+import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -25,14 +27,15 @@ public class MatchingDetailDto {
     private String content;
     private String location;
     private String locationImg;
-    private LocalDate date;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private String date;
+    private String startTime;
+    private String endTime;
+    private String recruitDueDate;
     private Integer recruitNum;
     private Integer cost;
     private Boolean isReserved;
-    private String ntrp;
-    private String ageGroup;
+    private Ntrp ntrp;
+    private AgeGroup ageGroup;
     private RecruitStatus recruitStatus;
     private MatchingType matchingType;
     private Integer confirmedNum;
@@ -46,18 +49,20 @@ public class MatchingDetailDto {
                 .content(matching.getContent())
                 .location(matching.getLocation())
                 .locationImg(matching.getLocationImg())
-                .date(matching.getDate().toLocalDate())
-                .startTime(matching.getStartTime().toLocalTime())
-                .endTime(matching.getEndTime().toLocalTime())
+                .date(matching.getDate().toString())
+                .startTime(matching.getStartTime().toString())
+                .endTime(matching.getEndTime().toString())
+                .recruitDueDate(matching.getRecruitDueDate().toString())
                 .recruitNum(matching.getRecruitNum())
+                .applyNum(matching.getApplyNum())
                 .cost(matching.getCost())
                 .isReserved(matching.getIsReserved())
                 .ntrp(matching.getNtrp())
                 .ageGroup(matching.getAge())
                 .recruitStatus(matching.getRecruitStatus())
                 .matchingType(matching.getMatchingType())
-                .confirmedNum(matching.getConfirmedNum())
-                .createTime(matching.getCreateTime().toLocalDateTime())
+                .applyNum(matching.getApplyNum())
+                .createTime(matching.getCreateTime())
                 .build();
     }
 }
