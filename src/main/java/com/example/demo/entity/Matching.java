@@ -141,7 +141,7 @@ public class Matching {
                 .recruitDueDate(recruitDueDate)
                 .recruitNum(matchingDetailDto.getRecruitNum())
                 .cost(matchingDetailDto.getCost())
-                .isReserved(matchingDetailDto.isReserved())
+                .isReserved(matchingDetailDto.getIsReserved())
                 .ntrp(matchingDetailDto.getNtrp())
                 .age(matchingDetailDto.getAgeGroup())
                 .recruitStatus(matchingDetailDto.getRecruitStatus())
@@ -171,6 +171,14 @@ public class Matching {
     }
 
     public void updateConfirmedNum(int confirmedNum) {
+        this.confirmedNum = confirmedNum;
+    }
+
+    public void changeRecruitStatus(RecruitStatus recruitStatus) {
+        this.recruitStatus = recruitStatus;
+    }
+
+    public void changeConfirmedNum(int confirmedNum) {
         this.confirmedNum = confirmedNum;
     }
 }

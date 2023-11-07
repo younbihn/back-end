@@ -5,6 +5,7 @@ import com.example.demo.type.AgeGroup;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,12 +15,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchingDetailDto {
     private long id;
     private long creatorUserId;
@@ -35,7 +38,7 @@ public class MatchingDetailDto {
     private String recruitDueDate;
     private int recruitNum;
     private int cost;
-    private boolean isReserved;
+    private Boolean isReserved;
     private Ntrp ntrp;
     private AgeGroup ageGroup;
     private RecruitStatus recruitStatus;

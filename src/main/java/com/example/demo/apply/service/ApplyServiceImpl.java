@@ -82,15 +82,18 @@ public class ApplyServiceImpl implements ApplyService {
         validateMatchingClosed(matching);
 
         if (RecruitStatus.FULL.equals(matching.getRecruitStatus())) {
-            //TODO: 패널티 부여
-            apply.changeApplyStatus(ApplyStatus.CANCELED);
-            return apply;
+            if (ApplyStatus.ACCEPTED.equals(apply.getStatus())) {
+                //TODO: 패널티 부여
+                apply.changeApplyStatus(ApplyStatus.CANCELED);
+                matching.changeRecruitStatus(RecruitStatus.OPEN);
+                matching.changeConfirmedNum(matching.getConfirmedNum() - 1);
+                return apply;
+            }
         }
-
         apply.changeApplyStatus(ApplyStatus.CANCELED);
+        matching.changeConfirmedNum(matching.getConfirmedNum() - 1);
         return apply;
     }
-
 
 
     private static void validateMatchingClosed(Matching matching) {
@@ -121,7 +124,7 @@ public class ApplyServiceImpl implements ApplyService {
 
         appliedList.stream()
                 .forEach(applyId
-                        -> applyRepository.findById(applyId).get().changeApplyStatus(ApplyStatus.PENDING)) ;
+                        -> applyRepository.findById(applyId).get().changeApplyStatus(ApplyStatus.PENDING));
 
         confirmedList.stream()
                 .forEach(confirmedId
