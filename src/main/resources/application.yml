@@ -12,7 +12,7 @@ spring:
     hibernate:
       ddl-auto: none
     generate-ddl: false
-    show-sql: true
+    show-sql: false
     database: mysql
     defer-datasource-initialization: true
 

@@ -3,14 +3,15 @@ package com.example.demo.exception.impl;
 import com.example.demo.exception.AbstractException;
 import org.springframework.http.HttpStatus;
 
-public class JsonException extends AbstractException {
+public class NoPermissionToEditAndDeleteMatching extends AbstractException {
+
     @Override
     public int getStatusCode() {
-        return HttpStatus.BAD_REQUEST.value();
+        return HttpStatus.FORBIDDEN.value();
     }
 
     @Override
     public String getMessage() {
-        return "json 파싱 에러가 발생했습니다.";
+        return "매칭글을 수정할 권한이 없습니다.";
     }
 }
