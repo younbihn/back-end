@@ -1,5 +1,7 @@
 package com.example.demo.siteuser.service;
 
+import com.example.demo.apply.repository.ApplyRepository;
+import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.siteuser.dto.MatchingMyHostedDto;
@@ -18,11 +20,13 @@ import java.util.stream.Collectors;
 public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     private final SiteUserRepository siteUserRepository;
     private final MatchingRepository matchingRepository;
+    private final ApplyRepository applyRepository;
 
     @Autowired
-    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository) {
+    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository) {
         this.siteUserRepository = siteUserRepository;
         this.matchingRepository = matchingRepository;
+        this.applyRepository = applyRepository;
     }
 
     @Override
@@ -40,13 +44,28 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     }
 
     @Override
-    public List<MatchingMyHostedDto> getBySiteUser(SiteUser siteUser) {
-        List<Matching> matchingList = matchingRepository.findBySiteUser(siteUser);
+    public List<MatchingMyHostedDto> getMatchingBySiteUser(SiteUser siteUser) {
+        List<Matching> matchingList = matchingRepository.findMatchingBySiteUser(siteUser);
 
         if (matchingList != null && !matchingList.isEmpty()) {
             return matchingList.stream()
                     .map(MatchingMyHostedDto::fromEntity)
                     .collect(Collectors.toList());
+        } else {
+            throw new EntityNotFoundException("No matching data found for user with ID: " + siteUser.getId());
+        }
+    }
+
+    @Override
+    public List<MatchingMyHostedDto> getApplyBySiteUser(SiteUser siteUser) {
+        List<Apply> applyList = applyRepository.findApplyBySiteUser(siteUser);
+
+        if (applyList != null && !applyList.isEmpty()) {
+            List<MatchingMyHostedDto> matchingDtos = applyList.stream()
+                    .filter(apply -> apply.getMatching() != null) // 필요에 따라 null 체크
+                    .map(apply -> MatchingMyHostedDto.fromEntity(apply.getMatching()))
+                    .collect(Collectors.toList());
+            return matchingDtos;
         } else {
             throw new EntityNotFoundException("No matching data found for user with ID: " + siteUser.getId());
         }

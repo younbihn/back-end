@@ -28,8 +28,8 @@ public class SiteUserInfoController {
     private MatchingRepository matchingRepository;
 
     @GetMapping("/profile/{siteUser}")
-    public ResponseEntity<SiteUserInfoDto> getSiteUserInfo(@PathVariable(value = "siteUser") Long userId) {
-        SiteUserInfoDto siteUserInfoDto = siteUserInfoService.getSiteUserInfoById(userId);
+    public ResponseEntity<SiteUserInfoDto> getSiteUserInfo(@PathVariable(value = "siteUser") Long siteUser) {
+        SiteUserInfoDto siteUserInfoDto = siteUserInfoService.getSiteUserInfoById(siteUser);
 
         if (siteUserInfoDto != null) {
             return new ResponseEntity<>(siteUserInfoDto, HttpStatus.OK);
@@ -39,8 +39,8 @@ public class SiteUserInfoController {
     }
 
     @GetMapping("/my-page/{siteUser}")
-    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfo(@PathVariable(value = "siteUser") Long userId) {
-        SiteUserMyInfoDto siteUserMyInfoDto = siteUserInfoService.getSiteUserMyInfoById(userId);
+    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfo(@PathVariable(value = "siteUser") Long siteUser) {
+        SiteUserMyInfoDto siteUserMyInfoDto = siteUserInfoService.getSiteUserMyInfoById(siteUser);
 
         if (siteUserMyInfoDto != null) {
             return new ResponseEntity<>(siteUserMyInfoDto, HttpStatus.OK);
@@ -50,8 +50,19 @@ public class SiteUserInfoController {
     }
 
     @GetMapping("/my-page/hosted/{siteUser}")
-    public ResponseEntity<List<MatchingMyHostedDto>> getBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
-        List<MatchingMyHostedDto> matchingMyHostedDtos = siteUserInfoService.getBySiteUser(siteUser);
+    public ResponseEntity<List<MatchingMyHostedDto>> getMatchingBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
+        List<MatchingMyHostedDto> matchingMyHostedDtos = siteUserInfoService.getMatchingBySiteUser(siteUser);
+
+        if (!matchingMyHostedDtos.isEmpty()) {
+            return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/my-page/apply/{siteUser}")
+    public ResponseEntity<List<MatchingMyHostedDto>> getApplyBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
+        List<MatchingMyHostedDto> matchingMyHostedDtos = siteUserInfoService.getApplyBySiteUser(siteUser);
 
         if (!matchingMyHostedDtos.isEmpty()) {
             return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);

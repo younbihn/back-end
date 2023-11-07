@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
-    List<Matching> findBySiteUser(SiteUser siteUser);
+    List<Matching> findMatchingBySiteUser(SiteUser siteUser);
 }
