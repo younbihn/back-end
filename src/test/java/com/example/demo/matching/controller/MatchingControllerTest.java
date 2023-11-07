@@ -218,7 +218,6 @@ class MatchingControllerTest {
                 .recruitStatus(RecruitStatus.OPEN)
                 .matchingType(MatchingType.MIXED_DOUBLE)
                 .confirmedNum(2)
-                .createTime(LocalDateTime.now())
                 .build();
     }
 
