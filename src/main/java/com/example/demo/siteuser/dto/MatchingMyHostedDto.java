@@ -1,4 +1,4 @@
-package com.example.demo.matching.dto;
+package com.example.demo.siteuser.dto;
 
 import com.example.demo.entity.Matching;
 import com.example.demo.type.MatchingType;
