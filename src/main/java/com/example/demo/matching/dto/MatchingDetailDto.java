@@ -21,25 +21,27 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class MatchingDetailDto {
-    private Long id;
-    private Long creatorUserId;
+    private long id;
+    private long creatorUserId;
     private String title;
     private String content;
     private String location;
+    private double lat;
+    private double lon;
     private String locationImg;
     private String date;
     private String startTime;
     private String endTime;
     private String recruitDueDate;
-    private Integer recruitNum;
-    private Integer cost;
-    private Boolean isReserved;
+    private int recruitNum;
+    private int cost;
+    private boolean isReserved;
     private Ntrp ntrp;
     private AgeGroup ageGroup;
     private RecruitStatus recruitStatus;
     private MatchingType matchingType;
-    private Integer confirmedNum;
-    private LocalDateTime createTime;
+    private int confirmedNum;
+    private String createTime;
 
     public static MatchingDetailDto fromEntity(Matching matching) {
         return MatchingDetailDto.builder()
@@ -48,6 +50,8 @@ public class MatchingDetailDto {
                 .title(matching.getTitle())
                 .content(matching.getContent())
                 .location(matching.getLocation())
+                .lat(matching.getLat())
+                .lon(matching.getLon())
                 .locationImg(matching.getLocationImg())
                 .date(matching.getDate().toString())
                 .startTime(matching.getStartTime().toString())
@@ -61,7 +65,7 @@ public class MatchingDetailDto {
                 .ageGroup(matching.getAge())
                 .recruitStatus(matching.getRecruitStatus())
                 .matchingType(matching.getMatchingType())
-                .createTime(matching.getCreateTime())
+                .createTime(matching.getCreateTime().toString())
                 .build();
     }
 }

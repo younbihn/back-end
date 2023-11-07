@@ -62,6 +62,12 @@ public class Matching {
     @Column(name = "LOCATION", length = 255, nullable = false)
     private String location;
 
+    @Column(name = "LAT", nullable = false)
+    private Double lat;
+
+    @Column(name = "LON", nullable = false)
+    private Double lon;
+
     @Column(name = "LOCATION_IMG", length = 1023)
     private String locationImg;
 
@@ -126,6 +132,8 @@ public class Matching {
                 .title(matchingDetailDto.getTitle())
                 .content(matchingDetailDto.getContent())
                 .location(matchingDetailDto.getLocation())
+                .lat(matchingDetailDto.getLat())
+                .lon(matchingDetailDto.getLon())
                 .locationImg(matchingDetailDto.getLocationImg())
                 .date(date)
                 .startTime(startTime)
@@ -133,7 +141,7 @@ public class Matching {
                 .recruitDueDate(recruitDueDate)
                 .recruitNum(matchingDetailDto.getRecruitNum())
                 .cost(matchingDetailDto.getCost())
-                .isReserved(matchingDetailDto.getIsReserved())
+                .isReserved(matchingDetailDto.isReserved())
                 .ntrp(matchingDetailDto.getNtrp())
                 .age(matchingDetailDto.getAgeGroup())
                 .recruitStatus(matchingDetailDto.getRecruitStatus())
@@ -147,6 +155,8 @@ public class Matching {
         this.title = matching.getTitle();
         this.content = matching.getContent();
         this.location = matching.getLocation();
+        this.lat = matching.getLat();
+        this.lon = matching.getLon();
         this.locationImg = matching.getLocationImg();
         this.date = matching.getDate();
         this.startTime = matching.getStartTime();
@@ -158,12 +168,9 @@ public class Matching {
         this.ntrp = matching.getNtrp();
         this.age = matching.getAge();
         this.matchingType = matching.getMatchingType();
-        this.confirmedNum = matching.getConfirmedNum();
     }
 
-    public void updateConfirmedNum(Matching matching, int confirmedNum) {
+    public void updateConfirmedNum(int confirmedNum) {
         this.confirmedNum = confirmedNum;
     }
-
-
 }

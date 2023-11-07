@@ -33,7 +33,7 @@ class ApplyControllerTest {
                         .build());
         // when
         // then
-        mockMvc.perform(MockMvcRequestBuilders.post("/apply/matches/1"))
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/apply/matches/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
@@ -47,7 +47,7 @@ class ApplyControllerTest {
                         .build());
         // when
         // then
-        mockMvc.perform(MockMvcRequestBuilders.delete("/apply/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/apply/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
@@ -62,7 +62,7 @@ class ApplyControllerTest {
 
         // when
         // then
-        mockMvc.perform(MockMvcRequestBuilders.patch("/apply/matches/1")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/apply/matches/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(request))
                 .andExpect(MockMvcResultMatchers.status().isOk())

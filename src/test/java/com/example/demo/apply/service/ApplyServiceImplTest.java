@@ -17,11 +17,9 @@ import com.example.demo.exception.impl.AlreadyCanceledApplyException;
 import com.example.demo.exception.impl.AlreadyClosedMatchingException;
 import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
-import com.example.demo.exception.impl.ApplyNotFoundException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
-import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.GenderType;
@@ -29,9 +27,6 @@ import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
 import com.example.demo.util.FindEntityUtils;
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,7 +43,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.Commit;
 
 @ExtendWith(MockitoExtension.class)
-class ApplyServiceTest {
+class ApplyServiceImplTest {
 
     @Mock
     private ApplyRepository applyRepository;

@@ -48,7 +48,6 @@ public class ApplyServiceImpl implements ApplyService {
         var applyDto = ApplyDto.builder()
                 .matching(matching)
                 .siteUser(user)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
 
         return applyRepository.save(Apply.fromDto(applyDto));
@@ -128,7 +127,7 @@ public class ApplyServiceImpl implements ApplyService {
                 .forEach(confirmedId
                         -> applyRepository.findById(confirmedId).get().changeApplyStatus(ApplyStatus.ACCEPTED));
 
-        matching.updateConfirmedNum(matching, confirmedNum);
+        matching.updateConfirmedNum(confirmedNum);
         return matching;
     }
 

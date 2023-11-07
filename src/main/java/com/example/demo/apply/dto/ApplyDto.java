@@ -4,7 +4,6 @@ import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.type.ApplyStatus;
-import java.sql.Timestamp;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,14 +13,14 @@ public class ApplyDto {
 
     private Matching matching;
     private SiteUser siteUser;
-    private Timestamp createTime;
+    private String createTime;
     private ApplyStatus applyStatus;
 
     public static ApplyDto fromEntity(Apply apply) {
         return ApplyDto.builder()
                 .matching(apply.getMatching())
                 .siteUser(apply.getSiteUser())
-                .createTime(apply.getCreateTime())
+                .createTime(apply.getCreateTime().toString())
                 .applyStatus(apply.getStatus())
                 .build();
     }
