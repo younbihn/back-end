@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/matches")
+@RequestMapping("/api/matches")
 public class MatchingController {
     private final MatchingService matchingService;
     private final S3Uploader s3Uploader;
@@ -32,7 +32,7 @@ public class MatchingController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/api/matching/img")
+    @PostMapping("/matching/img")
     public String saveImg(@RequestParam("file") MultipartFile file) throws IOException {
         return s3Uploader.uploadFile(file);
     }
