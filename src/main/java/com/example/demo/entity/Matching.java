@@ -29,6 +29,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.cglib.core.Local;
@@ -103,8 +104,8 @@ public class Matching {
     @Column(name = "MATCHING_TYPE", length = 50)
     private MatchingType matchingType;
 
-    @Column(name = "APPLY_NUM", columnDefinition = "INT DEFAULT 1")
-    private Integer applyNum;
+    @Column(name = "CONFIRMED_NUM", columnDefinition = "INT DEFAULT 1")
+    private Integer confirmedNum;
 
     @CreatedDate
     @Column(name = "CREATE_TIME") // yyyy-MM-dd HH:mm
@@ -139,7 +140,7 @@ public class Matching {
                 .age(matchingDetailDto.getAgeGroup())
                 .recruitStatus(matchingDetailDto.getRecruitStatus())
                 .matchingType(matchingDetailDto.getMatchingType())
-                .applyNum(matchingDetailDto.getApplyNum())
+                .confirmedNum(matchingDetailDto.getApplyNum())
                 .build();
     }
 
@@ -159,6 +160,5 @@ public class Matching {
         this.ntrp = matching.getNtrp();
         this.age = matching.getAge();
         this.matchingType = matching.getMatchingType();
-        this.applyNum = matching.getApplyNum();
     }
 }

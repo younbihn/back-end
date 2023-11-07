@@ -2,19 +2,16 @@ package com.example.demo.matching.controller;
 
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.service.MatchingService;
 import java.io.IOException;
 import lombok.SneakyThrows;
 import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.service.MatchingServiceImpl;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/matches")
 @RestController
 @RequestMapping("/api/matches")
 public class MatchingController {
