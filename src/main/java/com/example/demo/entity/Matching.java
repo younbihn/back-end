@@ -29,6 +29,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -39,6 +41,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@DynamicInsert
+@DynamicUpdate
 public class Matching {
 
     @Id
@@ -104,19 +108,6 @@ public class Matching {
     @CreatedDate
     @Column(name = "CREATE_TIME") // yyyy-MM-dd HH:mm
     private LocalDateTime createTime;
-
-    @PrePersist
-    public void prePersist() {
-        if(recruitStatus == null){
-            recruitStatus = RecruitStatus.OPEN;
-        }
-        if(applyNum == null){
-            applyNum = 1;
-        }
-        if(isReserved == null){
-            applyNum = 0;
-        }
-    }
 
     public static Matching fromDto(MatchingDetailDto matchingDetailDto, SiteUser siteUser) {
         // 시간 파싱
