@@ -10,6 +10,7 @@ import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
+import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.RecruitStatus;
@@ -40,7 +41,7 @@ public class ApplyServiceImpl implements ApplyService {
         if (isAlreadyExisted(userId, matchingId)) { // 신청 중복 검사
             var existApply = applyRepository.findBySiteUser_IdAndMatching_Id(userId, matchingId).get();
             validateApplyDuplication(existApply);
-            existApply.setStatus(ApplyStatus.PENDING); // 취소 신청 내역 있을 경우 상태만 변경
+            existApply.changeApplyStatus(ApplyStatus.PENDING); // 취소 신청 내역 있을 경우 상태만 변경
             return existApply;
         }
 
@@ -83,11 +84,11 @@ public class ApplyServiceImpl implements ApplyService {
 
         if (RecruitStatus.FULL.equals(matching.getRecruitStatus())) {
             //TODO: 패널티 부여
-            apply.setStatus(ApplyStatus.CANCELED);
+            apply.changeApplyStatus(ApplyStatus.CANCELED);
             return apply;
         }
 
-        apply.setStatus(ApplyStatus.CANCELED);
+        apply.changeApplyStatus(ApplyStatus.CANCELED);
         return apply;
     }
 
@@ -121,14 +122,13 @@ public class ApplyServiceImpl implements ApplyService {
 
         appliedList.stream()
                 .forEach(applyId
-                        -> applyRepository.findById(applyId).get().setStatus(ApplyStatus.PENDING));
+                        -> applyRepository.findById(applyId).get().changeApplyStatus(ApplyStatus.PENDING)) ;
 
         confirmedList.stream()
                 .forEach(confirmedId
-                        -> applyRepository.findById(confirmedId).get().setStatus(ApplyStatus.ACCEPTED));
+                        -> applyRepository.findById(confirmedId).get().changeApplyStatus(ApplyStatus.ACCEPTED));
 
-        matching.setConfirmedNum(confirmedNum);
-
+        matching.updateConfirmedNum(matching, confirmedNum);
         return matching;
     }
 

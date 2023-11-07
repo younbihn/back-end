@@ -28,7 +28,7 @@ public class ApplyController {
 
     private final ApplyService applyService;
 
-    @PostMapping("/matches/{match_id}") // 매칭 참가 신청 api
+    @PostMapping("/matches/{match_id}")
     public void apply(@PathVariable(value = "match_id") long matchingId) {
 
         long userId = 1; // 로그인 구현 전 임시로 부여
@@ -37,7 +37,7 @@ public class ApplyController {
 
 
 
-    @DeleteMapping("/{apply_id}") // 매칭 참가 신청 취소 api => 경기 확정
+    @DeleteMapping("/{apply_id}")
     public void cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
         ApplyDto.fromEntity(applyService.cancel(applyId));
@@ -45,7 +45,7 @@ public class ApplyController {
 
 
 
-    @PatchMapping("/matches/{matching_id}") // 참가 신청 수락 api
+    @PatchMapping("/matches/{matching_id}")
     public void acceptApply(@RequestBody AppliedListAndConfiredList appliedListAndConfiredList,
                                    @PathVariable(value = "matching_id") long matchingId) {
 

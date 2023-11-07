@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.GenderType;
+import com.example.demo.type.Ntrp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,8 +53,9 @@ public class SiteUser {
     @Column(name = "GENDER", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
     private GenderType gender;
 
-    @Column(name = "NTRP", precision = 2, scale = 1, nullable = false, columnDefinition = "DECIMAL(2,1)")
-    private BigDecimal ntrp;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "NTRP")
+    private Ntrp ntrp;
 
     @Column(name = "LOCATION_SI", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
     private String locationSi;

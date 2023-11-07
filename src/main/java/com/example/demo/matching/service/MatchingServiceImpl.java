@@ -34,14 +34,13 @@ public class MatchingServiceImpl implements MatchingService {
     private final SiteUserRepository siteUserRepository;
 
     @Override
-    public Matching create(Long userId, MatchingDetailDto matchingDetailDto) {
+    public void create(Long userId, MatchingDetailDto matchingDetailDto) {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
-        return matching;
     }
 
     @Override
-    public Matching update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto) {
+    public void update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto) {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = validateMatchingGivenId(matchingId);
 
@@ -53,7 +52,6 @@ public class MatchingServiceImpl implements MatchingService {
 
         matching.update(Matching.fromDto(matchingDetailDto, siteUser));
         Matching savedMatching = matchingRepository.save(matching);
-        return savedMatching;
     }
 
     @Override
@@ -67,7 +65,7 @@ public class MatchingServiceImpl implements MatchingService {
 
         //TODO : 신청자 존재하는데 매칭 글 삭제 시 신청자들에게 알림
         //TODO : 신청자 존재하는데 매칭 글 삭제 시 패널티 부여
-        if (matching.getConfirmedNum()>0) {
+        if (matching.getConfirmedNum() > 0) {
             //TODO : 매칭에 신청한 유저들의 매칭 해제
         }
 
