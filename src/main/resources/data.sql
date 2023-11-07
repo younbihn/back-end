@@ -28,16 +28,11 @@ values (1, 4, '2023-10-31 10:00:00');
 insert into apply (MATCHING_ID, SITE_USER_ID, CREATE_TIME)
 values (1, 5, '2023-10-31 10:00:00');
 
-INSERT INTO MATCHING (SITE_USER_ID, TITLE, CONTENT, LOCATION, LOCATION_IMG,
+INSERT INTO MATCHING (SITE_USER_ID, TITLE, CONTENT,
+                      LOCATION, LAT, LON, LOCATION_IMG,
                       DATE, START_TIME, END_TIME, RECRUIT_DUE_DATE, RECRUIT_NUM,
                       COST, NTRP, AGE, RECRUIT_STATUS, MATCHING_TYPE, CREATE_TIME)
-            VALUES (1, '주말 테니스 모임', '주말에 함께 테니스를 즐길 사람들을 모집합니다. 초보자도 환영합니다!', '서울시 강남구 테니스장', '',
-                    '2023-12-10', '14:00:00', '16:00:00', '2023-12-05 05:00:00', 2,
+            VALUES (1, '주말 테니스 모임', '주말에 함께 테니스를 즐길 사람들을 모집합니다. 초보자도 환영합니다!',
+                    '서울시 강남구 테니스장', 37.56556383681641, 126.98540998152264, '',
+                        '2023-12-10', '14:00:00', '16:00:00', '2023-12-05 05:00:00', 2,
                     50000, 'BEGINNER', 'TWENTIES', 'OPEN', 'SINGLE',  '2023-11-06 07:18:44');
-
-INSERT INTO MATCHING (SITE_USER_ID, TITLE, CONTENT, LOCATION, LOCATION_IMG,
-                      DATE, START_TIME, END_TIME, RECRUIT_DUE_DATE, RECRUIT_NUM,
-                      COST, NTRP, AGE, RECRUIT_STATUS, MATCHING_TYPE, CREATE_TIME)
-VALUES (1, '평일 테니스 모임', '평일에 함께 테니스를 즐길 사람들을 모집합니다. 초보자도 환영합니다!', '서울시 송파구 테니스장', '',
-        '2023-12-11', '14:00:00', '16:00:00', '2023-12-05 05:00:00', 2,
-        50000, 'BEGINNER', 'TWENTIES', 'OPEN', 'SINGLE',  '2023-11-06 07:18:44');

@@ -36,6 +36,8 @@ CREATE TABLE `MATCHING`
     `TITLE`            varchar(50)  NOT NULL,
     `CONTENT`          varchar(1023) NULL,
     `LOCATION`         varchar(255) NOT NULL,
+    `LAT`              DOUBLE       NOT NULL COMMENT '위도',
+    `LON`              DOUBLE       NOT NULL COMMENT '경도',
     `LOCATION_IMG`     varchar(1023) NULL,
     `DATE`             DATE         NOT NULL COMMENT 'YYYY-MM-DD',
     `START_TIME`       TIME         NOT NULL COMMENT 'HH:MM:SS',
