@@ -22,7 +22,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchingDetailDto {
     private long id;
     private long creatorUserId;
@@ -35,7 +34,9 @@ public class MatchingDetailDto {
     private String date;
     private String startTime;
     private String endTime;
+    private String recruitDueDateTime;
     private String recruitDueDate;
+    private String recruitDueTime;
     private int recruitNum;
     private int cost;
     private Boolean isReserved;
@@ -59,7 +60,7 @@ public class MatchingDetailDto {
                 .date(matching.getDate().toString())
                 .startTime(matching.getStartTime().toString())
                 .endTime(matching.getEndTime().toString())
-                .recruitDueDate(matching.getRecruitDueDate().toString())
+                .recruitDueDate(matching.getRecruitDueDateTime().toString())
                 .recruitNum(matching.getRecruitNum())
                 .confirmedNum(matching.getConfirmedNum())
                 .cost(matching.getCost())

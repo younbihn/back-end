@@ -95,7 +95,6 @@ public class ApplyServiceImpl implements ApplyService {
         return apply;
     }
 
-
     private static void validateMatchingClosed(Matching matching) {
         if (matching.getRecruitStatus().equals(RecruitStatus.CLOSED)) {
             throw new AlreadyClosedMatchingException();
@@ -131,7 +130,14 @@ public class ApplyServiceImpl implements ApplyService {
                         -> applyRepository.findById(confirmedId).get().changeApplyStatus(ApplyStatus.ACCEPTED));
 
         matching.updateConfirmedNum(confirmedNum);
+        checkForRecruitStatusChanging(recruitNum, confirmedNum, matching);
         return matching;
+    }
+
+    private static void checkForRecruitStatusChanging(Integer recruitNum, int confirmedNum, Matching matching) {
+        if (recruitNum == confirmedNum) {
+            matching.changeRecruitStatus(RecruitStatus.FULL);
+        }
     }
 
     private static void validateOverRecruitNumber(int recruitNum, int confirmedNum) {

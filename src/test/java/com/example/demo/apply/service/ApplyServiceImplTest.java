@@ -359,6 +359,7 @@ class ApplyServiceImplTest {
                 .recruitStatus(RecruitStatus.OPEN)
                 .createTime(LocalDateTime.now())
                 .matchingType(MatchingType.DOUBLE)
+                .confirmedNum(2)
                 .build();
     }
 

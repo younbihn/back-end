@@ -81,7 +81,7 @@ public class Matching {
     private LocalTime endTime;
 
     @Column(name = "RECRUIT_DUE_DATE", nullable = false) // yyyy-MM-dd HH:mm
-    private LocalDateTime recruitDueDate;
+    private LocalDateTime recruitDueDateTime;
 
     @Column(name = "RECRUIT_NUM", nullable = false)
     private Integer recruitNum;
@@ -120,12 +120,14 @@ public class Matching {
         DateTimeFormatter formForDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         DateTimeFormatter formForTime = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter formForDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String recruitDueDateTimeFromDto = matchingDetailDto.getRecruitDueDate()
+                + " " + matchingDetailDto.getRecruitDueTime() + ":00";
 
         LocalDate date = LocalDate.parse(matchingDetailDto.getDate(), formForDate);
         LocalTime startTime = LocalTime.parse(matchingDetailDto.getStartTime(), formForTime);
         LocalTime endTime = LocalTime.parse(matchingDetailDto.getEndTime(), formForTime);
-        LocalDateTime recruitDueDate = LocalDateTime
-                .parse(matchingDetailDto.getRecruitDueDate(), formForDateTime);
+        LocalDateTime recruitDueDateTime = LocalDateTime
+                .parse(recruitDueDateTimeFromDto, formForDateTime);
 
         return Matching.builder()
                 .siteUser(siteUser)
@@ -138,7 +140,7 @@ public class Matching {
                 .date(date)
                 .startTime(startTime)
                 .endTime(endTime)
-                .recruitDueDate(recruitDueDate)
+                .recruitDueDateTime(recruitDueDateTime)
                 .recruitNum(matchingDetailDto.getRecruitNum())
                 .cost(matchingDetailDto.getCost())
                 .isReserved(matchingDetailDto.getIsReserved())
@@ -146,7 +148,6 @@ public class Matching {
                 .age(matchingDetailDto.getAgeGroup())
                 .recruitStatus(matchingDetailDto.getRecruitStatus())
                 .matchingType(matchingDetailDto.getMatchingType())
-                .confirmedNum(matchingDetailDto.getConfirmedNum())
                 .build();
     }
 
@@ -161,7 +162,7 @@ public class Matching {
         this.date = matching.getDate();
         this.startTime = matching.getStartTime();
         this.endTime = matching.getEndTime();
-        this.recruitDueDate = matching.getRecruitDueDate();
+        this.recruitDueDateTime = matching.getRecruitDueDateTime();
         this.recruitNum = matching.getRecruitNum();
         this.cost = matching.getCost();
         this.isReserved = matching.getIsReserved();

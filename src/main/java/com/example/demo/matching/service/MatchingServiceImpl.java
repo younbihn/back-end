@@ -39,11 +39,11 @@ public class MatchingServiceImpl implements MatchingService {
     public Matching create(Long userId, MatchingDetailDto matchingDetailDto) {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
-        saveApplyForOrgainzer(matching, siteUser);
+        saveApplyForOrganizer(matching, siteUser);
         return matching;
     }
 
-    private void saveApplyForOrgainzer(Matching matching, SiteUser siteUser) {
+    private void saveApplyForOrganizer(Matching matching, SiteUser siteUser) {
         var applyDto = ApplyDto.builder()
                 .matching(matching)
                 .siteUser(siteUser)

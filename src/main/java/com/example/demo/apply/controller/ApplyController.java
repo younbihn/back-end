@@ -27,12 +27,10 @@ public class ApplyController {
         applyService.apply(userId, matchingId);
     }
 
-
-
     @DeleteMapping("/{apply_id}")
     public void cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
-        ApplyDto.fromEntity(applyService.cancel(applyId));
+        applyService.cancel(applyId);
     }
 
 
