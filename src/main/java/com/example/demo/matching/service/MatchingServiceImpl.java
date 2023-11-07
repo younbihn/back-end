@@ -65,7 +65,7 @@ public class MatchingServiceImpl implements MatchingService {
 
         //TODO : 신청자 존재하는데 매칭 글 삭제 시 신청자들에게 알림
         //TODO : 신청자 존재하는데 매칭 글 삭제 시 패널티 부여
-        if (matching.getApplyNum()>0) {
+        if (matching.getConfirmedNum() > 0) {
             //TODO : 매칭에 신청한 유저들의 매칭 해제
         }
 

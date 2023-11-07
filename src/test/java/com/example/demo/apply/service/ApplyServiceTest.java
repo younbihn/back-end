@@ -26,6 +26,7 @@ import com.example.demo.type.AgeGroup;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.MatchingType;
+import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
 import com.example.demo.util.FindEntityUtils;
 import java.math.BigDecimal;
@@ -34,6 +35,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -193,7 +195,7 @@ class ApplyServiceTest {
 
         Apply apply = getApply(matching, siteUser);
 
-        apply.setStatus(ApplyStatus.ACCEPTED);
+        apply.changeApplyStatus(ApplyStatus.ACCEPTED);
 
 
         given(findEntityUtils.findApply(1L))
@@ -238,7 +240,7 @@ class ApplyServiceTest {
                         .id(1L)
                         .recruitStatus(RecruitStatus.OPEN)
                         .recruitNum(3)
-                        .date(Date.valueOf(LocalDate.now()))
+                        .date(LocalDate.now())
                         .build()));
 
         List<Long> appliedList = new ArrayList<>();
@@ -272,7 +274,7 @@ class ApplyServiceTest {
                         .id(1L)
                         .recruitStatus(RecruitStatus.OPEN)
                         .recruitNum(2)
-                        .date(Date.valueOf(LocalDate.now()))
+                        .date(LocalDate.now())
                         .build()));
 
         List<Long> appliedList = new ArrayList<>();
@@ -351,16 +353,16 @@ class ApplyServiceTest {
                 .title("title")
                 .content("content")
                 .location("location")
-                .date(Date.valueOf("2023-11-15"))
-                .startTime(Time.valueOf("10:00:00"))
-                .endTime(Time.valueOf("12:00:00"))
+                .date(LocalDate.of(2023, 11, 15))
+                .startTime(LocalTime.of(10, 00))
+                .endTime(LocalTime.of(12, 00))
                 .recruitNum(4)
                 .cost(1000)
                 .isReserved(true)
-                .ntrp("1.0")
-                .age("20~30")
+                .ntrp(Ntrp.ADVANCE)
+                .age(AgeGroup.FORTIES)
                 .recruitStatus(RecruitStatus.OPEN)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                .createTime(LocalDateTime.now())
                 .matchingType(MatchingType.DOUBLE)
                 .build();
     }
@@ -372,16 +374,16 @@ class ApplyServiceTest {
                 .title("title")
                 .content("content")
                 .location("location")
-                .date(Date.valueOf("2023-11-15"))
-                .startTime(Time.valueOf("10:00:00"))
-                .endTime(Time.valueOf("12:00:00"))
+                .date(LocalDate.of(2023, 11, 15))
+                .startTime(LocalTime.of(10, 00))
+                .endTime(LocalTime.of(12, 00))
                 .recruitNum(4)
                 .cost(1000)
                 .isReserved(true)
-                .ntrp("1.0")
-                .age("20~30")
+                .ntrp(Ntrp.ADVANCE)
+                .age(AgeGroup.FORTIES)
                 .recruitStatus(RecruitStatus.CLOSED)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                .createTime(LocalDateTime.now())
                 .matchingType(MatchingType.DOUBLE)
                 .build();
     }

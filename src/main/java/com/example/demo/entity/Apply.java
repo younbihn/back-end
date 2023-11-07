@@ -24,7 +24,6 @@ import org.hibernate.annotations.DynamicInsert;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 @DynamicInsert
 public class Apply {
 
@@ -44,7 +43,7 @@ public class Apply {
     private Timestamp createTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "STATUS", length = 50)
+    @Column(name = "STATUS")
     private ApplyStatus status; // default 값 지정됨(PENDING)
 
     public static Apply fromDto(ApplyDto applyDto) {
@@ -53,5 +52,9 @@ public class Apply {
                 .siteUser(applyDto.getSiteUser())
                 .createTime(applyDto.getCreateTime())
                 .build();
+    }
+
+    public void changeApplyStatus(ApplyStatus applyStatus) {
+        this.status = applyStatus;
     }
 }

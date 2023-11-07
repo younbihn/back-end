@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/matches")
 @RestController
 @RequestMapping("/api/matches")
 public class MatchingController {

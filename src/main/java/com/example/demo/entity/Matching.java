@@ -36,7 +36,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -84,27 +83,27 @@ public class Matching {
     @Column(name = "COST", nullable = false)
     private Integer cost;
 
-    @Column(name = "IS_RESERVED", columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(name = "IS_RESERVED")
     private Boolean isReserved;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "NTRP", length = 50)
+    @Column(name = "NTRP")
     private Ntrp ntrp;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "AGE", length = 50)
+    @Column(name = "AGE")
     private AgeGroup age;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "RECRUIT_STATUS", length = 50, columnDefinition = "DEFAULT 'OPEN'")
+    @Column(name = "RECRUIT_STATUS")
     private RecruitStatus recruitStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "MATCHING_TYPE", length = 50)
+    @Column(name = "MATCHING_TYPE")
     private MatchingType matchingType;
 
-    @Column(name = "APPLY_NUM", columnDefinition = "INT DEFAULT 1")
-    private Integer applyNum;
+    @Column(name = "CONFIRMED_NUM")
+    private Integer confirmedNum;
 
     @CreatedDate
     @Column(name = "CREATE_TIME") // yyyy-MM-dd HH:mm
@@ -139,7 +138,7 @@ public class Matching {
                 .age(matchingDetailDto.getAgeGroup())
                 .recruitStatus(matchingDetailDto.getRecruitStatus())
                 .matchingType(matchingDetailDto.getMatchingType())
-                .applyNum(matchingDetailDto.getApplyNum())
+                .confirmedNum(matchingDetailDto.getConfirmedNum())
                 .build();
     }
 
@@ -159,6 +158,12 @@ public class Matching {
         this.ntrp = matching.getNtrp();
         this.age = matching.getAge();
         this.matchingType = matching.getMatchingType();
-        this.applyNum = matching.getApplyNum();
+        this.confirmedNum = matching.getConfirmedNum();
     }
+
+    public void updateConfirmedNum(Matching matching, int confirmedNum) {
+        this.confirmedNum = confirmedNum;
+    }
+
+
 }
