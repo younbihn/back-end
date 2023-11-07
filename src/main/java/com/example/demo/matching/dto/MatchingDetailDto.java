@@ -5,6 +5,7 @@ import com.example.demo.type.AgeGroup;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -37,7 +38,7 @@ public class MatchingDetailDto {
     private AgeGroup ageGroup;
     private RecruitStatus recruitStatus;
     private MatchingType matchingType;
-    private Integer applyNum;
+    private Integer confirmedNum;
     private LocalDateTime createTime;
 
     public static MatchingDetailDto fromEntity(Matching matching) {

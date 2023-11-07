@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class CustomExceptionHandler {
 
-    @ExceptionHandler(AbsctractException.class)
-    protected ResponseEntity<ErrorResponse> handleCustomException(AbsctractException e) {
+    @ExceptionHandler(AbstractException.class)
+    protected ResponseEntity<ErrorResponse> handleCustomException(AbstractException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(e.getStatus())
                 .code(e.getStatusCode())
                 .message(e.getMessage())
                 .build();

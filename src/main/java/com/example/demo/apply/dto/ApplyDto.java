@@ -17,13 +17,12 @@ public class ApplyDto {
     private Timestamp createTime;
     private ApplyStatus applyStatus;
 
-
-    public static ApplyDto fromEntity(Apply entity) {
+    public static ApplyDto fromEntity(Apply apply) {
         return ApplyDto.builder()
-                .matching(entity.getMatching())
-                .siteUser(entity.getSiteUser())
-                .createTime(entity.getCreateTime())
-                .applyStatus(entity.getStatus())
+                .matching(apply.getMatching())
+                .siteUser(apply.getSiteUser())
+                .createTime(apply.getCreateTime())
+                .applyStatus(apply.getStatus())
                 .build();
     }
 }

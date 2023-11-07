@@ -12,6 +12,6 @@ public class MatchingNotFoundException extends AbsctractException {
 
     @Override
     public String getMessage() {
-        return "존재하지 않는 매칭입니다.";
+        return "해당 매칭을 찾을 수 없습니다.";
     }
 }

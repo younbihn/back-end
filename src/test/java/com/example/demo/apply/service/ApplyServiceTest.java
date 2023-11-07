@@ -5,22 +5,37 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.exception.impl.AlreadyCanceledApplyException;
+import com.example.demo.exception.impl.AlreadyClosedMatchingException;
 import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
-import com.example.demo.exception.impl.NonExistedApplyException;
+import com.example.demo.exception.impl.ApplyNotFoundException;
+import com.example.demo.exception.impl.OverRecruitNumberException;
+import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.type.AgeGroup;
 import com.example.demo.type.ApplyStatus;
+import com.example.demo.type.GenderType;
+import com.example.demo.type.MatchingType;
 import com.example.demo.type.RecruitStatus;
+import com.example.demo.util.FindEntityUtils;
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,221 +43,346 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.annotation.Commit;
 
 @ExtendWith(MockitoExtension.class)
 class ApplyServiceTest {
 
     @Mock
     private ApplyRepository applyRepository;
-    @Mock
-    private SiteUserRepository siteUserRepository;
 
     @Mock
     private MatchingRepository matchingRepository;
 
+    @Mock
+    private FindEntityUtils findEntityUtils;
+
     @InjectMocks
     private ApplyServiceImpl applyService;
+
 
     @Test
     void applySuccess() {
         //given
-        SiteUser siteUser = SiteUser.builder()
-                .id(1L)
-                .build();
+        SiteUser siteUser = getSiteUser();
 
-        Matching matching = Matching.builder()
-                .id(2L)
-                .recruitStatus(RecruitStatus.OPEN)
-                .build();
+        Matching matching = getMatching(siteUser);
 
+        given(findEntityUtils.findUser(1L))
+                .willReturn(siteUser);
 
-        given(siteUserRepository.findById(anyLong()))
-                .willReturn(Optional.of(siteUser));
+        given(findEntityUtils.findMatching(1L))
+                .willReturn(matching);
 
-        given(matchingRepository.findById(anyLong()))
-                .willReturn(Optional.of(matching));
-
-        given(applyRepository.save(any()))
-                .willReturn(Apply.builder()
-                        .id(1L)
-                        .matching(matching)
-                        .siteUser(siteUser)
-                        .build());
         ArgumentCaptor<Apply> captor = ArgumentCaptor.forClass(Apply.class);
 
         // when
-        ApplyDto applyDto = applyService.apply(1L, 2L);
+        applyService.apply(1L, 1L);
 
         // then
         verify(applyRepository, times(1)).save(captor.capture()); // save 메서드가 한 번 실행되는 지 검증
-        assertEquals(1L, applyDto.getSiteUser().getId());
-        assertEquals(2L, applyDto.getMatching().getId());
     }
 
     @Test
     void applyFailByDuplication() {
         //given
-        SiteUser siteUser = SiteUser.builder()
-                .id(1L)
-                .build();
+        SiteUser siteUser = getSiteUser();
 
-        Matching matching = Matching.builder()
-                .id(2L)
-                .recruitStatus(RecruitStatus.OPEN)
-                .build();
+        SiteUser siteUserForApply = getSiteUserForApply();
 
-        Apply apply = Apply.builder()
-                .id(1L)
-                .matching(matching)
-                .siteUser(siteUser)
-                .status(ApplyStatus.PENDING)
-                .build();
+        Matching matching = getMatching(siteUser);
 
-        given(siteUserRepository.findById(anyLong()))
-                .willReturn(Optional.of(siteUser));
+        Apply apply = getApply(matching, siteUserForApply);
 
-        given(matchingRepository.findById(anyLong()))
-                .willReturn(Optional.of(matching));
+        given(findEntityUtils.findUser(2L))
+                .willReturn(siteUserForApply);
 
-        given(applyRepository.existsBySiteUser_IdAndMatching_Id(anyLong(), anyLong()))
+        given(findEntityUtils.findMatching(1L))
+                .willReturn(matching);
+
+        given(applyRepository.existsBySiteUser_IdAndMatching_Id(2L, 1L))
                 .willReturn(true);
 
-        given(applyRepository.findBySiteUser_IdAndMatching_Id(anyLong(), anyLong()))
+        given(applyRepository.findBySiteUser_IdAndMatching_Id(2L, 1L))
                 .willReturn(Optional.of(apply));
 
         // when
         AlreadyExistedApplyException exception = assertThrows(AlreadyExistedApplyException.class,
-                () -> applyService.apply(1L, 2L));
+                () -> applyService.apply(2L, 1L));
 
         // then
         assertEquals(exception.getMessage(), "이미 참여 신청한 경기입니다.");
     }
 
+
+
     @Test
     void applyFailByRecruitClosed() {
         //given
-        SiteUser siteUser = SiteUser.builder()
-                .id(1L)
-                .build();
+        SiteUser siteUser = getSiteUser();
 
-        Matching matching = Matching.builder()
-                .id(2L)
-                .recruitStatus(RecruitStatus.CLOSED)
-                .build();
+        SiteUser siteUserForApply = getSiteUserForApply();
 
-        given(siteUserRepository.findById(anyLong()))
-                .willReturn(Optional.of(siteUser));
+        Matching matching = getClosedMatching(siteUser);
 
-        given(matchingRepository.findById(anyLong()))
-                .willReturn(Optional.of(matching));
+        given(findEntityUtils.findUser(2L))
+                .willReturn(siteUserForApply);
+
+        given(findEntityUtils.findMatching(1L))
+                .willReturn(matching);
 
         // when
         ClosedMatchingException exception = assertThrows(ClosedMatchingException.class,
-                () -> applyService.apply(1L, 2L));
+                () -> applyService.apply(2L, 1L));
 
         // then
         assertEquals(exception.getMessage(), "신청 마감된 경기입니다.");
     }
 
+
+
     @Test
+    @Commit
     void applyCancelSuccess() {
         //given
-        SiteUser siteUser = SiteUser.builder()
-                .id(1L)
-                .build();
+        SiteUser siteUser = getSiteUser();
 
-        Matching matching = Matching.builder()
-                .id(2L)
-                .recruitStatus(RecruitStatus.OPEN)
-                .build();
+        SiteUser siteUserForApply = getSiteUserForApply();
 
-        Apply apply = Apply.builder()
+        Matching matching = getMatching(siteUser);
+
+        Apply apply = getApply(matching, siteUserForApply);
+
+        given(findEntityUtils.findApply(1L))
+                .willReturn(apply);
+
+        // when
+        applyService.cancel(1L);
+
+        // then
+        assertEquals(ApplyStatus.CANCELED, apply.getStatus());
+    }
+
+    @Test
+    void applyCancelFailByClosedMatching() {
+        // given
+        SiteUser siteUser = getSiteUser();
+
+        SiteUser siteUserForApply = getSiteUserForApply();
+
+        Matching matching = getClosedMatching(siteUser);
+
+        Apply apply = getApply(matching, siteUserForApply);
+
+        given(findEntityUtils.findApply(1L))
+                .willReturn(apply);
+        // when
+        AlreadyClosedMatchingException exception = assertThrows(AlreadyClosedMatchingException.class,
+                () -> applyService.cancel(1L));
+
+        // then
+        assertEquals(exception.getMessage(), "매칭 확정된 경기는 참여 취소가 불가능합니다.");
+    }
+
+    @Test
+    void applyCancelFailByYourOwnPosting() {
+        // given
+        SiteUser siteUser = getSiteUser();
+
+        Matching matching = getClosedMatching(siteUser);
+
+        Apply apply = getApply(matching, siteUser);
+
+        apply.setStatus(ApplyStatus.ACCEPTED);
+
+
+        given(findEntityUtils.findApply(1L))
+                .willReturn(apply);
+
+        // when
+        YourOwnPostingCancelException exception = assertThrows(YourOwnPostingCancelException.class,
+                () -> applyService.cancel(1L));
+
+        // then
+        assertEquals("자신이 주최한 매칭은 참가 취소를 할 수 없습니다.", exception.getMessage());
+    }
+
+    @Test
+    void applyCancelFailedByCancelDuplication() {
+        // given
+        SiteUser siteUser = getSiteUser();
+
+        SiteUser siteUserForApply = getSiteUserForApply();
+
+        Matching matching = getClosedMatching(siteUser);
+
+        Apply apply = getCancelApply(matching, siteUserForApply);
+
+        given(findEntityUtils.findApply(1L))
+                .willReturn(apply);
+        // when
+        AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
+                () -> applyService.cancel(1L));
+
+        // then
+        assertEquals(exception.getMessage(), "이미 참가 신청이 취소된 경기입니다.");
+    }
+
+
+
+    @Test
+    void applyAcceptSuccess() {
+        //given
+        given(matchingRepository.findById(anyLong()))
+                .willReturn(Optional.of(Matching.builder()
+                        .id(1L)
+                        .recruitStatus(RecruitStatus.OPEN)
+                        .recruitNum(3)
+                        .date(Date.valueOf(LocalDate.now()))
+                        .build()));
+
+        List<Long> appliedList = new ArrayList<>();
+        appliedList.add(1L);
+
+        List<Long> confirmedList = new ArrayList<>();
+        confirmedList.add(2L);
+
+        given(applyRepository.findById(1L))
+                .willReturn(Optional.of(Apply.builder()
+                        .id(1L)
+                        .build()));
+
+        given(applyRepository.findById(2L))
+                .willReturn(Optional.of(Apply.builder()
+                        .id(2L)
+                        .build()));
+
+        // when
+        applyService.accept(appliedList, confirmedList, 1L);
+
+        // then
+        verify(applyRepository, times(2)).findById(anyLong());
+    }
+
+    @Test
+    void applyAcceptFailedByOverRecruitNumber() {
+        //given
+        given(matchingRepository.findById(anyLong()))
+                .willReturn(Optional.of(Matching.builder()
+                        .id(1L)
+                        .recruitStatus(RecruitStatus.OPEN)
+                        .recruitNum(2)
+                        .date(Date.valueOf(LocalDate.now()))
+                        .build()));
+
+        List<Long> appliedList = new ArrayList<>();
+        appliedList.add(1L);
+
+        List<Long> confirmedList = new ArrayList<>();
+        confirmedList.add(1L);
+        confirmedList.add(3L);
+        confirmedList.add(4L);
+        confirmedList.add(5L);
+
+        // when
+        OverRecruitNumberException exception = assertThrows(OverRecruitNumberException.class,
+                () -> applyService.accept(appliedList, confirmedList, 1L));
+
+        // then
+        assertEquals("모집 인원보다 많은 인원을 수락할 수 없습니다.", exception.getMessage());
+    }
+
+    private static Apply getApply(Matching matching, SiteUser siteUser) {
+        return Apply.builder()
                 .id(1L)
                 .matching(matching)
                 .siteUser(siteUser)
                 .status(ApplyStatus.PENDING)
                 .build();
-
-        given(applyRepository.findById(anyLong()))
-                .willReturn(Optional.of(apply));
-
-        // when
-        ApplyDto applyDto = applyService.cancel(1L);
-
-        // then
-        assertEquals(ApplyStatus.CANCELED, applyDto.getApplyStatus());
     }
 
-    @Test
-    void applyCancelFailByNonExistedApply() {
-        // given
-        // when
-        NonExistedApplyException exception = assertThrows(NonExistedApplyException.class,
-                () -> applyService.cancel(1L));
-
-        // then
-        assertEquals(exception.getMessage(), "참가 신청 내역이 없습니다. 이미 삭제된 경기로 예상됩니다.");
-    }
-
-    @Test
-    void applyCancelFailByAlreadyCanceledApply() {
-        // given
-        Apply apply = Apply.builder()
+    private Apply getCancelApply(Matching matching, SiteUser siteUser) {
+        return Apply.builder()
                 .id(1L)
+                .matching(matching)
+                .siteUser(siteUser)
                 .status(ApplyStatus.CANCELED)
                 .build();
-
-        given(applyRepository.findById(anyLong()))
-                .willReturn(Optional.of(apply));
-        // when
-        AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
-                () -> applyService.cancel(1L));
-
-        // then
-        assertEquals(exception.getMessage(), "이미 참가 신청이 취소된 경기입니다.");
     }
 
-    @Test
-    void applyAcceptSuccess() {
-        //given
-        SiteUser siteUser = SiteUser.builder()
+    private SiteUser getSiteUser() {
+        return SiteUser.builder()
                 .id(1L)
+                .password("1234")
+                .nickname("nickname")
+                .email("emial@gmail.com")
+                .phoneNumber("010-1234-5678")
+                .gender(GenderType.FEMALE)
+                .ntrp(BigDecimal.valueOf(1.0))
+                .locationSi("안양시")
+                .locationGu("동안구")
+                .ageGroup(AgeGroup.TWENTIES)
+                .createDate(Timestamp.valueOf(LocalDateTime.now()))
+                .isPhoneVerified(true)
                 .build();
+    }
 
-        Matching matching = Matching.builder()
+    private SiteUser getSiteUserForApply() {
+        return SiteUser.builder()
                 .id(2L)
+                .password("1234")
+                .nickname("nickname")
+                .email("emial@gmail.com")
+                .phoneNumber("010-1234-5678")
+                .gender(GenderType.FEMALE)
+                .ntrp(BigDecimal.valueOf(1.0))
+                .locationSi("안양시")
+                .locationGu("동안구")
+                .ageGroup(AgeGroup.TWENTIES)
+                .createDate(Timestamp.valueOf(LocalDateTime.now()))
+                .isPhoneVerified(true)
                 .build();
-
-        Apply apply = Apply.builder()
-                .id(1L)
-                .status(ApplyStatus.PENDING)
-                .build();
-
-        given(applyRepository.findById(anyLong()))
-                .willReturn(Optional.of(apply));
-
-        // when
-        ApplyDto applyDto = applyService.accept(1L);
-
-        // then
-        assertEquals(ApplyStatus.ACCEPTED, applyDto.getApplyStatus());
     }
 
-    @Test
-    void applyAcceptFailByAlreadyCanceledApply() {
-        // given
-        Apply apply = Apply.builder()
+    private Matching getMatching(SiteUser siteUser) {
+        return Matching.builder()
                 .id(1L)
-                .status(ApplyStatus.CANCELED)
+                .siteUser(siteUser)
+                .title("title")
+                .content("content")
+                .location("location")
+                .date(Date.valueOf("2023-11-15"))
+                .startTime(Time.valueOf("10:00:00"))
+                .endTime(Time.valueOf("12:00:00"))
+                .recruitNum(4)
+                .cost(1000)
+                .isReserved(true)
+                .ntrp("1.0")
+                .age("20~30")
+                .recruitStatus(RecruitStatus.OPEN)
+                .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                .matchingType(MatchingType.DOUBLE)
                 .build();
+    }
 
-        given(applyRepository.findById(anyLong()))
-                .willReturn(Optional.of(apply));
-        // when
-        AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
-                () -> applyService.accept(1L));
-
-        // then
-        assertEquals(exception.getMessage(), "이미 참가 신청이 취소된 경기입니다.");
+    private static Matching getClosedMatching(SiteUser siteUser) {
+        return Matching.builder()
+                .id(1L)
+                .siteUser(siteUser)
+                .title("title")
+                .content("content")
+                .location("location")
+                .date(Date.valueOf("2023-11-15"))
+                .startTime(Time.valueOf("10:00:00"))
+                .endTime(Time.valueOf("12:00:00"))
+                .recruitNum(4)
+                .cost(1000)
+                .isReserved(true)
+                .ntrp("1.0")
+                .age("20~30")
+                .recruitStatus(RecruitStatus.CLOSED)
+                .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                .matchingType(MatchingType.DOUBLE)
+                .build();
     }
 }

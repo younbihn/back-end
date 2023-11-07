@@ -12,6 +12,6 @@ public class UserNotFoundException extends AbsctractException {
 
     @Override
     public String getMessage() {
-        return "존재하지 않는 사용자입니다.";
+        return "사용자를 찾을 수 없습니다.";
     }
 }

@@ -1,8 +1,10 @@
 package com.example.demo.matching.controller;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.matching.dto.ApplyContents;
+import com.example.demo.matching.service.MatchingService;
+import java.io.IOException;
+import lombok.SneakyThrows;
 import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
@@ -29,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/api/matches")
 @RestController
+@RequestMapping("/api/matches")
 public class MatchingController {
 
     private final MatchingServiceImpl matchingServiceImpl;
@@ -102,6 +105,17 @@ public class MatchingController {
             @PageableDefault(page = 0, size = 10) Pageable pageable){
 
         var result = matchingServiceImpl.getList(pageable);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @SneakyThrows
+    @GetMapping("/{matching_id}/apply")
+    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId) {
+
+        Long userId = 1L;
+
+        var result = matchingServiceImpl.getApplyContents(userId, matchingId);
 
         return ResponseEntity.ok(result);
     }

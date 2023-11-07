@@ -1,5 +1,7 @@
 package com.example.demo.matching.controller;
 
+import com.example.demo.matching.dto.ApplyContents;
+import com.example.demo.matching.service.MatchingService;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -31,6 +33,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +44,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(MatchingController.class)
-class MatchingControllerTest { //TODO: 공통 응답 확정되면 응답 형태 검증 로직 추가
+class MatchingControllerTest {
 
     @MockBean
     private MatchingServiceImpl matchingService;
@@ -49,9 +54,21 @@ class MatchingControllerTest { //TODO: 공통 응답 확정되면 응답 형태 
 
     @Autowired
     private MockMvc mockMvc;
-
+  
     @Autowired
     ObjectMapper objectMapper;
+
+    @Test
+    void successConfirmMatching() throws Exception {
+        // given
+        given(matchingService.getApplyContents(anyLong(), anyLong()))
+                .willReturn(ApplyContents.builder().build());
+
+        // when
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.get("/matches/1/apply"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
 
     @Test
     @DisplayName("매칭글 등록 - 구장 이미지 없는 경우")
