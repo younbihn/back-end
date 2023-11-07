@@ -1,9 +1,9 @@
 package com.example.demo.exception.impl;
 
-import com.example.demo.exception.AbsctractException;
+import com.example.demo.exception.AbstractException;
 import org.springframework.http.HttpStatus;
 
-public class MatchingNotFoundException extends AbsctractException {
+public class MatchingNotFoundException extends AbstractException {
 
     @Override
     public int getStatusCode() {

@@ -54,14 +54,13 @@ public class MatchingDetailDto {
                 .endTime(matching.getEndTime().toString())
                 .recruitDueDate(matching.getRecruitDueDate().toString())
                 .recruitNum(matching.getRecruitNum())
-                .applyNum(matching.getApplyNum())
+                .confirmedNum(matching.getConfirmedNum())
                 .cost(matching.getCost())
                 .isReserved(matching.getIsReserved())
                 .ntrp(matching.getNtrp())
                 .ageGroup(matching.getAge())
                 .recruitStatus(matching.getRecruitStatus())
                 .matchingType(matching.getMatchingType())
-                .applyNum(matching.getApplyNum())
                 .createTime(matching.getCreateTime())
                 .build();
     }

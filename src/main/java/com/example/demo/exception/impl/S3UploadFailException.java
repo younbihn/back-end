@@ -1,9 +1,9 @@
 package com.example.demo.exception.impl;
 
-import com.example.demo.exception.AbsctractException;
+import com.example.demo.exception.AbstractException;
 import org.springframework.http.HttpStatus;
 
-public class S3UploadFailException extends AbsctractException {
+public class S3UploadFailException extends AbstractException {
 
     @Override
     public int getStatusCode() {
