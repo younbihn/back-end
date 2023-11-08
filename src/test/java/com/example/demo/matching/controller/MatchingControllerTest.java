@@ -186,7 +186,7 @@ class MatchingControllerTest {
                 .matchingType(MatchingType.SINGLE)
                 .ntrp(Ntrp.PRO)
                 .isReserved(true)
-                .recruitDueDate(LocalDateTime.now().plusDays(3))
+                .recruitDueDateTime(LocalDateTime.now().plusDays(3))
                 .cost(5000)
                 .location("서울특별시 중구 을지로 66")
                 .lat(37.56556383681641)

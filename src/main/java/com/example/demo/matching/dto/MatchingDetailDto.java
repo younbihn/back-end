@@ -5,6 +5,7 @@ import com.example.demo.type.AgeGroup;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,33 +15,36 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MatchingDetailDto {
-    private Long id;
-    private Long creatorUserId;
+    private long id;
+    private long creatorUserId;
     private String title;
     private String content;
     private String location;
-    private Double lat;
-    private Double lon;
+    private double lat;
+    private double lon;
     private String locationImg;
     private String date;
     private String startTime;
     private String endTime;
+    private String recruitDueDateTime;
     private String recruitDueDate;
-    private Integer recruitNum;
-    private Integer cost;
+    private String recruitDueTime;
+    private int recruitNum;
+    private int cost;
     private Boolean isReserved;
     private Ntrp ntrp;
     private AgeGroup ageGroup;
     private RecruitStatus recruitStatus;
     private MatchingType matchingType;
-    private Integer confirmedNum;
+    private int confirmedNum;
     private String createTime;
 
     public static MatchingDetailDto fromEntity(Matching matching) {
@@ -56,7 +60,7 @@ public class MatchingDetailDto {
                 .date(matching.getDate().toString())
                 .startTime(matching.getStartTime().toString())
                 .endTime(matching.getEndTime().toString())
-                .recruitDueDate(matching.getRecruitDueDate().toString())
+                .recruitDueDate(matching.getRecruitDueDateTime().toString())
                 .recruitNum(matching.getRecruitNum())
                 .confirmedNum(matching.getConfirmedNum())
                 .cost(matching.getCost())

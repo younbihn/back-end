@@ -1,6 +1,8 @@
 package com.example.demo.matching.service;
 
+import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.repository.ApplyRepository;
+import com.example.demo.entity.Apply;
 import com.example.demo.exception.impl.ApplyNotFoundException;
 import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.dto.ApplyMember;
@@ -36,7 +38,18 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     public Matching create(Long userId, MatchingDetailDto matchingDetailDto) {
         SiteUser siteUser = validateUserGivenId(userId);
-        return matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
+        Matching matching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
+        saveApplyForOrganizer(matching, siteUser);
+        return matching;
+    }
+
+    private void saveApplyForOrganizer(Matching matching, SiteUser siteUser) {
+        var applyDto = ApplyDto.builder()
+                .matching(matching)
+                .siteUser(siteUser)
+                .build();
+        Apply apply = applyRepository.save(Apply.fromDto(applyDto));
+        apply.changeApplyStatus(ApplyStatus.ACCEPTED);
     }
 
     @Override

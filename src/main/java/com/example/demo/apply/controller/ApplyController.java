@@ -1,18 +1,10 @@
 package com.example.demo.apply.controller;
 
-import com.example.demo.apply.dto.AppliedListAndConfiredList;
+import com.example.demo.apply.dto.AppliedListAndConfirmedList;
 import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.service.ApplyService;
-import com.example.demo.entity.Apply;
-import com.example.demo.exception.impl.FailedApplyCancelException;
-import com.example.demo.exception.impl.FailedApplyException;
-import com.example.demo.matching.dto.MatchingDetailDto;
-import com.example.demo.type.ApplyStatus;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,22 +27,20 @@ public class ApplyController {
         applyService.apply(userId, matchingId);
     }
 
-
-
     @DeleteMapping("/{apply_id}")
     public void cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
-        ApplyDto.fromEntity(applyService.cancel(applyId));
+        applyService.cancel(applyId);
     }
 
 
 
     @PatchMapping("/matches/{matching_id}")
-    public void acceptApply(@RequestBody AppliedListAndConfiredList appliedListAndConfiredList,
+    public void acceptApply(@RequestBody AppliedListAndConfirmedList appliedListAndConfirmedList,
                                    @PathVariable(value = "matching_id") long matchingId) {
 
-        List<Long> appliedList = appliedListAndConfiredList.getAppliedList();
-        List<Long> confirmedList = appliedListAndConfiredList.getConfirmedList();
+        List<Long> appliedList = appliedListAndConfirmedList.getAppliedList();
+        List<Long> confirmedList = appliedListAndConfirmedList.getConfirmedList();
 
         applyService.accept(appliedList, confirmedList, matchingId);
     }

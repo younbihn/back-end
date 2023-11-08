@@ -1,17 +1,12 @@
 package com.example.demo.apply.controller;
 
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.service.ApplyService;
 import com.example.demo.entity.Apply;
-import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.type.ApplyStatus;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -38,7 +33,7 @@ class ApplyControllerTest {
                         .build());
         // when
         // then
-        mockMvc.perform(MockMvcRequestBuilders.post("/apply/matches/1"))
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/apply/matches/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
@@ -52,7 +47,7 @@ class ApplyControllerTest {
                         .build());
         // when
         // then
-        mockMvc.perform(MockMvcRequestBuilders.delete("/apply/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/apply/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
@@ -67,7 +62,7 @@ class ApplyControllerTest {
 
         // when
         // then
-        mockMvc.perform(MockMvcRequestBuilders.patch("/apply/matches/1")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/apply/matches/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(request))
                 .andExpect(MockMvcResultMatchers.status().isOk())

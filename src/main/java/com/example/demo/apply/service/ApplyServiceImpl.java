@@ -48,7 +48,6 @@ public class ApplyServiceImpl implements ApplyService {
         var applyDto = ApplyDto.builder()
                 .matching(matching)
                 .siteUser(user)
-                .createTime(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
 
         return applyRepository.save(Apply.fromDto(applyDto));
@@ -83,16 +82,18 @@ public class ApplyServiceImpl implements ApplyService {
         validateMatchingClosed(matching);
 
         if (RecruitStatus.FULL.equals(matching.getRecruitStatus())) {
-            //TODO: 패널티 부여
-            apply.changeApplyStatus(ApplyStatus.CANCELED);
-            return apply;
+            if (ApplyStatus.ACCEPTED.equals(apply.getStatus())) {
+                //TODO: 패널티 부여
+                apply.changeApplyStatus(ApplyStatus.CANCELED);
+                matching.changeRecruitStatus(RecruitStatus.OPEN);
+                matching.changeConfirmedNum(matching.getConfirmedNum() - 1);
+                return apply;
+            }
         }
-
         apply.changeApplyStatus(ApplyStatus.CANCELED);
+        matching.changeConfirmedNum(matching.getConfirmedNum() - 1);
         return apply;
     }
-
-
 
     private static void validateMatchingClosed(Matching matching) {
         if (matching.getRecruitStatus().equals(RecruitStatus.CLOSED)) {
@@ -122,14 +123,21 @@ public class ApplyServiceImpl implements ApplyService {
 
         appliedList.stream()
                 .forEach(applyId
-                        -> applyRepository.findById(applyId).get().changeApplyStatus(ApplyStatus.PENDING)) ;
+                        -> applyRepository.findById(applyId).get().changeApplyStatus(ApplyStatus.PENDING));
 
         confirmedList.stream()
                 .forEach(confirmedId
                         -> applyRepository.findById(confirmedId).get().changeApplyStatus(ApplyStatus.ACCEPTED));
 
-        matching.updateConfirmedNum(matching, confirmedNum);
+        matching.updateConfirmedNum(confirmedNum);
+        checkForRecruitStatusChanging(recruitNum, confirmedNum, matching);
         return matching;
+    }
+
+    private static void checkForRecruitStatusChanging(Integer recruitNum, int confirmedNum, Matching matching) {
+        if (recruitNum == confirmedNum) {
+            matching.changeRecruitStatus(RecruitStatus.FULL);
+        }
     }
 
     private static void validateOverRecruitNumber(int recruitNum, int confirmedNum) {
