@@ -4,7 +4,7 @@ import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
-import com.example.demo.siteuser.dto.MatchingMyHostedDto;
+import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
@@ -44,12 +44,12 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     }
 
     @Override
-    public List<MatchingMyHostedDto> getMatchingBySiteUser(SiteUser siteUser) {
+    public List<MatchingMyMatchingDto> getMatchingBySiteUser(SiteUser siteUser) {
         List<Matching> matchingList = matchingRepository.findMatchingBySiteUser(siteUser);
 
         if (matchingList != null && !matchingList.isEmpty()) {
             return matchingList.stream()
-                    .map(MatchingMyHostedDto::fromEntity)
+                    .map(MatchingMyMatchingDto::fromEntity)
                     .collect(Collectors.toList());
         } else {
             throw new EntityNotFoundException("No matching data found for user with ID: " + siteUser.getId());
@@ -57,13 +57,13 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     }
 
     @Override
-    public List<MatchingMyHostedDto> getApplyBySiteUser(SiteUser siteUser) {
+    public List<MatchingMyMatchingDto> getApplyBySiteUser(SiteUser siteUser) {
         List<Apply> applyList = applyRepository.findApplyBySiteUser(siteUser);
 
         if (applyList != null && !applyList.isEmpty()) {
-            List<MatchingMyHostedDto> matchingDtos = applyList.stream()
-                    .filter(apply -> apply.getMatching() != null) // 필요에 따라 null 체크
-                    .map(apply -> MatchingMyHostedDto.fromEntity(apply.getMatching()))
+            List<MatchingMyMatchingDto> matchingDtos = applyList.stream()
+                    .filter(apply -> apply.getMatching() != null)
+                    .map(apply -> MatchingMyMatchingDto.fromEntity(apply.getMatching()))
                     .collect(Collectors.toList());
             return matchingDtos;
         } else {

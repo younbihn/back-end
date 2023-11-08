@@ -11,14 +11,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MatchingMyHostedDto {
+public class MatchingMyMatchingDto {
     private String title;
     private String location;
     private LocalDate date;
     private MatchingType matchingType;
 
-    public static MatchingMyHostedDto fromEntity(Matching matching) {
-        return MatchingMyHostedDto.builder()
+    public static MatchingMyMatchingDto fromEntity(Matching matching) {
+        return MatchingMyMatchingDto.builder()
                 .title(matching.getTitle())
                 .location(matching.getLocation())
                 .date(matching.getDate().toLocalDate())

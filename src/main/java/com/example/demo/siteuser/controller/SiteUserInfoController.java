@@ -3,7 +3,7 @@ package com.example.demo.siteuser.controller;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
-import com.example.demo.siteuser.dto.MatchingMyHostedDto;
+import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import com.example.demo.siteuser.service.SiteUserInfoService;
@@ -50,8 +50,8 @@ public class SiteUserInfoController {
     }
 
     @GetMapping("/my-page/hosted/{siteUser}")
-    public ResponseEntity<List<MatchingMyHostedDto>> getMatchingBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
-        List<MatchingMyHostedDto> matchingMyHostedDtos = siteUserInfoService.getMatchingBySiteUser(siteUser);
+    public ResponseEntity<List<MatchingMyMatchingDto>> getMatchingBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
+        List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getMatchingBySiteUser(siteUser);
 
         if (!matchingMyHostedDtos.isEmpty()) {
             return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);
@@ -61,8 +61,8 @@ public class SiteUserInfoController {
     }
 
     @GetMapping("/my-page/apply/{siteUser}")
-    public ResponseEntity<List<MatchingMyHostedDto>> getApplyBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
-        List<MatchingMyHostedDto> matchingMyHostedDtos = siteUserInfoService.getApplyBySiteUser(siteUser);
+    public ResponseEntity<List<MatchingMyMatchingDto>> getApplyBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
+        List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getApplyBySiteUser(siteUser);
 
         if (!matchingMyHostedDtos.isEmpty()) {
             return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);
