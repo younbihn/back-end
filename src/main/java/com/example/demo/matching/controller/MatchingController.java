@@ -3,10 +3,14 @@ package com.example.demo.matching.controller;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.ApplyContents;
+import com.example.demo.matching.dto.KeywordDto;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
+import com.example.demo.matching.dto.RoadAddressDto;
+import com.example.demo.matching.service.AddressServiceImpl;
 import com.example.demo.matching.service.MatchingServiceImpl;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
@@ -30,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MatchingController {
 
     private final MatchingServiceImpl matchingServiceImpl;
+    private final AddressServiceImpl addressServiceImpl;
     private final S3Uploader s3Uploader;
 
     @PostMapping
@@ -115,4 +120,11 @@ public class MatchingController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/location")
+    public ResponseEntity<List<RoadAddressDto>> getAddress(@RequestBody KeywordDto keywordDto) {
+
+        var result = addressServiceImpl.getAddress(keywordDto);
+
+        return ResponseEntity.ok(result);
+    }
 }
