@@ -19,3 +19,8 @@ spring:
   sql:
     init:
       mode: always
+
+scheduler:
+  cron:
+    matches:
+      confirm: "0 0 0/1 * * *"
