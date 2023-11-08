@@ -1,14 +1,11 @@
 package com.example.demo.siteuser.controller;
 
 import com.example.demo.entity.SiteUser;
-import com.example.demo.matching.repository.MatchingRepository;
-import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import com.example.demo.siteuser.service.SiteUserInfoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +19,8 @@ import java.util.List;
 public class SiteUserInfoController {
     private final SiteUserInfoService siteUserInfoService;
 
-    @Autowired
-    private SiteUserRepository siteUserRepository;
-    @Autowired
-    private MatchingRepository matchingRepository;
-
     @GetMapping("/profile/{siteUser}")
-    public ResponseEntity<SiteUserInfoDto> getSiteUserInfo(@PathVariable(value = "siteUser") Long siteUser) {
+    public ResponseEntity<SiteUserInfoDto> getSiteUserInfoById(@PathVariable(value = "siteUser") Long siteUser) {
         SiteUserInfoDto siteUserInfoDto = siteUserInfoService.getSiteUserInfoById(siteUser);
 
         if (siteUserInfoDto != null) {
@@ -39,7 +31,7 @@ public class SiteUserInfoController {
     }
 
     @GetMapping("/my-page/{siteUser}")
-    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfo(@PathVariable(value = "siteUser") Long siteUser) {
+    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfoById(@PathVariable(value = "siteUser") Long siteUser) {
         SiteUserMyInfoDto siteUserMyInfoDto = siteUserInfoService.getSiteUserMyInfoById(siteUser);
 
         if (siteUserMyInfoDto != null) {

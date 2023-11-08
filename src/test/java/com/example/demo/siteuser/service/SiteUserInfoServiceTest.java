@@ -1,72 +1,156 @@
 package com.example.demo.siteuser.service;
 
-
+import com.example.demo.entity.Apply;
+import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.matching.repository.MatchingRepository;
+import com.example.demo.apply.repository.ApplyRepository;
+import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
-import com.example.demo.siteuser.service.SiteUserInfoServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static com.example.demo.type.AgeGroup.TWENTIES;
+import static com.example.demo.type.GenderType.MALE;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class SiteUserInfoServiceTest {
+
+    @Mock
+    private SiteUserRepository siteUserRepository;
+    @Mock
+    private MatchingRepository matchingRepository;
+    @Mock
+    private ApplyRepository applyRepository;
 
     @InjectMocks
     private SiteUserInfoServiceImpl siteUserInfoService;
 
-    @Mock
-    private SiteUserRepository siteUserRepository;
-
     @Test
-    public void testGetSiteUserInfoByIdWithValidUserId() {
-        Long userId = 1L;
+    public void getSiteUserInfoByIdTest() {
         SiteUser siteUser = SiteUser.builder()
                 .id(1L)
+                .email("test@email.com")
+                .password("passwordtest")
+                .nickname("testNick")
+                .phoneNumber("010-1234-5678")
+                .mannerScore(10)
+                .penaltyScore(0)
+                .gender(MALE)
+                .locationSi("서울시")
+                .locationGu("중구")
+                .ageGroup(TWENTIES)
+                .profileImg("test.html")
+                .ntrp(BigDecimal.valueOf(2.0))
                 .build();
-        when(siteUserRepository.findById(userId)).thenReturn(Optional.of(siteUser));
+        Mockito.when(siteUserRepository.findById(any())).thenReturn(Optional.of(siteUser));
 
-        SiteUserInfoDto result = siteUserInfoService.getSiteUserInfoById(userId);
-
-        // Add assertions to validate the result
+        SiteUserInfoDto result = siteUserInfoService.getSiteUserInfoById(1L);
+        assertNotNull(result);
     }
 
     @Test
-    public void testGetSiteUserInfoByIdWithInvalidUserId() {
-        Long userId = 2L;
-        when(siteUserRepository.findById(userId)).thenReturn(Optional.empty());
-
-        // Add assertions to verify the thrown exception
-    }
-
-    @Test
-    public void testGetSiteUserMyInfoByIdWithValidUserId() {
-        Long userId = 1L;
+    public void getSiteUserMyInfoByIdTest() {
         SiteUser siteUser = SiteUser.builder()
                 .id(1L)
+                .email("test@email.com")
+                .password("passwordtest")
+                .nickname("testNick")
+                .phoneNumber("010-1234-5678")
+                .mannerScore(10)
+                .penaltyScore(0)
+                .gender(MALE)
+                .locationSi("서울시")
+                .locationGu("중구")
+                .ageGroup(TWENTIES)
+                .profileImg("test.html")
+                .ntrp(BigDecimal.valueOf(2.0))
                 .build();
-        when(siteUserRepository.findById(userId)).thenReturn(Optional.of(siteUser));
+        Mockito.when(siteUserRepository.findById(any())).thenReturn(Optional.of(siteUser));
 
-        SiteUserMyInfoDto result = siteUserInfoService.getSiteUserMyInfoById(userId);
-
-        // Add assertions to validate the result
+        SiteUserMyInfoDto result = siteUserInfoService.getSiteUserMyInfoById(1L);
+        assertNotNull(result);
     }
 
     @Test
-    public void testGetSiteUserMyInfoByIdWithInvalidUserId() {
-        Long userId = 2L;
-        when(siteUserRepository.findById(userId)).thenReturn(Optional.empty());
+    public void getMatchingBySiteUserTest() {
+        SiteUser siteUser = SiteUser.builder()
+                .id(1L)
+                .email("test@email.com")
+                .password("passwordtest")
+                .nickname("testNick")
+                .phoneNumber("010-1234-5678")
+                .mannerScore(10)
+                .penaltyScore(0)
+                .gender(MALE)
+                .locationSi("서울시")
+                .locationGu("중구")
+                .ageGroup(TWENTIES)
+                .profileImg("test.html")
+                .ntrp(BigDecimal.valueOf(2.0))
+                .build();
 
-        // Add assertions to verify the thrown exception
+        Matching matching = Matching.builder()
+                .siteUser(siteUser)
+                .title("testTitle")
+                .content("testContent")
+                .date(Date.valueOf(LocalDate.of(2022,10,01)))
+                .build();
+        List<Matching> matchings = Arrays.asList(matching);
+        Mockito.when(matchingRepository.findMatchingBySiteUser(any())).thenReturn(matchings);
+
+        List<MatchingMyMatchingDto> result = siteUserInfoService.getMatchingBySiteUser(siteUser);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    public void getApplyBySiteUserTest() {
+        SiteUser siteUser = SiteUser.builder()
+                .id(1L)
+                .email("test@email.com")
+                .password("passwordtest")
+                .nickname("testNick")
+                .phoneNumber("010-1234-5678")
+                .mannerScore(10)
+                .penaltyScore(0)
+                .gender(MALE)
+                .locationSi("서울시")
+                .locationGu("중구")
+                .ageGroup(TWENTIES)
+                .profileImg("test.html")
+                .ntrp(BigDecimal.valueOf(2.0))
+                .build();
+
+        Matching matching = Matching.builder()
+                .siteUser(siteUser)
+                .title("testTitle")
+                .content("testContent")
+                .date(Date.valueOf(LocalDate.of(2022,10,01)))
+                .build();
+
+        Apply apply = Apply.builder()
+                .matching(matching)
+                .siteUser(siteUser)
+                .build();
+        List<Apply> applies = Arrays.asList(apply);
+        Mockito.when(applyRepository.findApplyBySiteUser(any())).thenReturn(applies);
+
+        List<MatchingMyMatchingDto> result = siteUserInfoService.getApplyBySiteUser(siteUser);
+        assertFalse(result.isEmpty());
     }
 }
-
