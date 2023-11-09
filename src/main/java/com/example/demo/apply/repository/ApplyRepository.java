@@ -13,8 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface ApplyRepository extends JpaRepository<Apply, Long> {
     boolean existsBySiteUser_IdAndMatching_Id(long userId, long matchingId);
 
-    Optional<Apply> findBySiteUser_IdAndMatching_Id(long userId, long matchId);
-
     Optional<Apply> findBySiteUser_IdAndMatching_Id(long userId, long matchingId);
 
     Optional<List<Apply>> findByMatching_IdAndStatus(long matchingId, Enum accepted);

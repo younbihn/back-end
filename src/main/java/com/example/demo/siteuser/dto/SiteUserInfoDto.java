@@ -3,6 +3,7 @@ package com.example.demo.siteuser.dto;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.GenderType;
+import com.example.demo.type.Ntrp;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -17,7 +18,7 @@ public class SiteUserInfoDto{
     private String nickname;
     private String locationSi;
     private String locationGu;
-    private BigDecimal ntrp;
+    private Ntrp ntrp;
     private GenderType gender;
     private Integer mannerScore;
     private Integer penaltyScore;

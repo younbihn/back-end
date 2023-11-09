@@ -21,7 +21,7 @@ public class MatchingMyMatchingDto {
         return MatchingMyMatchingDto.builder()
                 .title(matching.getTitle())
                 .location(matching.getLocation())
-                .date(matching.getDate().toLocalDate())
+                .date(matching.getDate())
                 .matchingType(matching.getMatchingType())
                 .build();
     }
