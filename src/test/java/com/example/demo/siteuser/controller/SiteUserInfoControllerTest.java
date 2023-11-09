@@ -1,8 +1,12 @@
 package com.example.demo.siteuser.controller;
 
+import com.example.demo.entity.Matching;
+import com.example.demo.entity.SiteUser;
+import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import com.example.demo.siteuser.service.SiteUserInfoService;
+import com.example.demo.type.MatchingType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,7 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -64,44 +74,43 @@ public class SiteUserInfoControllerTest {
                 .andExpect(jsonPath("$.nickname").value("test")); // replace field and expected value accordingly
     }
 
-    // 객체 불일치로 코드 수정 필요
-//    @Test
-//    public void testGetMatchingBySiteUser() throws Exception {
-//        SiteUser siteUser = SiteUser.builder()
-//                .id(1L)
-//                .build();
-//        MatchingMyMatchingDto dto1 = MatchingMyMatchingDto.builder()
-//                .title("testTitle1")
-//                .location("testLocation1")
-//                .date(LocalDate.of(2022, 10, 1))
-//                .matchingType(MatchingType.SINGLE) // 예시 타입
-//                .build();
-//        MatchingMyMatchingDto dto2 = MatchingMyMatchingDto.builder()
-//                .title("testTitle2")
-//                .location("testLocation2")
-//                .date(LocalDate.of(2022, 10, 1))
-//                .matchingType(MatchingType.SINGLE) // 예시 타입
-//                .build();
-//
-//        List<MatchingMyMatchingDto> mockList = Arrays.asList(dto1, dto2);
-//        when(siteUserInfoService.getMatchingBySiteUser(any(SiteUser.class))).thenReturn(mockList);
-//
-//        mockMvc.perform(get("/api/users/my-page/hosted/{siteUserId}", siteUser)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$[0].title").value("testTitle1"));
-//    }
-//
-//    @Test
-//    public void testGetApplyBySiteUser() throws Exception {
-//        List<MatchingMyMatchingDto> mockList = Arrays.asList(new MatchingMyMatchingDto()); // populate with test data
-//        when(siteUserInfoService.getApplyBySiteUser(any(SiteUser.class))).thenReturn(mockList);
-//
-//        mockMvc.perform(get("/api/users/my-page/apply/{siteUser}", 1L)
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$[0].field").value("expected value")); // replace field and expected value accordingly
-//    }
+    @Test
+    public void testGetMatchingBySiteUser() throws Exception {
+        MatchingMyMatchingDto dto = MatchingMyMatchingDto.builder()
+                .title("testTitle1")
+                .location("testLocation1")
+                .date(LocalDate.of(2022, 10, 1))
+                .matchingType(MatchingType.SINGLE)
+                .build();
+        List<MatchingMyMatchingDto> mockList = Arrays.asList(dto);
+
+        // Mocking service method
+        when(siteUserInfoService.getMatchingBySiteUser(anyLong())).thenReturn(mockList);
+
+        // Act: Perform the actual request
+        mockMvc.perform(get("/api/users/my-page/hosted/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                // Assert: Verify the outcomes
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].title").value("testTitle1"));
+    }
+
+    @Test
+    public void testGetApplyBySiteUser() throws Exception {
+        MatchingMyMatchingDto dto = MatchingMyMatchingDto.builder()
+                .title("testTitle1")
+                .location("testLocation1")
+                .date(LocalDate.of(2022, 10, 1))
+                .matchingType(MatchingType.SINGLE)
+                .build();
+        List<MatchingMyMatchingDto> mockList = Arrays.asList(dto);
+        when(siteUserInfoService.getApplyBySiteUser(anyLong())).thenReturn(mockList);
+
+        mockMvc.perform(get("/api/users/my-page/apply/{siteUser}", 1L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].title").value("testTitle1"));
+    }
 }

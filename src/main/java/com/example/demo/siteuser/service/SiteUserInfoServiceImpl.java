@@ -44,21 +44,21 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     }
 
     @Override
-    public List<MatchingMyMatchingDto> getMatchingBySiteUser(SiteUser siteUser) {
-        List<Matching> matchingList = matchingRepository.findMatchingBySiteUser(siteUser);
+    public List<MatchingMyMatchingDto> getMatchingBySiteUser(Long userId) {
+        List<Matching> matchingList = matchingRepository.findBySiteUser_Id(userId);
 
         if (matchingList != null && !matchingList.isEmpty()) {
             return matchingList.stream()
                     .map(MatchingMyMatchingDto::fromEntity)
                     .collect(Collectors.toList());
         } else {
-            throw new EntityNotFoundException("No matching data found for user with ID: " + siteUser.getId());
+            throw new EntityNotFoundException("No matching data found for user with ID: " + userId);
         }
     }
 
     @Override
-    public List<MatchingMyMatchingDto> getApplyBySiteUser(SiteUser siteUser) {
-        List<Apply> applyList = applyRepository.findApplyBySiteUser(siteUser);
+    public List<MatchingMyMatchingDto> getApplyBySiteUser(Long userId) {
+        List<Apply> applyList = applyRepository.findBySiteUser_Id(userId);
 
         if (applyList != null && !applyList.isEmpty()) {
             List<MatchingMyMatchingDto> matchingDtos = applyList.stream()
@@ -67,7 +67,7 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
                     .collect(Collectors.toList());
             return matchingDtos;
         } else {
-            throw new EntityNotFoundException("No matching data found for user with ID: " + siteUser.getId());
+            throw new EntityNotFoundException("No matching data found for user with ID: " + userId);
         }
     }
 }

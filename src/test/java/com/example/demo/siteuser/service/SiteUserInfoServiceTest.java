@@ -112,9 +112,9 @@ public class SiteUserInfoServiceTest {
                 .date(Date.valueOf(LocalDate.of(2022,10,01)))
                 .build();
         List<Matching> matchings = Arrays.asList(matching);
-        Mockito.when(matchingRepository.findMatchingBySiteUser(any())).thenReturn(matchings);
+        Mockito.when(matchingRepository.findBySiteUser_Id(any())).thenReturn(matchings);
 
-        List<MatchingMyMatchingDto> result = siteUserInfoService.getMatchingBySiteUser(siteUser);
+        List<MatchingMyMatchingDto> result = siteUserInfoService.getMatchingBySiteUser(siteUser.getId());
         assertFalse(result.isEmpty());
     }
 
@@ -148,9 +148,9 @@ public class SiteUserInfoServiceTest {
                 .siteUser(siteUser)
                 .build();
         List<Apply> applies = Arrays.asList(apply);
-        Mockito.when(applyRepository.findApplyBySiteUser(any())).thenReturn(applies);
+        Mockito.when(applyRepository.findBySiteUser_Id(any())).thenReturn(applies);
 
-        List<MatchingMyMatchingDto> result = siteUserInfoService.getApplyBySiteUser(siteUser);
+        List<MatchingMyMatchingDto> result = siteUserInfoService.getApplyBySiteUser(siteUser.getId());
         assertFalse(result.isEmpty());
     }
 }

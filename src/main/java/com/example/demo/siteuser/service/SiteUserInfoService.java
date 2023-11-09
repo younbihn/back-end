@@ -11,6 +11,6 @@ import java.util.List;
 public interface SiteUserInfoService {
     SiteUserInfoDto getSiteUserInfoById(Long userId);
     SiteUserMyInfoDto getSiteUserMyInfoById(Long userId);
-    List<MatchingMyMatchingDto> getMatchingBySiteUser(SiteUser siteUser);
-    List<MatchingMyMatchingDto> getApplyBySiteUser(SiteUser siteUser);
+    List<MatchingMyMatchingDto> getMatchingBySiteUser(Long userId);
+    List<MatchingMyMatchingDto> getApplyBySiteUser(Long userId);
 }

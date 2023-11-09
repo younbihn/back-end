@@ -18,5 +18,5 @@ public interface ApplyRepository extends JpaRepository<Apply, Long> {
 
     Optional<Apply> findBySiteUser_IdAndMatching_Id(long userId, long matchId);
 
-    List<Apply> findApplyBySiteUser(SiteUser siteUser);
+    List<Apply> findBySiteUser_Id(Long userId);
 }

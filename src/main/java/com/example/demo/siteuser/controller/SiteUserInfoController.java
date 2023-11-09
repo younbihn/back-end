@@ -42,8 +42,8 @@ public class SiteUserInfoController {
     }
 
     @GetMapping("/my-page/hosted/{siteUser}")
-    public ResponseEntity<List<MatchingMyMatchingDto>> getMatchingBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
-        List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getMatchingBySiteUser(siteUser);
+    public ResponseEntity<List<MatchingMyMatchingDto>> getMatchingBySiteUser(@PathVariable(value = "siteUser") Long userId) {
+        List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getMatchingBySiteUser(userId);
 
         if (!matchingMyHostedDtos.isEmpty()) {
             return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);
@@ -53,8 +53,8 @@ public class SiteUserInfoController {
     }
 
     @GetMapping("/my-page/apply/{siteUser}")
-    public ResponseEntity<List<MatchingMyMatchingDto>> getApplyBySiteUser(@PathVariable(value = "siteUser") SiteUser siteUser) {
-        List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getApplyBySiteUser(siteUser);
+    public ResponseEntity<List<MatchingMyMatchingDto>> findApplyBySiteUser_Id(@PathVariable(value = "siteUser") Long userId) {
+        List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getApplyBySiteUser(userId);
 
         if (!matchingMyHostedDtos.isEmpty()) {
             return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);
