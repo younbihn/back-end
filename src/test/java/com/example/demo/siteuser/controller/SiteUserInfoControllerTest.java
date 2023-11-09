@@ -1,7 +1,5 @@
 package com.example.demo.siteuser.controller;
 
-import com.example.demo.entity.Matching;
-import com.example.demo.entity.SiteUser;
 import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
