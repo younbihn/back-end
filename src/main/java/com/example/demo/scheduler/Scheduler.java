@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Component
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class Scheduler {
     private final MatchingRepository matchingRepository;
     private static final DateTimeFormatter formForDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private final List<Matching> nullCase = new ArrayList<>();
 
     @Async
     @Scheduled(cron = "${scheduler.cron.matches.confirm}") // 매일 정시에 수행
@@ -31,9 +31,9 @@ public class Scheduler {
         log.info("scheduler is started at " + now);
 
         List<Matching> matchesForConfirm
-                = matchingRepository.findAllByRecruitDueDateTime(recruitDueDateTime).orElseGet(() -> nullCase);
+                = matchingRepository.findAllByRecruitDueDateTime(recruitDueDateTime).get();
 
-        if (!matchesForConfirm.isEmpty()) {
+        if (!CollectionUtils.isEmpty(matchesForConfirm)) {
             changeStatusOfMatches(matchesForConfirm);
         }
     }
