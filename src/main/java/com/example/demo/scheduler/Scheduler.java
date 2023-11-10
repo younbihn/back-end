@@ -25,22 +25,20 @@ public class Scheduler {
 
     @Async
     @Scheduled(cron = "${scheduler.cron.matches.confirm}") // 매일 정시에 수행
-//    @Scheduled(cron = "0/2 * * * * *") // 테스트 용
-    public void confirmMatches() {
-
+    public void confirmResultsOfMatchesAtDueDate() {
         String now = LocalDateTime.now().format(formForDateTime);
         LocalDateTime recruitDueDateTime = LocalDateTime.parse(now, formForDateTime);
         log.info("scheduler is started at " + now);
 
         List<Matching> matchesForConfirm
-                = matchingRepository.findByRecruitDueDateTime(recruitDueDateTime).orElseGet(() -> nullCase);
+                = matchingRepository.findAllByRecruitDueDateTime(recruitDueDateTime).orElseGet(() -> nullCase);
 
         if (!matchesForConfirm.isEmpty()) {
             changeStatusOfMatches(matchesForConfirm);
         }
     }
 
-    private static void changeStatusOfMatches(List<Matching> matchesForConfirm) {
+    private void changeStatusOfMatches(List<Matching> matchesForConfirm) {
         matchesForConfirm.stream()
                 .forEach(matching
                         -> {
