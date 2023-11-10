@@ -1,10 +1,10 @@
 package com.example.demo.matching.dto;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
 @Builder
+@Getter
 public class AddressRequestDto {
 
     private Integer currentPage;

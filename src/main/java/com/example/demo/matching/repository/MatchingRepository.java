@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
     boolean existsByIdAndSiteUser(Long id, SiteUser siteUser);
-    Optional<List<Matching>> findByRecruitDueDateTime(LocalDateTime now);
+    Optional<List<Matching>> findAllByRecruitDueDateTime(LocalDateTime now);
 }
