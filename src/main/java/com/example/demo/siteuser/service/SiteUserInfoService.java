@@ -12,4 +12,5 @@ public interface SiteUserInfoService {
     SiteUserMyInfoDto getSiteUserMyInfoById(Long userId);
     List<MatchingMyMatchingDto> getMatchingBySiteUser(Long userId);
     List<MatchingMyMatchingDto> getApplyBySiteUser(Long userId);
+    void updateProfileImage(Long userId, String imageUrl);
 }

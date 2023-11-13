@@ -84,4 +84,8 @@ public class SiteUser {
 
     @OneToMany(mappedBy = "siteUser")
     private List<Notification> notifications; // 알림
+
+    public void setProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
 }
