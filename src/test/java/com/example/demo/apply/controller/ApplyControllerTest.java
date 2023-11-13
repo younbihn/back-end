@@ -4,15 +4,14 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.service.ApplyService;
+import com.example.demo.entity.Apply;
 import com.example.demo.type.ApplyStatus;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -29,12 +28,12 @@ class ApplyControllerTest {
     void successApply() throws Exception {
         // given
         given(applyService.apply(anyLong(), anyLong()))
-                .willReturn(ApplyDto.builder()
-                        .createTime(Timestamp.valueOf(LocalDateTime.now()))
+                .willReturn(Apply.builder()
+                        .status(ApplyStatus.PENDING)
                         .build());
         // when
         // then
-        mockMvc.perform(MockMvcRequestBuilders.post("/apply/matches/1"))
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/apply/matches/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
@@ -43,13 +42,12 @@ class ApplyControllerTest {
     void successCancelApply() throws Exception {
         // given
         given(applyService.cancel(anyLong()))
-                .willReturn(ApplyDto.builder()
-                        .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                        .applyStatus(ApplyStatus.CANCELED)
+                .willReturn(Apply.builder()
+                        .status(ApplyStatus.CANCELED)
                         .build());
         // when
         // then
-        mockMvc.perform(MockMvcRequestBuilders.delete("/apply/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/apply/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
@@ -57,16 +55,17 @@ class ApplyControllerTest {
     @Test
     void successAcceptApply() throws Exception {
         // given
-        given(applyService.accept(anyLong()))
-                .willReturn(ApplyDto.builder()
-                        .createTime(Timestamp.valueOf(LocalDateTime.now()))
-                        .applyStatus(ApplyStatus.ACCEPTED)
-                        .build());
+        String request = "{\n"
+                + "\"appliedList\": [1,2],\n"
+                + "\"confirmedList\": [3,4]\n"
+                + "}";
+
         // when
         // then
-        mockMvc.perform(MockMvcRequestBuilders.patch("/apply/1"))
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/apply/matches/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(request))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
-
 }

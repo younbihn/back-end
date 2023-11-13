@@ -1,49 +1,47 @@
 package com.example.demo.apply.controller;
 
+import com.example.demo.apply.dto.AppliedListAndConfirmedList;
 import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.service.ApplyService;
-import com.example.demo.response.ResponseDto;
-import com.example.demo.response.ResponseUtil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/apply")
+@RequestMapping("/api/apply")
 @RequiredArgsConstructor
 public class ApplyController {
 
     private final ApplyService applyService;
 
-    @PostMapping("/matches/{match_id}") // 매칭 참가 신청 api
-    public ResponseDto apply(@PathVariable(value = "match_id") long matchId) {
+    @PostMapping("/matches/{match_id}")
+    public void apply(@PathVariable(value = "match_id") long matchingId) {
 
         long userId = 1; // 로그인 구현 전 임시로 부여
-        applyService.apply(userId, matchId);
-
-        return ResponseUtil.SUCCESS("매칭 참가 신청에 성공하였습니다.", null);
+        applyService.apply(userId, matchingId);
     }
 
-    @DeleteMapping("/{apply_id}") // 매칭 참가 신청 취소 api
-    public ResponseDto cancelApply(@PathVariable(value = "apply_id") long applyId) {
+    @DeleteMapping("/{apply_id}")
+    public void cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
         applyService.cancel(applyId);
-
-        return ResponseUtil.SUCCESS("매칭 참가 신청을 취소하였습니다.", null);
-    }
-
-    @PatchMapping("/{apply_id}")
-    public ResponseDto acceptApply(@PathVariable(value = "apply_id") long applyId) {
-
-        applyService.accept(applyId);
-
-        return ResponseUtil.SUCCESS("참가 신청을 수락하였습니다.", null);
     }
 
 
+
+    @PatchMapping("/matches/{matching_id}")
+    public void acceptApply(@RequestBody AppliedListAndConfirmedList appliedListAndConfirmedList,
+                                   @PathVariable(value = "matching_id") long matchingId) {
+
+        List<Long> appliedList = appliedListAndConfirmedList.getAppliedList();
+        List<Long> confirmedList = appliedListAndConfirmedList.getConfirmedList();
+
+        applyService.accept(appliedList, confirmedList, matchingId);
+    }
 }

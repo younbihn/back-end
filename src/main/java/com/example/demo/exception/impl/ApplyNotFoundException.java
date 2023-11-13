@@ -1,15 +1,9 @@
 package com.example.demo.exception.impl;
 
-import com.example.demo.exception.AbsctractException;
-import com.example.demo.response.ResponseStatus;
+import com.example.demo.exception.AbstractException;
 import org.springframework.http.HttpStatus;
 
-public class NonExistedApplyException extends AbsctractException {
-    @Override
-    public ResponseStatus getStatus() {
-        return ResponseStatus.ERROR;
-    }
-
+public class ApplyNotFoundException extends AbstractException {
     @Override
     public int getStatusCode() {
         return HttpStatus.BAD_REQUEST.value();
