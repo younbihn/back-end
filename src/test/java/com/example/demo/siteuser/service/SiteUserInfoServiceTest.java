@@ -8,11 +8,11 @@ import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
+import com.example.demo.siteuser.dto.SiteUserModifyDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -27,6 +27,7 @@ import static com.example.demo.type.GenderType.MALE;
 import static com.example.demo.type.Ntrp.DEVELOPMENT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SiteUserInfoServiceTest {
@@ -58,7 +59,7 @@ public class SiteUserInfoServiceTest {
                 .profileImg("test.html")
                 .ntrp(DEVELOPMENT)
                 .build();
-        Mockito.when(siteUserRepository.findById(any())).thenReturn(Optional.of(siteUser));
+        when(siteUserRepository.findById(any())).thenReturn(Optional.of(siteUser));
 
         SiteUserInfoDto result = siteUserInfoService.getSiteUserInfoById(1L);
         assertNotNull(result);
@@ -81,7 +82,7 @@ public class SiteUserInfoServiceTest {
                 .profileImg("test.html")
                 .ntrp(DEVELOPMENT)
                 .build();
-        Mockito.when(siteUserRepository.findById(any())).thenReturn(Optional.of(siteUser));
+        when(siteUserRepository.findById(any())).thenReturn(Optional.of(siteUser));
 
         SiteUserMyInfoDto result = siteUserInfoService.getSiteUserMyInfoById(1L);
         assertNotNull(result);
@@ -112,7 +113,7 @@ public class SiteUserInfoServiceTest {
                 .date(Date.valueOf(LocalDate.of(2022,10,01)).toLocalDate())
                 .build();
         List<Matching> matchings = Arrays.asList(matching);
-        Mockito.when(matchingRepository.findBySiteUser_Id(any())).thenReturn(matchings);
+        when(matchingRepository.findBySiteUser_Id(any())).thenReturn(matchings);
 
         List<MatchingMyMatchingDto> result = siteUserInfoService.getMatchingBySiteUser(siteUser.getId());
         assertFalse(result.isEmpty());
@@ -148,9 +149,41 @@ public class SiteUserInfoServiceTest {
                 .siteUser(siteUser)
                 .build();
         List<Apply> applies = Arrays.asList(apply);
-        Mockito.when(applyRepository.findAllBySiteUser_Id(any())).thenReturn(applies);
+
+        when(applyRepository.findBySiteUser_Id(any())).thenReturn(applies);
 
         List<MatchingMyMatchingDto> result = siteUserInfoService.getApplyBySiteUser(siteUser.getId());
         assertFalse(result.isEmpty());
+    }
+
+    @Test
+    public void testUpdateProfileImageService() {
+        Long userId = 1L;
+        String newImageUrl = "http://example.com/new-image.jpg";
+
+        SiteUser siteUser = SiteUser.builder()
+                .profileImg("http://example.com/old-image.jpg")
+                .build();
+
+        when(siteUserRepository.findById(userId)).thenReturn(Optional.of(siteUser));
+
+        siteUserInfoService.updateProfileImage(userId, newImageUrl);
+
+        assertEquals(newImageUrl, siteUser.getProfileImg());
+    }
+
+    @Test
+    public void updateSiteUserInfoTest() {
+        Long userId = 1L;
+        SiteUserModifyDto modifyDto = SiteUserModifyDto.builder()
+                .nickname("test")
+                .build();
+
+        SiteUser siteUser = new SiteUser();
+        when(siteUserRepository.findById(userId)).thenReturn(Optional.of(siteUser));
+
+        siteUserInfoService.updateSiteUserInfo(userId, modifyDto);
+
+        assertEquals(modifyDto.getNickname(), siteUser.getNickname());
     }
 }

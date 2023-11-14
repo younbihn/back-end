@@ -19,6 +19,7 @@ import com.example.demo.notification.service.NotificationService;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.NotificationType;
+import com.example.demo.common.FindEntity;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

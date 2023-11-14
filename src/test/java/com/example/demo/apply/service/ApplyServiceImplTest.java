@@ -26,6 +26,7 @@ import com.example.demo.type.GenderType;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
+import com.example.demo.common.FindEntity;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
