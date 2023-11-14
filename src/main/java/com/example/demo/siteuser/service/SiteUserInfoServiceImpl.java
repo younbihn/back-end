@@ -8,6 +8,7 @@ import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
+import com.example.demo.siteuser.dto.SiteUserModifyDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,8 +79,45 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
         SiteUser siteUser = siteUserRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
 
-        // SiteUser 엔티티의 profileImg 필드 업데이트
         siteUser.setProfileImg(imageUrl);
         siteUserRepository.save(siteUser);
+    }
+
+    @Transactional
+    @Override
+    public void updateSiteUserInfo(Long userId, SiteUserModifyDto siteUserModifyDto) {
+        SiteUser siteUser = siteUserRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+
+        updateSiteUserFromDto(siteUser, siteUserModifyDto);
+        siteUserRepository.save(siteUser);
+    }
+
+    private void updateSiteUserFromDto(SiteUser siteUser, SiteUserModifyDto dto) {
+        if (dto.getNickname() != null) {
+            siteUser.setNickname(dto.getNickname());
+        }
+        if (dto.getLocationSi() != null) {
+            siteUser.setLocationSi(dto.getLocationSi());
+        }
+        if (dto.getLocationGu() != null) {
+            siteUser.setLocationGu(dto.getLocationGu());
+        }
+        if (dto.getNtrp() != null) {
+            siteUser.setNtrp(dto.getNtrp());
+        }
+        if (dto.getGender() != null) {
+            siteUser.setGender(dto.getGender());
+        }
+        if (dto.getAgeGroup() != null) {
+            siteUser.setAgeGroup(dto.getAgeGroup());
+        }
+    }
+
+    @Override
+    public String getProfileUrl(Long userId) {
+        SiteUser siteUser = siteUserRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+        return siteUser.getProfileImg();
     }
 }
