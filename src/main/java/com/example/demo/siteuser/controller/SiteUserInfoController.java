@@ -67,14 +67,14 @@ public class SiteUserInfoController {
         }
     }
 
-    @PostMapping("/{userId}/upload-profile-image")
+    @PostMapping("{userId}/upload-profile-image")
     public ResponseEntity<?> uploadOrUpdateProfileImage(@PathVariable Long userId, @RequestParam("imageFile") MultipartFile imageFile) {
         try {
-            // 기존 이미지 URL 가져오기 및 삭제
-            String oldImageUrl = siteUserInfoService.getProfileUrl(userId);
-            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
-                s3Uploader.deleteFile(oldImageUrl);
-            }
+//            // 기존 이미지 URL 가져오기 및 삭제
+//            String oldImageUrl = siteUserInfoService.getProfileUrl(userId);
+//            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+//                s3Uploader.deleteFile(oldImageUrl);
+//            }
 
             // 새 이미지 업로드 및 URL 반환
             String newImageUrl = s3Uploader.uploadFile(imageFile);
