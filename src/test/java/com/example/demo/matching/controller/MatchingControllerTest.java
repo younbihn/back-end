@@ -3,13 +3,10 @@ package com.example.demo.matching.controller;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.matching.dto.ApplyContents;
+import com.example.demo.matching.service.AddressService;
 import com.example.demo.matching.service.MatchingService;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -53,7 +50,10 @@ import org.springframework.test.web.servlet.MockMvc;
 class MatchingControllerTest {
 
     @MockBean
-    private MatchingServiceImpl matchingService;
+    private MatchingService matchingService;
+
+    @MockBean
+    private AddressService addressService;
 
     @MockBean
     private S3Uploader s3Uploader;

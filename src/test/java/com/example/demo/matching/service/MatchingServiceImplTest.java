@@ -7,19 +7,21 @@ import static org.mockito.BDDMockito.given;
 
 import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.repository.ApplyRepository;
+import com.example.demo.common.FindEntity;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.repository.MatchingRepository;
+import com.example.demo.notification.service.NotificationService;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.AgeGroup;
-import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
+import java.lang.annotation.Native;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,6 +43,12 @@ class MatchingServiceImplTest {
 
     @Mock
     private ApplyRepository applyRepository;
+
+    @Mock
+    FindEntity findEntity;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private MatchingServiceImpl matchingService;

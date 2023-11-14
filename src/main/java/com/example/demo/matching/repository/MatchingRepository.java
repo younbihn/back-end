@@ -10,12 +10,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 
 @Repository
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
     List<Matching> findBySiteUser_Id(Long userId);
     boolean existsByIdAndSiteUser(Long id, SiteUser siteUser);
-    Optional<List<Matching>> findByRecruitDueDateTime(LocalDateTime now);
+    Optional<List<Matching>> findAllByRecruitDueDateTime(LocalDateTime now);
 }

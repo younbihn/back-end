@@ -1,4 +1,4 @@
-package com.example.demo.util;
+package com.example.demo.common;
 
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class FindEntityUtils {
+public class FindEntity {
 
     private final MatchingRepository matchingRepository;
     private final SiteUserRepository siteUserRepository;
@@ -34,5 +34,4 @@ public class FindEntityUtils {
         return applyRepository.findById(applyId)
                 .orElseThrow(() -> new ApplyNotFoundException());
     }
-
 }

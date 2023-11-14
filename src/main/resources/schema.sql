@@ -20,7 +20,7 @@ CREATE TABLE `SITE_USER`
     `MANNER_SCORE`      INT NULL DEFAULT 0,
     `PENALTY_SCORE`     INT NULL DEFAULT 0,
     `GENDER`            varchar(50)   NOT NULL COMMENT 'MALE, FEMALE',
-    `NTRP`              VARCHAR(50)  NOT NULL,
+    `NTRP`              VARCHAR(50)   NOT NULL,
     `LOCATION_SI`       varchar(50)   NOT NULL,
     `LOCATION_GU`       varchar(50)   NOT NULL,
     `AGE_GROUP`         varchar(50)   NOT NULL COMMENT 'TWENTIES, THIRTIES , FORTIES , SENIOR',
@@ -36,8 +36,8 @@ CREATE TABLE `MATCHING`
     `TITLE`            varchar(50)  NOT NULL,
     `CONTENT`          varchar(1023) NULL,
     `LOCATION`         varchar(255) NOT NULL,
-    `LAT`              DOUBLE       NOT NULL COMMENT '위도',
-    `LON`              DOUBLE       NOT NULL COMMENT '경도',
+    `LAT` DOUBLE NOT NULL COMMENT '위도',
+    `LON` DOUBLE NOT NULL COMMENT '경도',
     `LOCATION_IMG`     varchar(1023) NULL,
     `DATE`             DATE         NOT NULL COMMENT 'YYYY-MM-DD',
     `START_TIME`       TIME         NOT NULL COMMENT 'HH:MM:SS',
@@ -46,7 +46,7 @@ CREATE TABLE `MATCHING`
     `RECRUIT_NUM`      INT          NOT NULL,
     `COST`             INT          NOT NULL,
     `IS_RESERVED`      BOOL        DEFAULT 0 COMMENT 'true = 1 / false = 0',
-    `NTRP`             VARCHAR(50) NOT NULL,
+    `NTRP`             VARCHAR(50)  NOT NULL,
     `AGE`              VARCHAR(50)  NOT NULL,
     `RECRUIT_STATUS`   VARCHAR(50) DEFAULT 'OPEN',
     `CREATE_TIME`      TIMESTAMP COMMENT 'YYYY-MM-DD HH:MM:SS',
@@ -72,12 +72,12 @@ CREATE TABLE `APPLY`
 
 CREATE TABLE `NOTIFICATION`
 (
-    `ID`           BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `SITE_USER_ID` VARCHAR(255) NOT NULL,
-    `MATCHING_ID`  BIGINT NULL COMMENT '*특정 매칭과 관련없는 알림의 경우 null',
-    `CODE`         VARCHAR(50)  NOT NULL,
-    `CONTENT`      VARCHAR(255) NOT NULL,
-    `CREATE_DATE`  VARCHAR(255) NOT NULL
+    `ID`                BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `SITE_USER_ID`      VARCHAR(255) NOT NULL,
+    `MATCHING_ID`       BIGINT NULL COMMENT '*특정 매칭과 관련없는 알림의 경우 null',
+    `NOTIFICATION_TYPE` VARCHAR(50)  NOT NULL,
+    `CONTENT`           VARCHAR(255) NOT NULL,
+    `CREATE_TIME`       TIMESTAMP    NOT NULL
 );
 
 CREATE TABLE `MANNER_SCORE`
