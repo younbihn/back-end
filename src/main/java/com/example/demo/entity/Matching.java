@@ -43,7 +43,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @DynamicInsert
 @DynamicUpdate
-@Entity(name = "MATCHING")
+@Entity
+@Table(name = "MATCHING")
 public class Matching {
 
     @Id
