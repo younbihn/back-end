@@ -60,7 +60,7 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
 
     @Override
     public List<MatchingMyMatchingDto> getApplyBySiteUser(Long userId) {
-        List<Apply> applyList = applyRepository.findBySiteUser_Id(userId);
+        List<Apply> applyList = applyRepository.findAllBySiteUser_Id(userId);
 
         if (applyList != null && !applyList.isEmpty()) {
             List<MatchingMyMatchingDto> matchingDtos = applyList.stream()

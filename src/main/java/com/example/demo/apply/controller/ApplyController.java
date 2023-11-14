@@ -20,10 +20,9 @@ public class ApplyController {
 
     private final ApplyService applyService;
 
-    @PostMapping("/matches/{match_id}")
-    public void apply(@PathVariable(value = "match_id") long matchingId) {
+    @PostMapping("/matches/{match_id}/{user_id}")
+    public void apply(@PathVariable(value = "match_id") long matchingId, @PathVariable(value = "user_id") long userId) {
 
-        long userId = 1; // 로그인 구현 전 임시로 부여
         applyService.apply(userId, matchingId);
     }
 
@@ -32,8 +31,6 @@ public class ApplyController {
 
         applyService.cancel(applyId);
     }
-
-
 
     @PatchMapping("/matches/{matching_id}")
     public void acceptApply(@RequestBody AppliedListAndConfirmedList appliedListAndConfirmedList,

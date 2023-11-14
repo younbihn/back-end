@@ -13,11 +13,9 @@ import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -151,6 +149,7 @@ public class SiteUserInfoServiceTest {
                 .siteUser(siteUser)
                 .build();
         List<Apply> applies = Arrays.asList(apply);
+
         when(applyRepository.findBySiteUser_Id(any())).thenReturn(applies);
 
         List<MatchingMyMatchingDto> result = siteUserInfoService.getApplyBySiteUser(siteUser.getId());

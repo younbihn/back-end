@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -39,10 +40,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
 @EntityListeners(AuditingEntityListener.class)
 @DynamicInsert
 @DynamicUpdate
+@Entity
+@Table(name = "MATCHING")
 public class Matching {
 
     @Id

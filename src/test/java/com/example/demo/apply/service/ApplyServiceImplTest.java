@@ -2,14 +2,13 @@ package com.example.demo.apply.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.example.demo.apply.repository.ApplyRepository;
+import com.example.demo.common.FindEntity;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
@@ -20,6 +19,7 @@ import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
+import com.example.demo.notification.service.NotificationService;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.GenderType;
@@ -53,6 +53,9 @@ class ApplyServiceImplTest {
 
     @Mock
     private FindEntity findEntity;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ApplyServiceImpl applyService;

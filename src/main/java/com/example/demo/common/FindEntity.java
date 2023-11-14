@@ -34,5 +34,4 @@ public class FindEntity {
         return applyRepository.findById(applyId)
                 .orElseThrow(() -> new ApplyNotFoundException());
     }
-
 }
