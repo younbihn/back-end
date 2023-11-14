@@ -3,23 +3,23 @@ package com.example.demo.matching.service;
 import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
-import com.example.demo.exception.impl.ApplyNotFoundException;
-import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.dto.ApplyMember;
-import com.example.demo.type.ApplyStatus;
-import com.example.demo.util.FindEntityUtils;
-import java.util.List;
-import java.util.stream.Collectors;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
+import com.example.demo.exception.impl.ApplyNotFoundException;
 import com.example.demo.exception.impl.MatchingNotFoundException;
 import com.example.demo.exception.impl.NoPermissionToEditAndDeleteMatching;
 import com.example.demo.exception.impl.UserNotFoundException;
+import com.example.demo.matching.dto.ApplyContents;
+import com.example.demo.matching.dto.ApplyMember;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.repository.MatchingRepository;
 import java.util.List;
 import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.type.ApplyStatus;
+import com.example.demo.common.FindEntity;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +33,7 @@ public class MatchingServiceImpl implements MatchingService {
 
     private final MatchingRepository matchingRepository;
     private final ApplyRepository applyRepository;
-    private final FindEntityUtils findEntityUtils;
+    private final FindEntity findEntity;
     private final SiteUserRepository siteUserRepository;
 
     @Override
@@ -116,7 +116,7 @@ public class MatchingServiceImpl implements MatchingService {
 
     @Override
     public ApplyContents getApplyContents(long userId, long matchingId) {
-        var matching = findEntityUtils.findMatching(matchingId);
+        var matching = findEntity.findMatching(matchingId);
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = matching.getConfirmedNum();
         var applyNum = applyRepository.countByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING).get();
@@ -146,7 +146,7 @@ public class MatchingServiceImpl implements MatchingService {
         }
 
     private List<ApplyMember> findConfirmedMembers(long matchingId) {
-        return applyRepository.findByMatching_IdAndStatus(matchingId, ApplyStatus.ACCEPTED)
+        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.ACCEPTED)
                 .get().stream().map((apply)
                         -> ApplyMember.builder()
                         .applyId(apply.getId())
@@ -156,7 +156,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     private List<ApplyMember> findAppliedMembers(long matchingId) {
-        return applyRepository.findByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING)
+        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING)
                 .orElseThrow(() -> new ApplyNotFoundException())
                 .stream().map((apply)
                         -> ApplyMember.builder()

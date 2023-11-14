@@ -26,7 +26,7 @@ import com.example.demo.type.GenderType;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
-import com.example.demo.util.FindEntityUtils;
+import com.example.demo.common.FindEntity;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,7 +52,7 @@ class ApplyServiceImplTest {
     private MatchingRepository matchingRepository;
 
     @Mock
-    private FindEntityUtils findEntityUtils;
+    private FindEntity findEntity;
 
     @InjectMocks
     private ApplyServiceImpl applyService;
@@ -65,10 +65,10 @@ class ApplyServiceImplTest {
 
         Matching matching = getMatching(siteUser);
 
-        given(findEntityUtils.findUser(1L))
+        given(findEntity.findUser(1L))
                 .willReturn(siteUser);
 
-        given(findEntityUtils.findMatching(1L))
+        given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         ArgumentCaptor<Apply> captor = ArgumentCaptor.forClass(Apply.class);
@@ -91,10 +91,10 @@ class ApplyServiceImplTest {
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findUser(2L))
+        given(findEntity.findUser(2L))
                 .willReturn(siteUserForApply);
 
-        given(findEntityUtils.findMatching(1L))
+        given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         given(applyRepository.existsBySiteUser_IdAndMatching_Id(2L, 1L))
@@ -122,10 +122,10 @@ class ApplyServiceImplTest {
 
         Matching matching = getClosedMatching(siteUser);
 
-        given(findEntityUtils.findUser(2L))
+        given(findEntity.findUser(2L))
                 .willReturn(siteUserForApply);
 
-        given(findEntityUtils.findMatching(1L))
+        given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         // when
@@ -150,7 +150,7 @@ class ApplyServiceImplTest {
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
 
         // when
@@ -171,7 +171,7 @@ class ApplyServiceImplTest {
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
         // when
         AlreadyClosedMatchingException exception = assertThrows(AlreadyClosedMatchingException.class,
@@ -193,7 +193,7 @@ class ApplyServiceImplTest {
         apply.changeApplyStatus(ApplyStatus.ACCEPTED);
 
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
 
         // when
@@ -215,7 +215,7 @@ class ApplyServiceImplTest {
 
         Apply apply = getCancelApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
         // when
         AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
