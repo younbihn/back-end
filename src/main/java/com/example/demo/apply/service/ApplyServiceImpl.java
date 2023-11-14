@@ -10,13 +10,12 @@ import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
-import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.repository.MatchingRepository;
+import com.example.demo.notification.service.NotificationService;
 import com.example.demo.type.ApplyStatus;
+import com.example.demo.type.NotificationType;
 import com.example.demo.type.RecruitStatus;
-import com.example.demo.util.FindEntityUtils;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import com.example.demo.common.FindEntity;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,17 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ApplyServiceImpl implements ApplyService {
 
     private final ApplyRepository applyRepository;
     private final MatchingRepository matchingRepository;
-    private final FindEntityUtils findEntityUtils;
+    private final NotificationService notificationService;
+    private final FindEntity findEntity;
 
     @Override
     public Apply apply(long userId, long matchingId) {
-        var user = findEntityUtils.findUser(userId);
-        var matching = findEntityUtils.findMatching(matchingId);
+        var user = findEntity.findUser(userId);
+        var matching = findEntity.findMatching(matchingId);
+        var organizer = matching.getSiteUser();
 
         validateRecruitStatus(matching); // 매칭 상태 검사
 
@@ -49,6 +49,8 @@ public class ApplyServiceImpl implements ApplyService {
                 .matching(matching)
                 .siteUser(user)
                 .build();
+
+        notificationService.createAndSendNotification(organizer, matching, NotificationType.REQUEST_APPLY);
 
         return applyRepository.save(Apply.fromDto(applyDto));
     }
@@ -71,8 +73,9 @@ public class ApplyServiceImpl implements ApplyService {
     }
 
     @Override
+    @Transactional
     public Apply cancel(long applyId) {
-        var apply = findEntityUtils.findApply(applyId);
+        var apply = findEntity.findApply(applyId);
 
         validateCancelDuplication(apply); // 취소 중복 검사
 
@@ -87,11 +90,15 @@ public class ApplyServiceImpl implements ApplyService {
                 apply.changeApplyStatus(ApplyStatus.CANCELED);
                 matching.changeRecruitStatus(RecruitStatus.OPEN);
                 matching.changeConfirmedNum(matching.getConfirmedNum() - 1);
+                notificationService.createAndSendNotification(matching.getSiteUser(),
+                        matching, NotificationType.CANCEL_APPLY);
                 return apply;
             }
         }
         apply.changeApplyStatus(ApplyStatus.CANCELED);
         matching.changeConfirmedNum(matching.getConfirmedNum() - 1);
+        notificationService.createAndSendNotification(matching.getSiteUser(),
+                matching, NotificationType.CANCEL_APPLY);
         return apply;
     }
 
@@ -114,6 +121,7 @@ public class ApplyServiceImpl implements ApplyService {
     }
 
     @Override
+    @Transactional
     public Matching accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
         var matching = matchingRepository.findById(matchingId).get();
         var recruitNum = matching.getRecruitNum();
@@ -121,14 +129,20 @@ public class ApplyServiceImpl implements ApplyService {
 
         validateOverRecruitNumber(recruitNum, confirmedNum);
 
-        appliedList.stream()
+        appliedList
                 .forEach(applyId
                         -> applyRepository.findById(applyId).get().changeApplyStatus(ApplyStatus.PENDING));
 
-        confirmedList.stream()
+        confirmedList
                 .forEach(confirmedId
-                        -> applyRepository.findById(confirmedId).get().changeApplyStatus(ApplyStatus.ACCEPTED));
+                        -> {
+                    findEntity.findApply(confirmedId).changeApplyStatus(ApplyStatus.ACCEPTED);
+                    notificationService
+                            .createAndSendNotification(
+                                    findEntity.findApply(confirmedId).getSiteUser(),
+                                    matching, NotificationType.ACCEPT_APPLY);
 
+                });
         matching.updateConfirmedNum(confirmedNum);
         checkForRecruitStatusChanging(recruitNum, confirmedNum, matching);
         return matching;

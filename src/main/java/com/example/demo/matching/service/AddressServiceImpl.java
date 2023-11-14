@@ -35,11 +35,11 @@ public class AddressServiceImpl implements AddressService {
     public List<RoadAddressDto> getAddress(KeywordDto keywordDto) {
         AddressRequestDto addressRequestDto = AddressRequestDto.fromKeyword(keywordDto);
         String addressData = getAddressString(addressRequestDto);
-        List<Object> parseAddress = parseAddress(addressData);
+        List<String> parseAddress = parseAddress(addressData);
 
         return parseAddress.stream()
                 .map(address
-                        -> new RoadAddressDto(address.toString()))
+                        -> new RoadAddressDto(address))
                 .collect(Collectors.toList());
 
     }
@@ -85,7 +85,7 @@ public class AddressServiceImpl implements AddressService {
                 + "&firstSort=" + addressRequestDto.getFirstSort();
     }
 
-    private List<Object> parseAddress(String addressString) {
+    private List<String> parseAddress(String addressString) {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject;
 
@@ -94,7 +94,7 @@ public class AddressServiceImpl implements AddressService {
         } catch (ParseException e) {
             throw new JsonParsingException();
         }
-        List<Object> parseResults = new ArrayList<>();
+        List<String> parseResults = new ArrayList<>();
 
         JSONObject resultsForJuso = (JSONObject) jsonObject.get("results");
         JSONArray jusoList = (JSONArray) resultsForJuso.get("juso");
@@ -102,7 +102,7 @@ public class AddressServiceImpl implements AddressService {
         try {
             for (int i = 0; i < jusoList.size(); i++) {
                 JSONObject jusoData = (JSONObject) jusoList.get(i);
-                parseResults.add(jusoData.get("roadAddr"));
+                parseResults.add(jusoData.get("roadAddr").toString());
             }
         } catch (Exception e) {
             throw new AddressNotFoundException();

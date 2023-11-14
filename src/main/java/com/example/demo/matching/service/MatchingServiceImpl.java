@@ -2,24 +2,25 @@ package com.example.demo.matching.service;
 
 import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.repository.ApplyRepository;
+import com.example.demo.common.FindEntity;
 import com.example.demo.entity.Apply;
-import com.example.demo.exception.impl.ApplyNotFoundException;
-import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.dto.ApplyMember;
-import com.example.demo.type.ApplyStatus;
-import com.example.demo.util.FindEntityUtils;
-import java.util.List;
-import java.util.stream.Collectors;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
+import com.example.demo.exception.impl.ApplyNotFoundException;
 import com.example.demo.exception.impl.MatchingNotFoundException;
 import com.example.demo.exception.impl.NoPermissionToEditAndDeleteMatching;
 import com.example.demo.exception.impl.UserNotFoundException;
+import com.example.demo.matching.dto.ApplyContents;
+import com.example.demo.matching.dto.ApplyMember;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.repository.MatchingRepository;
-import java.util.List;
+import com.example.demo.notification.service.NotificationService;
 import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.type.ApplyStatus;
+import com.example.demo.type.NotificationType;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +34,9 @@ public class MatchingServiceImpl implements MatchingService {
 
     private final MatchingRepository matchingRepository;
     private final ApplyRepository applyRepository;
-    private final FindEntityUtils findEntityUtils;
+    private final FindEntity findEntity;
     private final SiteUserRepository siteUserRepository;
+    private final NotificationService notificationService;
 
     @Override
     public Matching create(Long userId, MatchingDetailDto matchingDetailDto) {
@@ -58,14 +60,26 @@ public class MatchingServiceImpl implements MatchingService {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = validateMatchingGivenId(matchingId);
 
-        if(!isUserMadeThisMatching(matchingId, siteUser)){
+        if (!isUserMadeThisMatching(matchingId, siteUser)) {
             throw new NoPermissionToEditAndDeleteMatching();
         }
 
-        //TODO : 매칭 글 수정 시 신청자들에게 알림
+        sendNotificationToApplyUser(matchingId, siteUser, matching, NotificationType.MODIFY_MATCHING);
 
         matching.update(Matching.fromDto(matchingDetailDto, siteUser));
         return matchingRepository.save(matching);
+    }
+
+    private void sendNotificationToApplyUser(Long matchingId, SiteUser siteUser, Matching matching,
+                                             NotificationType modifyMatching) {
+        var applies = applyRepository.findAllByMatching_Id(matchingId);
+        for (Apply apply : applies.get()) {
+            if (apply.getSiteUser() == siteUser) {
+                continue;
+            }
+            notificationService.createAndSendNotification(apply.getSiteUser(), matching,
+                    modifyMatching);
+        }
     }
 
     @Override
@@ -73,16 +87,15 @@ public class MatchingServiceImpl implements MatchingService {
         SiteUser siteUser = validateUserGivenId(userId);
         Matching matching = validateMatchingGivenId(matchingId);
 
-        if(!isUserMadeThisMatching(matchingId, siteUser)){
+        if (!isUserMadeThisMatching(matchingId, siteUser)) {
             throw new NoPermissionToEditAndDeleteMatching();
         }
 
-        //TODO : 신청자 존재하는데 매칭 글 삭제 시 신청자들에게 알림
+        sendNotificationToApplyUser(matchingId, siteUser, matching, NotificationType.DELETE_MATCHING);
         //TODO : 신청자 존재하는데 매칭 글 삭제 시 패널티 부여
         if (matching.getConfirmedNum() > 0) {
             //TODO : 매칭에 신청한 유저들의 매칭 해제
         }
-
         matchingRepository.delete(matching);
     }
 
@@ -98,25 +111,25 @@ public class MatchingServiceImpl implements MatchingService {
         return MatchingDetailDto.fromEntity(matching);
     }
 
-    public SiteUser validateUserGivenId(Long userId){
+    public SiteUser validateUserGivenId(Long userId) {
         SiteUser siteUser = siteUserRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException());
         return siteUser;
     }
 
-    private Matching validateMatchingGivenId(Long matchingId){
+    private Matching validateMatchingGivenId(Long matchingId) {
         Matching matching = matchingRepository.findById(matchingId)
                 .orElseThrow(() -> new MatchingNotFoundException());
         return matching;
     }
 
-    private boolean isUserMadeThisMatching(Long matchingId, SiteUser siteUser){
+    private boolean isUserMadeThisMatching(Long matchingId, SiteUser siteUser) {
         return matchingRepository.existsByIdAndSiteUser(matchingId, siteUser);
     }
 
     @Override
     public ApplyContents getApplyContents(long userId, long matchingId) {
-        var matching = findEntityUtils.findMatching(matchingId);
+        var matching = findEntity.findMatching(matchingId);
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = matching.getConfirmedNum();
         var applyNum = applyRepository.countByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING).get();
@@ -142,11 +155,11 @@ public class MatchingServiceImpl implements MatchingService {
                 .confirmedMembers(confirmedMembers)
                 .build();
 
-            return applyContentsForUser;
-        }
+        return applyContentsForUser;
+    }
 
     private List<ApplyMember> findConfirmedMembers(long matchingId) {
-        return applyRepository.findByMatching_IdAndStatus(matchingId, ApplyStatus.ACCEPTED)
+        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.ACCEPTED)
                 .get().stream().map((apply)
                         -> ApplyMember.builder()
                         .applyId(apply.getId())
@@ -156,7 +169,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     private List<ApplyMember> findAppliedMembers(long matchingId) {
-        return applyRepository.findByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING)
+        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING)
                 .orElseThrow(() -> new ApplyNotFoundException())
                 .stream().map((apply)
                         -> ApplyMember.builder()
