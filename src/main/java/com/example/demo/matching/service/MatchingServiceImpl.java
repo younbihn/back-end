@@ -14,6 +14,7 @@ import com.example.demo.matching.dto.ApplyMember;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.repository.MatchingRepository;
+import java.util.List;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.common.FindEntity;
