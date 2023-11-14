@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import static com.example.demo.type.AgeGroup.TWENTIES;
 import static com.example.demo.type.GenderType.MALE;
+import static com.example.demo.type.Ntrp.DEVELOPMENT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -56,7 +57,7 @@ public class SiteUserInfoServiceTest {
                 .locationGu("중구")
                 .ageGroup(TWENTIES)
                 .profileImg("test.html")
-                .ntrp(BigDecimal.valueOf(2.0))
+                .ntrp(DEVELOPMENT)
                 .build();
         Mockito.when(siteUserRepository.findById(any())).thenReturn(Optional.of(siteUser));
 
@@ -79,7 +80,7 @@ public class SiteUserInfoServiceTest {
                 .locationGu("중구")
                 .ageGroup(TWENTIES)
                 .profileImg("test.html")
-                .ntrp(BigDecimal.valueOf(2.0))
+                .ntrp(DEVELOPMENT)
                 .build();
         Mockito.when(siteUserRepository.findById(any())).thenReturn(Optional.of(siteUser));
 
@@ -102,14 +103,14 @@ public class SiteUserInfoServiceTest {
                 .locationGu("중구")
                 .ageGroup(TWENTIES)
                 .profileImg("test.html")
-                .ntrp(BigDecimal.valueOf(2.0))
+                .ntrp(DEVELOPMENT)
                 .build();
 
         Matching matching = Matching.builder()
                 .siteUser(siteUser)
                 .title("testTitle")
                 .content("testContent")
-                .date(Date.valueOf(LocalDate.of(2022,10,01)))
+                .date(Date.valueOf(LocalDate.of(2022,10,01)).toLocalDate())
                 .build();
         List<Matching> matchings = Arrays.asList(matching);
         Mockito.when(matchingRepository.findBySiteUser_Id(any())).thenReturn(matchings);
@@ -133,14 +134,14 @@ public class SiteUserInfoServiceTest {
                 .locationGu("중구")
                 .ageGroup(TWENTIES)
                 .profileImg("test.html")
-                .ntrp(BigDecimal.valueOf(2.0))
+                .ntrp(DEVELOPMENT)
                 .build();
 
         Matching matching = Matching.builder()
                 .siteUser(siteUser)
                 .title("testTitle")
                 .content("testContent")
-                .date(Date.valueOf(LocalDate.of(2022,10,01)))
+                .date(Date.valueOf(LocalDate.of(2022,10,01)).toLocalDate())
                 .build();
 
         Apply apply = Apply.builder()

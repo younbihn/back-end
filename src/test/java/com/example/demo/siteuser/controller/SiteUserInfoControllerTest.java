@@ -1,5 +1,6 @@
 package com.example.demo.siteuser.controller;
 
+import com.example.demo.aws.S3Uploader;
 import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
@@ -33,6 +34,8 @@ public class SiteUserInfoControllerTest {
     @Mock
     private SiteUserInfoService siteUserInfoService;
 
+    @Mock
+    private S3Uploader s3Uploader;
 
     @InjectMocks
     private SiteUserInfoController siteUserInfoController;
@@ -40,7 +43,8 @@ public class SiteUserInfoControllerTest {
     @BeforeEach
     public void setup() {
         siteUserInfoService = Mockito.mock(SiteUserInfoService.class);
-        siteUserInfoController = new SiteUserInfoController(siteUserInfoService);
+        s3Uploader = Mockito.mock(S3Uploader.class);
+        siteUserInfoController = new SiteUserInfoController(siteUserInfoService, s3Uploader);
         mockMvc = MockMvcBuilders.standaloneSetup(siteUserInfoController).build();
     }
 

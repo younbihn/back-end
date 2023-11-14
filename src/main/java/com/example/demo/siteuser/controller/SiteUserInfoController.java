@@ -1,5 +1,6 @@
 package com.example.demo.siteuser.controller;
 
+import com.example.demo.aws.S3Uploader;
 import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
@@ -8,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -17,6 +20,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class SiteUserInfoController {
     private final SiteUserInfoService siteUserInfoService;
+    private final S3Uploader s3Uploader;
 
     @GetMapping("/profile/{siteUser}")
     public ResponseEntity<SiteUserInfoDto> getSiteUserInfoById(@PathVariable(value = "siteUser") Long siteUser) {
@@ -59,6 +63,25 @@ public class SiteUserInfoController {
             return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/{userId}/upload-profile-image")
+    public ResponseEntity<String> uploadProfileImage(
+            @PathVariable Long userId,
+            @RequestParam("imageFile") MultipartFile imageFile
+    ) {
+        try {
+            // S3에 이미지 업로드 및 URL 반환
+            String imageUrl = s3Uploader.uploadFile(imageFile);
+
+            // SiteUser의 profileImg 필드 업데이트
+            siteUserInfoService.updateProfileImage(userId, imageUrl);
+
+            return new ResponseEntity<>(imageUrl, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

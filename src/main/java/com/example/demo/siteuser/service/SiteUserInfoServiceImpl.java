@@ -12,6 +12,7 @@ import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,5 +70,16 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
         } else {
             throw new EntityNotFoundException("No matching data found for user with ID: " + userId);
         }
+    }
+
+    @Transactional
+    @Override
+    public void updateProfileImage(Long userId, String imageUrl) {
+        SiteUser siteUser = siteUserRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+
+        // SiteUser 엔티티의 profileImg 필드 업데이트
+        siteUser.setProfileImg(imageUrl);
+        siteUserRepository.save(siteUser);
     }
 }
