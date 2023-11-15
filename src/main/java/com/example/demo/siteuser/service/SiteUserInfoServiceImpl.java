@@ -98,11 +98,11 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
         if (dto.getNickname() != null) {
             siteUser.setNickname(dto.getNickname());
         }
-        if (dto.getLocationSi() != null) {
-            siteUser.setLocationSi(dto.getLocationSi());
+        if (dto.getAddress() != null) {
+            siteUser.setAddress(dto.getAddress());
         }
-        if (dto.getLocationGu() != null) {
-            siteUser.setLocationGu(dto.getLocationGu());
+        if (dto.getZipCode() != null) {
+            siteUser.setZipCode(dto.getZipCode());
         }
         if (dto.getNtrp() != null) {
             siteUser.setNtrp(dto.getNtrp());
