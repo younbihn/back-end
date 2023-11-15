@@ -20,23 +20,12 @@ public enum PrecipitationType {
         return this.message;
     }
 
-    public String getCode() {
-        return this.code;
-    }
 
     public static PrecipitationType findPrecipitationType(String code) {
-        if (code == RAIN.code) {
-            return RAIN;
+        try {
+            return PrecipitationType.valueOf(code);
+        } catch (IllegalArgumentException e) {
+            return OTHER;
         }
-        if (code == RAIN_OR_SNOW.code) {
-            return RAIN_OR_SNOW;
-        }
-        if (code == SNOW.code) {
-            return SNOW;
-        }
-        if (code == SHOWER.code) {
-            return SHOWER;
-        }
-        return OTHER;
     }
 }
