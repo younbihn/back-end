@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MatchingController {
 
     private final MatchingService matchingService;
-    private final AddressService addressServiceImpl;
+    private final AddressService addressService;
     private final S3Uploader s3Uploader;
 
     @PostMapping
@@ -109,7 +109,7 @@ public class MatchingController {
     @GetMapping("/address")
     public ResponseEntity<List<RoadAddressDto>> getAddress(@RequestParam String keyword) {
 
-        var result = addressServiceImpl.getAddress(keyword);
+        var result = addressService.getAddress(keyword);
 
         return ResponseEntity.ok(result);
     }

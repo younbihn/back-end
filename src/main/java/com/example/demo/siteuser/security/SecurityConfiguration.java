@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("api/auth/signup", "api/auth/signin", "api/auth/kakao/signup", "api/auth/kakao/callback", "api/matches/list", "api/matches/**").permitAll()
+                        .requestMatchers("api/auth/signup", "api/auth/signin", "api/auth/kakao/signup", "api/auth/kakao/callback", "api/matches/list", "api/matches/**", "api/users/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(this.authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.failureHandler(customFailurHandler)

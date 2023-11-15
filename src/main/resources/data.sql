@@ -54,3 +54,10 @@ values (1, 4, '2023-10-31 10:00:00');
 
 insert into APPLY (MATCHING_ID, SITE_USER_ID, CREATE_TIME)
 values (1, 5, '2023-10-31 10:00:00');
+
+INSERT INTO NOTIFICATION (SITE_USER_ID, MATCHING_ID, NOTIFICATION_TYPE, CONTENT, CREATE_TIME) VALUES
+(1, 1, 'MODIFY_MATCHING', '신청한 매칭글이 수정되었습니다.', '2023-11-10 10:00:00'),
+(1, 2, 'MODIFY_MATCHING', '신청한 매칭글이 수정되었습니다.', '2023-11-10 11:00:00'),
+(2, 1, 'ACCEPT_APPLY', '신청한 매칭글의 주최자가 참가 신청을 수락하였습니다.', '2023-11-10 12:00:00'),
+(2, 3, 'MATCHING_CLOSED', '매칭에 성공하였습니다. 채팅방이 활성화됩니다.', '2023-11-10 13:00:00'),
+(3, 1, 'MATCHING_CLOSED', '매칭에 성공하였습니다. 채팅방이 활성화됩니다.', '2023-11-10 14:00:00');

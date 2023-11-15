@@ -160,7 +160,7 @@ class ApplyServiceImplTest {
         applyService.cancel(1L);
 
         // then
-        assertEquals(ApplyStatus.CANCELED, apply.getStatus());
+        assertEquals(ApplyStatus.CANCELED, apply.getApplyStatus());
     }
 
     @Test
@@ -297,7 +297,7 @@ class ApplyServiceImplTest {
                 .id(1L)
                 .matching(matching)
                 .siteUser(siteUser)
-                .status(ApplyStatus.PENDING)
+                .applyStatus(ApplyStatus.PENDING)
                 .build();
     }
 
@@ -306,7 +306,7 @@ class ApplyServiceImplTest {
                 .id(1L)
                 .matching(matching)
                 .siteUser(siteUser)
-                .status(ApplyStatus.CANCELED)
+                .applyStatus(ApplyStatus.CANCELED)
                 .build();
     }
 
