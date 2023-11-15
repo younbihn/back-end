@@ -3,31 +3,34 @@ package com.example.demo.entity;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity(name = "SITE_USER")
-public class SiteUser {
+@Table(name = "SITE_USER")
+public class SiteUser implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    //@ElementCollection
+    @Convert(converter = SiteUserRoleConverter.class)
+    private List<String> roles;
 
     @Column(name = "PASSWORD", length = 1023, nullable = false, columnDefinition = "VARCHAR(1023)")
     private String password;
@@ -35,7 +38,7 @@ public class SiteUser {
     @Column(name = "NICKNAME", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
     private String nickname;
 
-    @Column(name = "EMAIL", length = 255, nullable = false, columnDefinition = "VARCHAR(255)")
+    @Column(name = "EMAIL", unique = true, length = 255, nullable = false, columnDefinition = "VARCHAR(255)")
     private String email;
 
     @Column(name = "PHONE_NUMBER", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
@@ -59,6 +62,7 @@ public class SiteUser {
     private String address;
 
     @Column(name = "ZIP_CODE", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
+
     private String zipCode;
 
     @Enumerated(EnumType.STRING)
@@ -82,6 +86,38 @@ public class SiteUser {
 
     @OneToMany(mappedBy = "siteUser")
     private List<Notification> notifications; // 알림
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
     public void setNickname(String nickname) {
         this.nickname = nickname;

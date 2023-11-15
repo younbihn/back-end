@@ -1,9 +1,7 @@
 package com.example.demo.siteuser.service;
 
-import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
-import com.example.demo.siteuser.dto.SiteUserInfoDto;
-import com.example.demo.siteuser.dto.SiteUserModifyDto;
-import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
+import com.example.demo.entity.Notification;
+import com.example.demo.siteuser.dto.*;
 
 import java.util.List;
 
@@ -16,4 +14,6 @@ public interface SiteUserInfoService {
     void updateProfileImage(Long userId, String imageUrl);
     void updateSiteUserInfo(Long userId, SiteUserModifyDto siteUserModifyDto);
     String getProfileUrl(Long userId);
+    List<SiteUserNotificationDto> getNotificationBySiteUser(Long userId);
+    void deleteNotification(Long userId, Long notificationId);
 }

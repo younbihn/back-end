@@ -1,10 +1,7 @@
 package com.example.demo.siteuser.controller;
 
 import com.example.demo.aws.S3Uploader;
-import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
-import com.example.demo.siteuser.dto.SiteUserInfoDto;
-import com.example.demo.siteuser.dto.SiteUserModifyDto;
-import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
+import com.example.demo.siteuser.dto.*;
 import com.example.demo.siteuser.service.SiteUserInfoService;
 import com.example.demo.type.MatchingType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,12 +18,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasValue;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -85,7 +85,7 @@ public class SiteUserInfoControllerTest {
         MatchingMyMatchingDto dto = MatchingMyMatchingDto.builder()
                 .title("testTitle1")
                 .location("testLocation1")
-                .date(LocalDate.of(2022, 10, 1))
+                .date("2022-10-01")
                 .matchingType(MatchingType.SINGLE)
                 .build();
         List<MatchingMyMatchingDto> mockList = Arrays.asList(dto);
@@ -107,7 +107,7 @@ public class SiteUserInfoControllerTest {
         MatchingMyMatchingDto dto = MatchingMyMatchingDto.builder()
                 .title("testTitle1")
                 .location("testLocation1")
-                .date(LocalDate.of(2022, 10, 1))
+                .date("2022-10-01")
                 .matchingType(MatchingType.SINGLE)
                 .build();
         List<MatchingMyMatchingDto> mockList = Arrays.asList(dto);
@@ -155,5 +155,38 @@ public class SiteUserInfoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonModifyDto))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetNotificationBySiteUser() throws Exception {
+        Long userId = 1L;
+        List<SiteUserNotificationDto> mockNotifications = Arrays.asList(
+                new SiteUserNotificationDto("Notification Title 1", "Notification Content 1", LocalDateTime.now().toString()),
+                new SiteUserNotificationDto("Notification Title 2", "Notification Content 2", LocalDateTime.now().toString())
+        );
+
+        when(siteUserInfoService.getNotificationBySiteUser(userId)).thenReturn(mockNotifications);
+
+        mockMvc.perform(get("/api/users/my-page/notification/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].title").value("Notification Title 1"))
+                .andExpect(jsonPath("$[1].title").value("Notification Title 2"));
+    }
+
+    @Test
+    public void testDeleteNotification() throws Exception {
+        Long userId = 1L;
+        Long notificationId = 100L;
+
+        doNothing().when(siteUserInfoService).deleteNotification(userId, notificationId);
+
+        mockMvc.perform(delete("/api/users/my-page/notification/{userId}/{notificationId}", userId, notificationId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(siteUserInfoService).deleteNotification(userId, notificationId);
     }
 }

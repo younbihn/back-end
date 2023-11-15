@@ -201,7 +201,7 @@ public class MatchingServiceImpl implements MatchingService {
         var matching = findEntity.findMatching(matchingId);
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = matching.getConfirmedNum();
-        var applyNum = applyRepository.countByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING).get();
+        var applyNum = applyRepository.countByMatching_IdAndApplyStatus(matchingId, ApplyStatus.PENDING).get();
 
         var appliedMembers = findAppliedMembers(matchingId);
         var confirmedMembers = findConfirmedMembers(matchingId);
@@ -228,7 +228,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     private List<ApplyMember> findConfirmedMembers(long matchingId) {
-        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.ACCEPTED)
+        return applyRepository.findAllByMatching_IdAndApplyStatus(matchingId, ApplyStatus.ACCEPTED)
                 .get().stream().map((apply)
                         -> ApplyMember.builder()
                         .applyId(apply.getId())
@@ -238,7 +238,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     private List<ApplyMember> findAppliedMembers(long matchingId) {
-        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING)
+        return applyRepository.findAllByMatching_IdAndApplyStatus(matchingId, ApplyStatus.PENDING)
                 .orElseThrow(() -> new ApplyNotFoundException())
                 .stream().map((apply)
                         -> ApplyMember.builder()

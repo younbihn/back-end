@@ -3,7 +3,6 @@ package com.example.demo.matching.controller;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.dto.KeywordDto;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.dto.RoadAddressDto;
@@ -128,10 +127,10 @@ public class MatchingController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/location")
-    public ResponseEntity<List<RoadAddressDto>> getAddress(@RequestBody KeywordDto keywordDto) {
+    @GetMapping("/address")
+    public ResponseEntity<List<RoadAddressDto>> getAddress(@RequestParam String keyword) {
 
-        var result = addressService.getAddress(keywordDto);
+        var result = addressService.getAddress(keyword);
 
         return ResponseEntity.ok(result);
     }

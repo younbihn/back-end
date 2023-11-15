@@ -14,14 +14,14 @@ import java.time.LocalDate;
 public class MatchingMyMatchingDto {
     private String title;
     private String location;
-    private LocalDate date;
+    private String date;
     private MatchingType matchingType;
 
     public static MatchingMyMatchingDto fromEntity(Matching matching) {
         return MatchingMyMatchingDto.builder()
                 .title(matching.getTitle())
                 .location(matching.getLocation())
-                .date(matching.getDate())
+                .date(matching.getDate().toString())
                 .matchingType(matching.getMatchingType())
                 .build();
     }
