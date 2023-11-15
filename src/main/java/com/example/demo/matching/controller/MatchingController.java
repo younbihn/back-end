@@ -12,10 +12,13 @@ import com.example.demo.matching.service.MatchingService;
 
 import java.io.IOException;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,17 +34,17 @@ public class MatchingController {
     private final S3Uploader s3Uploader;
 
     @PostMapping
-    public void createMatching (
+    public void createMatching(
             @RequestBody MatchingDetailDto matchingDetailDto,
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
         Long userId = 1L;
         matchingService.create(userId, matchingDetailDto);
 
-        if(file != null){
-            try{
+        if (file != null) {
+            try {
                 s3Uploader.uploadFile(file);
-            } catch(IOException exception){
+            } catch (IOException exception) {
                 throw new S3UploadFailException();
             }
         }
@@ -49,7 +52,7 @@ public class MatchingController {
 
     @GetMapping("/{matchingId}")
     public ResponseEntity<MatchingDetailDto> getDetailedMatching(
-            @PathVariable Long matchingId){
+            @PathVariable Long matchingId) {
 
         var result = matchingService.getDetail(matchingId);
 
@@ -60,19 +63,19 @@ public class MatchingController {
     public void editMatching(
             @RequestBody MatchingDetailDto matchingDetailDto,
             @PathVariable Long matchingId,
-            @RequestParam(value = "file", required = false) MultipartFile file){
+            @RequestParam(value = "file", required = false) MultipartFile file) {
 
         Long userId = 1L;
         matchingService.update(userId, matchingId, matchingDetailDto);
 
         // 구장 이미지 변경
         //TODO: 이미 존재하는 이미지인지 검증하는 로직이 이게 맞나..?
-        if(file!=null && !file.toString().equals(matchingDetailDto.getLocationImg())){
-            try{
+        if (file != null && !file.toString().equals(matchingDetailDto.getLocationImg())) {
+            try {
                 //TODO : S3에 있는 파일 삭제
                 s3Uploader.uploadFile(file);
                 matchingDetailDto.setLocationImg(file.toString());
-            } catch(IOException exception){
+            } catch (IOException exception) {
                 throw new S3UploadFailException();
             }
         }
@@ -80,7 +83,7 @@ public class MatchingController {
 
     @DeleteMapping("/{matchingId}")
     public void deleteMatching(
-            @PathVariable Long matchingId){
+            @PathVariable Long matchingId) {
 
         Long userId = 1L;
 
@@ -89,10 +92,17 @@ public class MatchingController {
 
     @GetMapping("/list")
     public ResponseEntity<Page<MatchingPreviewDto>> getMatchingList(
-            @PageableDefault(page = 0, size = 10) Pageable pageable){
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "5") int size,
+            @RequestParam(required = false) String sort) {
 
-        var result = matchingService.getList(pageable);
-
+        PageRequest pageRequest = PageRequest.of(page, size);
+        if ("register".equals(sort)) {
+            pageRequest = PageRequest.of(page, size, Sort.by("createTime").ascending());
+        } else if ("due-date".equals(sort)) {
+            pageRequest = PageRequest.of(page, size, Sort.by("recruitDueDateTime").ascending());
+        }
+        var result = matchingService.getList(pageRequest);
         return ResponseEntity.ok(result);
     }
 
