@@ -6,8 +6,9 @@ import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.dto.RoadAddressDto;
-import com.example.demo.matching.service.AddressServiceImpl;
-import com.example.demo.matching.service.MatchingServiceImpl;
+import com.example.demo.matching.service.AddressService;
+import com.example.demo.matching.service.MatchingService;
+
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +25,17 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/matches")
 public class MatchingController {
 
-    private final MatchingServiceImpl matchingServiceImpl;
-    private final AddressServiceImpl addressServiceImpl;
+    private final MatchingService matchingService;
+    private final AddressService addressService;
     private final S3Uploader s3Uploader;
 
     @PostMapping
-    public ResponseEntity createMatching (
+    public void createMatching (
             @RequestBody MatchingDetailDto matchingDetailDto,
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
         Long userId = 1L;
-        matchingServiceImpl.create(userId, matchingDetailDto);
+        matchingService.create(userId, matchingDetailDto);
 
         if(file != null){
             try{
@@ -43,27 +44,25 @@ public class MatchingController {
                 throw new S3UploadFailException();
             }
         }
-
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{matchingId}")
     public ResponseEntity<MatchingDetailDto> getDetailedMatching(
             @PathVariable Long matchingId){
 
-        var result = matchingServiceImpl.getDetail(matchingId);
+        var result = matchingService.getDetail(matchingId);
 
         return ResponseEntity.ok(result);
     }
 
     @PatchMapping("/{matchingId}")
-    public ResponseEntity editMatching(
+    public void editMatching(
             @RequestBody MatchingDetailDto matchingDetailDto,
             @PathVariable Long matchingId,
             @RequestParam(value = "file", required = false) MultipartFile file){
 
         Long userId = 1L;
-        matchingServiceImpl.update(userId, matchingId, matchingDetailDto);
+        matchingService.update(userId, matchingId, matchingDetailDto);
 
         // 구장 이미지 변경
         //TODO: 이미 존재하는 이미지인지 검증하는 로직이 이게 맞나..?
@@ -76,26 +75,22 @@ public class MatchingController {
                 throw new S3UploadFailException();
             }
         }
-
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{matchingId}")
-    public ResponseEntity deleteMatching(
+    public void deleteMatching(
             @PathVariable Long matchingId){
 
         Long userId = 1L;
 
-        matchingServiceImpl.delete(userId, matchingId);
-
-        return ResponseEntity.ok().build();
+        matchingService.delete(userId, matchingId);
     }
 
     @GetMapping("/list")
     public ResponseEntity<Page<MatchingPreviewDto>> getMatchingList(
             @PageableDefault(page = 0, size = 10) Pageable pageable){
 
-        var result = matchingServiceImpl.getList(pageable);
+        var result = matchingService.getList(pageable);
 
         return ResponseEntity.ok(result);
     }
@@ -106,7 +101,7 @@ public class MatchingController {
 
         Long userId = 1L;
 
-        var result = matchingServiceImpl.getApplyContents(userId, matchingId);
+        var result = matchingService.getApplyContents(userId, matchingId);
 
         return ResponseEntity.ok(result);
     }

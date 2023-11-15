@@ -3,6 +3,7 @@ package com.example.demo.siteuser.controller;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
+import com.example.demo.siteuser.dto.SiteUserModifyDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 import com.example.demo.siteuser.service.SiteUserInfoService;
 import lombok.RequiredArgsConstructor;
@@ -66,22 +67,31 @@ public class SiteUserInfoController {
         }
     }
 
-    @PostMapping("/{userId}/upload-profile-image")
-    public ResponseEntity<String> uploadProfileImage(
-            @PathVariable Long userId,
-            @RequestParam("imageFile") MultipartFile imageFile
-    ) {
+    @PostMapping("{userId}/upload-profile-image")
+    public ResponseEntity<?> uploadOrUpdateProfileImage(@PathVariable Long userId, @RequestParam("imageFile") MultipartFile imageFile) {
         try {
-            // S3에 이미지 업로드 및 URL 반환
-            String imageUrl = s3Uploader.uploadFile(imageFile);
+//            // 기존 이미지 URL 가져오기 및 삭제
+//            String oldImageUrl = siteUserInfoService.getProfileUrl(userId);
+//            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+//                s3Uploader.deleteFile(oldImageUrl);
+//            }
+
+            // 새 이미지 업로드 및 URL 반환
+            String newImageUrl = s3Uploader.uploadFile(imageFile);
 
             // SiteUser의 profileImg 필드 업데이트
-            siteUserInfoService.updateProfileImage(userId, imageUrl);
+            siteUserInfoService.updateProfileImage(userId, newImageUrl);
 
-            return new ResponseEntity<>(imageUrl, HttpStatus.OK);
+            return new ResponseEntity<>(newImageUrl, HttpStatus.OK);
         } catch (IOException e) {
             e.printStackTrace();
             return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PatchMapping("my-page/modify/{userId}")
+    public ResponseEntity<?> updateSiteUser(@PathVariable Long userId, @RequestBody SiteUserModifyDto siteUserModifyDto) {
+        siteUserInfoService.updateSiteUserInfo(userId, siteUserModifyDto);
+        return ResponseEntity.ok().build();
     }
 }

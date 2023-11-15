@@ -16,7 +16,13 @@ import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
+import com.example.demo.siteuser.dto.SiteUserModifyDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -27,6 +33,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static com.example.demo.type.AgeGroup.TWENTIES;
+import static com.example.demo.type.GenderType.MALE;
+import static com.example.demo.type.Ntrp.DEVELOPMENT;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SiteUserInfoServiceTest {
@@ -149,9 +161,41 @@ public class SiteUserInfoServiceTest {
                 .build();
         List<Apply> applies = Arrays.asList(apply);
 
+
         when(applyRepository.findAllBySiteUser_Id(any())).thenReturn(applies);
 
         List<MatchingMyMatchingDto> result = siteUserInfoService.getApplyBySiteUser(siteUser.getId());
         assertFalse(result.isEmpty());
+    }
+
+    @Test
+    public void testUpdateProfileImageService() {
+        Long userId = 1L;
+        String newImageUrl = "http://example.com/new-image.jpg";
+
+        SiteUser siteUser = SiteUser.builder()
+                .profileImg("http://example.com/old-image.jpg")
+                .build();
+
+        when(siteUserRepository.findById(userId)).thenReturn(Optional.of(siteUser));
+
+        siteUserInfoService.updateProfileImage(userId, newImageUrl);
+
+        assertEquals(newImageUrl, siteUser.getProfileImg());
+    }
+
+    @Test
+    public void updateSiteUserInfoTest() {
+        Long userId = 1L;
+        SiteUserModifyDto modifyDto = SiteUserModifyDto.builder()
+                .nickname("test")
+                .build();
+
+        SiteUser siteUser = new SiteUser();
+        when(siteUserRepository.findById(userId)).thenReturn(Optional.of(siteUser));
+
+        siteUserInfoService.updateSiteUserInfo(userId, modifyDto);
+
+        assertEquals(modifyDto.getNickname(), siteUser.getNickname());
     }
 }
