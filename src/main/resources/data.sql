@@ -54,3 +54,4 @@ values (1, 4, '2023-10-31 10:00:00');
 
 insert into APPLY (MATCHING_ID, SITE_USER_ID, CREATE_TIME)
 values (1, 5, '2023-10-31 10:00:00');
+
