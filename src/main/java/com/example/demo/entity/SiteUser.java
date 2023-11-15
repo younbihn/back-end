@@ -58,10 +58,11 @@ public class SiteUser implements UserDetails {
     @Column(name = "NTRP")
     private Ntrp ntrp;
 
-    @Column(name = "ADDRESS", length = 255, nullable = false, columnDefinition = "VARCHAR(50)")
+    @Column(name = "ADDRESS", length = 50, nullable = false, columnDefinition = "VARCHAR(255)")
     private String address;
 
-    @Column(name = "ZIPCODE", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
+    @Column(name = "ZIP_CODE", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
+
     private String zipCode;
 
     @Enumerated(EnumType.STRING)
