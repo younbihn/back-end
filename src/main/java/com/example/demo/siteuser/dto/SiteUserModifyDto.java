@@ -16,8 +16,8 @@ public class SiteUserModifyDto{
     private String password;
     private String email;
     private String phoneNumber;
-    private String locationSi;
-    private String locationGu;
+    private String address;
+    private String zipCode;
     private Ntrp ntrp;
     private GenderType gender;
     private AgeGroup ageGroup;
@@ -27,8 +27,8 @@ public class SiteUserModifyDto{
                 .password(siteUser.getPassword())
                 .email(siteUser.getEmail())
                 .nickname(siteUser.getNickname())
-                .locationSi(siteUser.getLocationSi())
-                .locationGu(siteUser.getLocationGu())
+                .address(siteUser.getAddress())
+                .zipCode(siteUser.getZipCode())
                 .ntrp(siteUser.getNtrp())
                 .gender(siteUser.getGender())
                 .ageGroup(siteUser.getAgeGroup())

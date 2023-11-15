@@ -16,8 +16,8 @@ import java.math.BigDecimal;
 public class SiteUserInfoDto{
     private String profileImg;
     private String nickname;
-    private String locationSi;
-    private String locationGu;
+    private String address;
+    private String zipCode;
     private Ntrp ntrp;
     private GenderType gender;
     private Integer mannerScore;
@@ -28,8 +28,8 @@ public class SiteUserInfoDto{
         return SiteUserInfoDto.builder()
                 .profileImg(siteUser.getProfileImg())
                 .nickname(siteUser.getNickname())
-                .locationSi(siteUser.getLocationSi())
-                .locationGu(siteUser.getLocationGu())
+                .address(siteUser.getAddress())
+                .zipCode(siteUser.getZipCode())
                 .ntrp(siteUser.getNtrp())
                 .gender(siteUser.getGender())
                 .mannerScore(siteUser.getMannerScore())
