@@ -1,6 +1,8 @@
 package com.example.demo.notification.controller;
 
 import com.example.demo.notification.service.NotificationService;
+import com.example.demo.scheduler.Scheduler;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

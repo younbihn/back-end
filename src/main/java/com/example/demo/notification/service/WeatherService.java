@@ -1,7 +1,9 @@
 package com.example.demo.notification.service;
 
-import org.springframework.stereotype.Service;
+import com.example.demo.notification.dto.WeatherDto;
+import com.example.demo.notification.dto.LocationAndDateFromMatching;
 
-@Service
-public class WeatherService implements WeatherServiceImpl {
+public interface WeatherService {
+
+    WeatherDto getWeather(LocationAndDateFromMatching locationAndDateFromMatching);
 }

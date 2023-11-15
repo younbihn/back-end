@@ -1,7 +1,6 @@
 package com.example.demo.apply.controller;
 
 import com.example.demo.apply.dto.AppliedListAndConfirmedList;
-import com.example.demo.apply.dto.ApplyDto;
 import com.example.demo.apply.service.ApplyService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

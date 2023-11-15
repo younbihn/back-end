@@ -19,6 +19,7 @@ import com.example.demo.notification.service.NotificationService;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.NotificationType;
+import com.example.demo.type.RecruitStatus;
 import com.example.demo.common.FindEntity;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,6 +94,11 @@ public class MatchingServiceImpl implements MatchingService {
         }
 
         sendNotificationToApplyUser(matchingId, siteUser, matching, NotificationType.DELETE_MATCHING);
+        if (matching.getRecruitStatus().equals(RecruitStatus.WEATHER_ISSUE)) { // 우천 시 패널티 적용 없이 삭제 가능
+            matchingRepository.delete(matching);
+            //TODO : 매칭에 신청한 유저들의 매칭 해제
+            return;
+        }
         //TODO : 신청자 존재하는데 매칭 글 삭제 시 패널티 부여
         if (matching.getConfirmedNum() > 0) {
             //TODO : 매칭에 신청한 유저들의 매칭 해제
@@ -133,7 +139,7 @@ public class MatchingServiceImpl implements MatchingService {
         var matching = findEntity.findMatching(matchingId);
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = matching.getConfirmedNum();
-        var applyNum = applyRepository.countByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING).get();
+        var applyNum = applyRepository.countByMatching_IdAndApplyStatus(matchingId, ApplyStatus.PENDING).get();
 
         var appliedMembers = findAppliedMembers(matchingId);
         var confirmedMembers = findConfirmedMembers(matchingId);
@@ -160,7 +166,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     private List<ApplyMember> findConfirmedMembers(long matchingId) {
-        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.ACCEPTED)
+        return applyRepository.findAllByMatching_IdAndApplyStatus(matchingId, ApplyStatus.ACCEPTED)
                 .get().stream().map((apply)
                         -> ApplyMember.builder()
                         .applyId(apply.getId())
@@ -170,7 +176,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     private List<ApplyMember> findAppliedMembers(long matchingId) {
-        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING)
+        return applyRepository.findAllByMatching_IdAndApplyStatus(matchingId, ApplyStatus.PENDING)
                 .orElseThrow(() -> new ApplyNotFoundException())
                 .stream().map((apply)
                         -> ApplyMember.builder()

@@ -4,7 +4,6 @@ import com.example.demo.exception.impl.FailedGetAddressException;
 import com.example.demo.exception.impl.JsonParsingException;
 import com.example.demo.exception.impl.AddressNotFoundException;
 import com.example.demo.matching.dto.AddressRequestDto;
-import com.example.demo.matching.dto.KeywordDto;
 import com.example.demo.matching.dto.RoadAddressDto;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,8 +31,8 @@ public class AddressServiceImpl implements AddressService {
     private String apiKey;
 
     @Override
-    public List<RoadAddressDto> getAddress(KeywordDto keywordDto) {
-        AddressRequestDto addressRequestDto = AddressRequestDto.fromKeyword(keywordDto);
+    public List<RoadAddressDto> getAddress(String keyword) {
+        AddressRequestDto addressRequestDto = AddressRequestDto.fromKeyword(keyword);
         String addressData = getAddressString(addressRequestDto);
         List<String> parseAddress = parseAddress(addressData);
 
@@ -45,7 +44,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     private String getAddressString(AddressRequestDto addressRequestDto) {
-        String apiUrl = makeApiUrl(addressRequestDto);
+        String apiUrl = makeAddressApiUrl(addressRequestDto);
         try {
             BufferedReader bufferedReader = getBufferedReader(apiUrl);
             String inputLine;
@@ -75,7 +74,7 @@ public class AddressServiceImpl implements AddressService {
         return bufferedReader;
     }
 
-    private String makeApiUrl(AddressRequestDto addressRequestDto) {
+    private String makeAddressApiUrl(AddressRequestDto addressRequestDto) {
         return "https://business.juso.go.kr/addrlink/addrLinkApi.do?confmKey=" + apiKey
                 + "&currentPage=" + addressRequestDto.getCurrentPage()
                 + "&countPerPage=" + addressRequestDto.getCountPerPage()
@@ -85,12 +84,12 @@ public class AddressServiceImpl implements AddressService {
                 + "&firstSort=" + addressRequestDto.getFirstSort();
     }
 
-    private List<String> parseAddress(String addressString) {
+    private List<String> parseAddress(String addressData) {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject;
 
         try {
-            jsonObject = (JSONObject) jsonParser.parse(addressString);
+            jsonObject = (JSONObject) jsonParser.parse(addressData);
         } catch (ParseException e) {
             throw new JsonParsingException();
         }

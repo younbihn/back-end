@@ -1,11 +1,19 @@
 package com.example.demo.siteuser.service;
 
+import static com.example.demo.type.AgeGroup.TWENTIES;
+import static com.example.demo.type.GenderType.MALE;
+import static com.example.demo.type.Ntrp.DEVELOPMENT;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
-import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.matching.repository.MatchingRepository;
-import com.example.demo.apply.repository.ApplyRepository;
+import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
 import com.example.demo.siteuser.dto.SiteUserModifyDto;
@@ -15,13 +23,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import static com.example.demo.type.AgeGroup.TWENTIES;
 import static com.example.demo.type.GenderType.MALE;
 import static com.example.demo.type.Ntrp.DEVELOPMENT;
@@ -149,7 +160,6 @@ public class SiteUserInfoServiceTest {
                 .siteUser(siteUser)
                 .build();
         List<Apply> applies = Arrays.asList(apply);
-
         when(applyRepository.findAllBySiteUser_Id(any())).thenReturn(applies);
 
         List<MatchingMyMatchingDto> result = siteUserInfoService.getApplyBySiteUser(siteUser.getId());
