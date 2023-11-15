@@ -29,7 +29,7 @@ class ApplyControllerTest {
         // given
         given(applyService.apply(anyLong(), anyLong()))
                 .willReturn(Apply.builder()
-                        .status(ApplyStatus.PENDING)
+                        .applyStatus(ApplyStatus.PENDING)
                         .build());
         // when
         // then
@@ -43,7 +43,7 @@ class ApplyControllerTest {
         // given
         given(applyService.cancel(anyLong()))
                 .willReturn(Apply.builder()
-                        .status(ApplyStatus.CANCELED)
+                        .applyStatus(ApplyStatus.CANCELED)
                         .build());
         // when
         // then
