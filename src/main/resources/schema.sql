@@ -21,12 +21,13 @@ CREATE TABLE `SITE_USER`
     `PENALTY_SCORE`     INT NULL DEFAULT 0,
     `GENDER`            varchar(50)   NOT NULL COMMENT 'MALE, FEMALE',
     `NTRP`              VARCHAR(50)   NOT NULL,
-    `LOCATION_SI`       varchar(50)   NOT NULL,
-    `LOCATION_GU`       varchar(50)   NOT NULL,
+    `ADDRESS`           varchar(255)  NOT NULL,
+    `ZIPCODE`           varchar(50)   NOT NULL,
     `AGE_GROUP`         varchar(50)   NOT NULL COMMENT 'TWENTIES, THIRTIES , FORTIES , SENIOR',
     `PROFILE_IMG`       varchar(1023) NULL,
     `CREATE_DATE`       TIMESTAMP     NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS',
-    `IS_PHONE_VERIFIED` BOOL NULL DEFAULT 0 COMMENT 'true = 1 / false = 0'
+    `IS_PHONE_VERIFIED` BOOL NULL DEFAULT 0 COMMENT 'true = 1 / false = 0',
+    `ROLES`             varchar(50)
 );
 
 CREATE TABLE `MATCHING`
