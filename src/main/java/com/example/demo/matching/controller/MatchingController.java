@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MatchingController {
 
     private final MatchingService matchingService;
-    private final AddressService addressServiceImpl;
+    private final AddressService addressService;
     private final S3Uploader s3Uploader;
 
     @PostMapping
