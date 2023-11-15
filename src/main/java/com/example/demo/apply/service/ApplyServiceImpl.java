@@ -84,6 +84,14 @@ public class ApplyServiceImpl implements ApplyService {
         validateYourOwnPosting(matching, apply);
         validateMatchingClosed(matching);
 
+        if (matching.getRecruitStatus().equals(RecruitStatus.WEATHER_ISSUE)) {
+            apply.changeApplyStatus(ApplyStatus.CANCELED);
+            matching.changeConfirmedNum(matching.getConfirmedNum() - 1);
+            notificationService.createAndSendNotification(matching.getSiteUser(),
+                    matching, NotificationType.CANCEL_APPLY);
+            return apply;
+        }
+
         if (RecruitStatus.FULL.equals(matching.getRecruitStatus())) {
             if (ApplyStatus.ACCEPTED.equals(apply.getStatus())) {
                 //TODO: 패널티 부여
