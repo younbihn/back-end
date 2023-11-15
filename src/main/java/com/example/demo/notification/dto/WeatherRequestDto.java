@@ -1,6 +1,5 @@
 package com.example.demo.notification.dto;
 
-import com.example.demo.matching.dto.KeywordDto;
 import lombok.Builder;
 import lombok.Getter;
 

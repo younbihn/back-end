@@ -61,7 +61,7 @@ public class ApplyServiceImpl implements ApplyService {
 
     private static void validateApplyDuplication(Apply existApply) {
 
-        if (!existApply.getStatus().equals(ApplyStatus.CANCELED)) {
+        if (!existApply.getApplyStatus().equals(ApplyStatus.CANCELED)) {
             throw new AlreadyExistedApplyException();
         }
     }
@@ -81,7 +81,7 @@ public class ApplyServiceImpl implements ApplyService {
 
         var matching = apply.getMatching();
 
-        validateYourOwnPosting(matching, apply);
+        validateNotYourOwnPosting(matching, apply);
         validateMatchingClosed(matching);
 
         if (matching.getRecruitStatus().equals(RecruitStatus.WEATHER_ISSUE)) {
@@ -93,7 +93,7 @@ public class ApplyServiceImpl implements ApplyService {
         }
 
         if (RecruitStatus.FULL.equals(matching.getRecruitStatus())) {
-            if (ApplyStatus.ACCEPTED.equals(apply.getStatus())) {
+            if (ApplyStatus.ACCEPTED.equals(apply.getApplyStatus())) {
                 //TODO: 패널티 부여
                 apply.changeApplyStatus(ApplyStatus.CANCELED);
                 matching.changeRecruitStatus(RecruitStatus.OPEN);
@@ -116,14 +116,14 @@ public class ApplyServiceImpl implements ApplyService {
         }
     }
 
-    private static void validateYourOwnPosting(Matching matching, Apply apply) {
+    private static void validateNotYourOwnPosting(Matching matching, Apply apply) {
         if (matching.getSiteUser().getId() == apply.getSiteUser().getId()) {
             throw new YourOwnPostingCancelException();
         }
     }
 
     private static void validateCancelDuplication(Apply apply) {
-        if (apply.getStatus().equals(ApplyStatus.CANCELED)) {
+        if (apply.getApplyStatus().equals(ApplyStatus.CANCELED)) {
             throw new AlreadyCanceledApplyException();
         }
     }

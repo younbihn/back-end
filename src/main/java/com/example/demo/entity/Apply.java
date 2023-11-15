@@ -52,7 +52,7 @@ public class Apply {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
-    private ApplyStatus status; // default 값 지정됨(PENDING)
+    private ApplyStatus applyStatus; // default 값 지정됨(PENDING)
 
     public static Apply fromDto(ApplyDto applyDto) {
         return Apply.builder()
@@ -62,6 +62,6 @@ public class Apply {
     }
 
     public void changeApplyStatus(ApplyStatus applyStatus) {
-        this.status = applyStatus;
+        this.applyStatus = applyStatus;
     }
 }

@@ -14,11 +14,11 @@ public class AddressRequestDto {
     private String hstryYn;
     private String firstSort;
 
-    public static AddressRequestDto fromKeyword(KeywordDto keywordDto) {
+    public static AddressRequestDto fromKeyword(String keyword) {
         return AddressRequestDto.builder()
                 .currentPage(1)
                 .countPerPage(15)
-                .keyword(keywordDto.getKeyword())
+                .keyword(keyword)
                 .resultType("json")
                 .hstryYn("Y")
                 .firstSort("none")

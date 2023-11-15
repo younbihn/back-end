@@ -4,7 +4,6 @@ import com.example.demo.exception.impl.FailedGetAddressException;
 import com.example.demo.exception.impl.JsonParsingException;
 import com.example.demo.exception.impl.AddressNotFoundException;
 import com.example.demo.matching.dto.AddressRequestDto;
-import com.example.demo.matching.dto.KeywordDto;
 import com.example.demo.matching.dto.RoadAddressDto;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,8 +31,8 @@ public class AddressServiceImpl implements AddressService {
     private String apiKey;
 
     @Override
-    public List<RoadAddressDto> getAddress(KeywordDto keywordDto) {
-        AddressRequestDto addressRequestDto = AddressRequestDto.fromKeyword(keywordDto);
+    public List<RoadAddressDto> getAddress(String keyword) {
+        AddressRequestDto addressRequestDto = AddressRequestDto.fromKeyword(keyword);
         String addressData = getAddressString(addressRequestDto);
         List<String> parseAddress = parseAddress(addressData);
 
