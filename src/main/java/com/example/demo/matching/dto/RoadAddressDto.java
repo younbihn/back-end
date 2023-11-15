@@ -1,7 +1,6 @@
 package com.example.demo.matching.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
