@@ -34,13 +34,7 @@ public class AddressServiceImpl implements AddressService {
     public List<RoadAddressDto> getAddress(String keyword) {
         AddressRequestDto addressRequestDto = AddressRequestDto.fromKeyword(keyword);
         String addressData = getAddressString(addressRequestDto);
-        List<String> parseAddress = parseAddress(addressData);
-
-        return parseAddress.stream()
-                .map(address
-                        -> new RoadAddressDto(address))
-                .collect(Collectors.toList());
-
+        return parseAddress(addressData);
     }
 
     private String getAddressString(AddressRequestDto addressRequestDto) {
@@ -84,7 +78,7 @@ public class AddressServiceImpl implements AddressService {
                 + "&firstSort=" + addressRequestDto.getFirstSort();
     }
 
-    private List<String> parseAddress(String addressData) {
+    private List<RoadAddressDto> parseAddress(String addressData) {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject;
 
@@ -93,7 +87,7 @@ public class AddressServiceImpl implements AddressService {
         } catch (ParseException e) {
             throw new JsonParsingException();
         }
-        List<String> parseResults = new ArrayList<>();
+        List<RoadAddressDto> parseResults = new ArrayList<>();
 
         JSONObject resultsForJuso = (JSONObject) jsonObject.get("results");
         JSONArray jusoList = (JSONArray) resultsForJuso.get("juso");
@@ -101,7 +95,12 @@ public class AddressServiceImpl implements AddressService {
         try {
             for (int i = 0; i < jusoList.size(); i++) {
                 JSONObject jusoData = (JSONObject) jusoList.get(i);
-                parseResults.add(jusoData.get("roadAddr").toString());
+                String roadAddr = jusoData.get("roadAddr").toString();
+                String zipNo = jusoData.get("zipNo").toString();
+                parseResults.add(RoadAddressDto.builder()
+                        .roadAddr(roadAddr)
+                        .zipNo(zipNo)
+                        .build());
             }
         } catch (Exception e) {
             throw new AddressNotFoundException();
