@@ -55,11 +55,11 @@ public class SiteUser {
     @Column(name = "NTRP")
     private Ntrp ntrp;
 
-    @Column(name = "LOCATION_SI", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
-    private String locationSi;
+    @Column(name = "ADDRESS", length = 50, nullable = false, columnDefinition = "VARCHAR(255)")
+    private String address;
 
-    @Column(name = "LOCATION_GU", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
-    private String locationGu;
+    @Column(name = "ZIP_CODE", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
+    private String zipCode;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "AGE_GROUP", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
@@ -99,12 +99,12 @@ public class SiteUser {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setLocationSi(String locationSi) {
-        this.locationSi = locationSi;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public void setLocationGu(String locationGu) {
-        this.locationGu = locationGu;
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
     public void setNtrp(Ntrp ntrp) {

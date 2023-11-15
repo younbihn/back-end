@@ -6,10 +6,7 @@ import com.example.demo.common.FindEntity;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
-import com.example.demo.exception.impl.ApplyNotFoundException;
-import com.example.demo.exception.impl.MatchingNotFoundException;
-import com.example.demo.exception.impl.NoPermissionToEditAndDeleteMatching;
-import com.example.demo.exception.impl.UserNotFoundException;
+import com.example.demo.exception.impl.*;
 import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.dto.ApplyMember;
 import com.example.demo.matching.dto.MatchingDetailDto;
@@ -20,22 +17,34 @@ import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.NotificationType;
 import com.example.demo.type.RecruitStatus;
-import com.example.demo.common.FindEntity;
 
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class MatchingServiceImpl implements MatchingService {
+
+    @Value("${kakao-rest-api.key}")
+    private String apiKey;
 
     private final MatchingRepository matchingRepository;
     private final ApplyRepository applyRepository;
@@ -118,6 +127,51 @@ public class MatchingServiceImpl implements MatchingService {
         // 매핑글 중에서 현재보다 마감일이 뒤에 있으면서 FULL이 아니라 OPEN되어있는 것만 조회
         return matchingRepository.findByRecruitStatusAndRecruitDueDateTimeGreaterThan(RecruitStatus.OPEN, LocalDateTime.now(), pageable)
                 .map(MatchingPreviewDto::fromEntity);
+    }
+
+    @Override
+    public Page<MatchingPreviewDto> getListByDistance(Long userId, Pageable pageable) {
+        SiteUser siteUser = validateUserGivenId(userId);
+        String address = siteUser.getAddress();
+        String detailedAddress = getUserAddressInfo(address);
+        Double lat = getLatLon(detailedAddress).get(0);
+        Double lon = getLatLon(detailedAddress).get(1);
+
+        return matchingRepository.findByDistance(BigDecimal.valueOf(lon), BigDecimal.valueOf(lat), pageable)
+                .map(MatchingPreviewDto::fromEntity);
+    }
+
+    private String getUserAddressInfo(String address){
+        WebClient webClient = WebClient.builder()
+                .baseUrl("https://dapi.kakao.com/v2/local/search/address")
+                .defaultHeader("Authorization", apiKey)
+                .build();
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("query", address)
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+    }
+
+    private List<Double> getLatLon(String address){
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject;
+
+        try {
+            jsonObject = (JSONObject) jsonParser.parse(address);
+        } catch (ParseException e) {
+            throw new JsonParsingException();
+        }
+
+        JSONArray documents = (JSONArray) jsonObject.get("documents");
+        JSONObject firstDocument = (JSONObject) documents.get(0);
+        double lon = Double.parseDouble((String) firstDocument.get("x"));
+        double lat = Double.parseDouble((String) firstDocument.get("y"));
+
+        return List.of(lat, lon);
     }
 
     @Override

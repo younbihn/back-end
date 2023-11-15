@@ -21,8 +21,8 @@ public class SiteUserMyInfoDto {
     private Integer penaltyScore;
     private GenderType gender;
     private Ntrp ntrp;
-    private String locationSi;
-    private String locationGu;
+    private String address;
+    private String zipCode;
     private AgeGroup ageGroup;
     private String profileImg;
 
@@ -35,8 +35,8 @@ public class SiteUserMyInfoDto {
                 .penaltyScore(siteUser.getPenaltyScore())
                 .gender(siteUser.getGender())
                 .ntrp(siteUser.getNtrp())
-                .locationSi(siteUser.getLocationSi())
-                .locationGu(siteUser.getLocationGu())
+                .address(siteUser.getAddress())
+                .zipCode(siteUser.getZipCode())
                 .ageGroup(siteUser.getAgeGroup())
                 .profileImg(siteUser.getProfileImg())
                 .build();

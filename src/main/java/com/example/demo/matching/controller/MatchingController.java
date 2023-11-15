@@ -97,13 +97,24 @@ public class MatchingController {
             @RequestParam(required = false) String sort) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
+
+        // 등록순 정렬
         if ("register".equals(sort)) {
             pageRequest = PageRequest.of(page, size, Sort.by("createTime").ascending());
-        } else if ("due-date".equals(sort)) {
-            pageRequest = PageRequest.of(page, size, Sort.by("recruitDueDateTime").ascending());
+            return ResponseEntity.ok(matchingService.getList(pageRequest));
         }
-        var result = matchingService.getList(pageRequest);
-        return ResponseEntity.ok(result);
+        // 마감순 정렬
+        else if ("due-date".equals(sort)) {
+            pageRequest = PageRequest.of(page, size, Sort.by("recruitDueDateTime").ascending());
+            return ResponseEntity.ok(matchingService.getList(pageRequest));
+        }
+        // 거리순 정렬
+        else if ("distance".equals(sort)) {
+            //TODO: 로그인 여부에 상관없이 사용자의 현 주소 받아오도록 해야 함
+            return ResponseEntity.ok(matchingService.getListByDistance(1L, pageRequest));
+        }
+        // 정렬 없을 때
+        return ResponseEntity.ok(matchingService.getList(pageRequest));
     }
 
     @SneakyThrows
