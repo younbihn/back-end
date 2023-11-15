@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
+@Entity(name = "SITE_USER")
 public class SiteUser {
 
     @Id
@@ -84,4 +84,8 @@ public class SiteUser {
 
     @OneToMany(mappedBy = "siteUser")
     private List<Notification> notifications; // 알림
+
+    public void setProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
 }

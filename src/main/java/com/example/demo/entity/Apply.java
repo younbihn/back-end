@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @DynamicInsert
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "APPLY")
 public class Apply {
 
     @Id
@@ -50,7 +52,7 @@ public class Apply {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
-    private ApplyStatus status; // default 값 지정됨(PENDING)
+    private ApplyStatus applyStatus; // default 값 지정됨(PENDING)
 
     public static Apply fromDto(ApplyDto applyDto) {
         return Apply.builder()
@@ -60,6 +62,6 @@ public class Apply {
     }
 
     public void changeApplyStatus(ApplyStatus applyStatus) {
-        this.status = applyStatus;
+        this.applyStatus = applyStatus;
     }
 }

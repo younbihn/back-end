@@ -2,14 +2,13 @@ package com.example.demo.apply.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.example.demo.apply.repository.ApplyRepository;
+import com.example.demo.common.FindEntity;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
@@ -20,13 +19,13 @@ import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
+import com.example.demo.notification.service.NotificationService;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
-import com.example.demo.util.FindEntityUtils;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,7 +51,10 @@ class ApplyServiceImplTest {
     private MatchingRepository matchingRepository;
 
     @Mock
-    private FindEntityUtils findEntityUtils;
+    private FindEntity findEntity;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ApplyServiceImpl applyService;
@@ -65,10 +67,10 @@ class ApplyServiceImplTest {
 
         Matching matching = getMatching(siteUser);
 
-        given(findEntityUtils.findUser(1L))
+        given(findEntity.findUser(1L))
                 .willReturn(siteUser);
 
-        given(findEntityUtils.findMatching(1L))
+        given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         ArgumentCaptor<Apply> captor = ArgumentCaptor.forClass(Apply.class);
@@ -91,10 +93,10 @@ class ApplyServiceImplTest {
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findUser(2L))
+        given(findEntity.findUser(2L))
                 .willReturn(siteUserForApply);
 
-        given(findEntityUtils.findMatching(1L))
+        given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         given(applyRepository.existsBySiteUser_IdAndMatching_Id(2L, 1L))
@@ -122,10 +124,10 @@ class ApplyServiceImplTest {
 
         Matching matching = getClosedMatching(siteUser);
 
-        given(findEntityUtils.findUser(2L))
+        given(findEntity.findUser(2L))
                 .willReturn(siteUserForApply);
 
-        given(findEntityUtils.findMatching(1L))
+        given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         // when
@@ -150,7 +152,7 @@ class ApplyServiceImplTest {
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
 
         // when
@@ -171,7 +173,7 @@ class ApplyServiceImplTest {
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
         // when
         AlreadyClosedMatchingException exception = assertThrows(AlreadyClosedMatchingException.class,
@@ -193,7 +195,7 @@ class ApplyServiceImplTest {
         apply.changeApplyStatus(ApplyStatus.ACCEPTED);
 
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
 
         // when
@@ -215,7 +217,7 @@ class ApplyServiceImplTest {
 
         Apply apply = getCancelApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
         // when
         AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
