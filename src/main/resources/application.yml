@@ -25,7 +25,13 @@ spring:
 scheduler:
   cron:
     matches:
-      confirm: "0 0 0/1 * * *"
+      confirm: "0 0 0/1 * * "
+
+    weather:
+      notification: "0 30 6 * ?"
 
 address-api:
   key: devU01TX0FVVEgyMDIzMTEwODIyMjIxOTExNDI1NzI=
+
+weather-api:
+  key: Fg%2FykrK6V%2BW3fBedso%2BvxODsN0Etqdd%2FYQqDzpx5OMRRXA03Lhy7dhuByFnDyAml5Jc0jBtpp6dVwjaBRGdchA%3D%3D

@@ -150,7 +150,7 @@ public class SiteUserInfoServiceTest {
                 .build();
         List<Apply> applies = Arrays.asList(apply);
 
-        when(applyRepository.findBySiteUser_Id(any())).thenReturn(applies);
+        when(applyRepository.findAllBySiteUser_Id(any())).thenReturn(applies);
 
         List<MatchingMyMatchingDto> result = siteUserInfoService.getApplyBySiteUser(siteUser.getId());
         assertFalse(result.isEmpty());
