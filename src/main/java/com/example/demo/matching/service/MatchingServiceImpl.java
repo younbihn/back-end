@@ -21,8 +21,11 @@ import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.NotificationType;
 import com.example.demo.type.RecruitStatus;
 import com.example.demo.common.FindEntity;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +42,10 @@ public class MatchingServiceImpl implements MatchingService {
     private final FindEntity findEntity;
     private final SiteUserRepository siteUserRepository;
     private final NotificationService notificationService;
+
+    private static boolean isOrganizer(long userId, Matching matching) {
+        return matching.getSiteUser().getId() == userId;
+    }
 
     @Override
     public Matching create(Long userId, MatchingDetailDto matchingDetailDto) {
@@ -108,7 +115,8 @@ public class MatchingServiceImpl implements MatchingService {
 
     @Override
     public Page<MatchingPreviewDto> getList(Pageable pageable) {
-        return matchingRepository.findAll(pageable)
+        // 매핑글 중에서 현재보다 마감일이 뒤에 있으면서 FULL이 아니라 OPEN되어있는 것만 조회
+        return matchingRepository.findByRecruitStatusAndRecruitDueDateTimeGreaterThan(RecruitStatus.OPEN, LocalDateTime.now(), pageable)
                 .map(MatchingPreviewDto::fromEntity);
     }
 
@@ -184,9 +192,5 @@ public class MatchingServiceImpl implements MatchingService {
                         .siteUserId(apply.getSiteUser().getId())
                         .nickname(apply.getSiteUser().getNickname())
                         .build()).collect(Collectors.toList());
-    }
-
-    private static boolean isOrganizer(long userId, Matching matching) {
-        return matching.getSiteUser().getId() == userId;
     }
 }
