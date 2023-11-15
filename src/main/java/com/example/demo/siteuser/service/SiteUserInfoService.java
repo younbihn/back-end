@@ -2,6 +2,7 @@ package com.example.demo.siteuser.service;
 
 import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
 import com.example.demo.siteuser.dto.SiteUserInfoDto;
+import com.example.demo.siteuser.dto.SiteUserModifyDto;
 import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface SiteUserInfoService {
     List<MatchingMyMatchingDto> getMatchingBySiteUser(Long userId);
     List<MatchingMyMatchingDto> getApplyBySiteUser(Long userId);
     void updateProfileImage(Long userId, String imageUrl);
+    void updateSiteUserInfo(Long userId, SiteUserModifyDto siteUserModifyDto);
+    String getProfileUrl(Long userId);
 }
