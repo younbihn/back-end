@@ -23,9 +23,9 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
     List<Matching> findBySiteUser_Id(Long userId);
     boolean existsByIdAndSiteUser(Long id, SiteUser siteUser);
     Optional<List<Matching>> findAllByRecruitDueDateTime(LocalDateTime now);
-    Page<Matching> findByRecruitStatusAndRecruitDueDateTimeGreaterThan(RecruitStatus OPEN, LocalDateTime LocalDateTime , Pageable pageable);
     Optional<List<Matching>> findAllByDate(LocalDate today);
 
+    Page<Matching> findByRecruitStatusAndRecruitDueDateTimeGreaterThan(RecruitStatus OPEN, LocalDateTime LocalDateTime , Pageable pageable);
     @Query(value = "SELECT *, ST_Distance_Sphere(POINT(:lon, :lat), POINT(LON, LAT)) as distance " +
             "FROM Matching " +
             "WHERE RECRUIT_STATUS = 'OPEN' AND matching.RECRUIT_DUE_DATE >= current_timestamp " +

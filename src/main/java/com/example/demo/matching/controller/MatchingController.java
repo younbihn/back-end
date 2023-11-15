@@ -2,11 +2,7 @@ package com.example.demo.matching.controller;
 
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.exception.impl.S3UploadFailException;
-import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.dto.KeywordDto;
-import com.example.demo.matching.dto.MatchingDetailDto;
-import com.example.demo.matching.dto.MatchingPreviewDto;
-import com.example.demo.matching.dto.RoadAddressDto;
+import com.example.demo.matching.dto.*;
 import com.example.demo.matching.service.AddressService;
 import com.example.demo.matching.service.MatchingService;
 
@@ -94,7 +90,8 @@ public class MatchingController {
     public ResponseEntity<Page<MatchingPreviewDto>> getMatchingList(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
-            @RequestParam(required = false) String sort) {
+            @RequestParam(required = false) String sort,
+            @RequestBody FilterDto filters) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
