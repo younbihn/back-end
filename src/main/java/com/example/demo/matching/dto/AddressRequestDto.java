@@ -3,8 +3,8 @@ package com.example.demo.matching.dto;
 import lombok.Builder;
 import lombok.Getter;
 
-@Getter
 @Builder
+@Getter
 public class AddressRequestDto {
 
     private Integer currentPage;

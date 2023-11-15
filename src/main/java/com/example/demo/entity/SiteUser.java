@@ -11,8 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -84,6 +82,42 @@ public class SiteUser {
 
     @OneToMany(mappedBy = "siteUser")
     private List<Notification> notifications; // 알림
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setLocationSi(String locationSi) {
+        this.locationSi = locationSi;
+    }
+
+    public void setLocationGu(String locationGu) {
+        this.locationGu = locationGu;
+    }
+
+    public void setNtrp(Ntrp ntrp) {
+        this.ntrp = ntrp;
+    }
+
+    public void setGender(GenderType gender) {
+        this.gender = gender;
+    }
+
+    public void setAgeGroup(AgeGroup ageGroup) {
+        this.ageGroup = ageGroup;
+    }
 
     public void setProfileImg(String profileImg) {
         this.profileImg = profileImg;

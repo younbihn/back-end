@@ -77,4 +77,16 @@ public class S3Uploader {
         }
         return amazonS3.getUrl(bucket, fileName).toString();
     }
+
+    public void deleteFile(String fileName) {
+        try {
+            amazonS3.deleteObject(bucket, fileName);
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+            throw new RuntimeException("S3에서 파일 삭제 중 에러 발생", e);
+        } catch (SdkClientException e) {
+            e.printStackTrace();
+            throw new RuntimeException("S3 클라이언트에서 에러 발생", e);
+        }
+    }
 }
