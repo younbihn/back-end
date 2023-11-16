@@ -5,6 +5,7 @@ import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +26,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @Entity(name = "SITE_USER")
 @Table(name = "SITE_USER")
+@DynamicUpdate
+@EntityListeners(AuditingEntityListener.class)
 public class SiteUser implements UserDetails {
 
     @Id
@@ -72,8 +78,9 @@ public class SiteUser implements UserDetails {
     @Column(name = "PROFILE_IMG", length = 1023, columnDefinition = "VARCHAR(1023)")
     private String profileImg;
 
-    @Column(name = "CREATE_DATE", nullable = false, columnDefinition = "TIMESTAMP")
-    private Timestamp createDate;
+    @CreatedDate
+    @Column(name = "CREATE_DATE")
+    private LocalDateTime createDate;
 
     @Column(name = "IS_PHONE_VERIFIED", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean isPhoneVerified;

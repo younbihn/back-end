@@ -21,7 +21,7 @@ public class ApplyController {
 
     private final ApplyService applyService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/matches/{match_id}")
     public void apply(@PathVariable(value = "match_id") long matchingId, Principal principal) {
 
@@ -30,14 +30,14 @@ public class ApplyController {
         applyService.apply(email, matchingId);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{apply_id}")
     public void cancelApply(@PathVariable(value = "apply_id") long applyId) {
 
         applyService.cancel(applyId);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @PatchMapping("/matches/{matching_id}")
     public void acceptApply(@RequestBody AppliedListAndConfirmedList appliedListAndConfirmedList,
                                    @PathVariable(value = "matching_id") long matchingId) {

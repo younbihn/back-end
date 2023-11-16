@@ -4,6 +4,7 @@ import com.example.demo.entity.SiteUser;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
+import java.time.LocalDateTime;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -28,7 +29,7 @@ public class SiteUserMyInfoDto {
     private String zipCode;
     private AgeGroup ageGroup;
     private String profileImg;
-    private Timestamp createDate;
+    private LocalDateTime createDate;
     private Boolean isPhoneVerified;
 
     public static SiteUserMyInfoDto fromEntity(SiteUser siteUser) {
