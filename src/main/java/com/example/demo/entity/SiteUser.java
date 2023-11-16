@@ -1,11 +1,13 @@
 package com.example.demo.entity;
 
 import com.example.demo.type.AgeGroup;
+import com.example.demo.type.Authority;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,8 +37,10 @@ public class SiteUser implements UserDetails {
     private Long id;
 
     //@ElementCollection
+    //@Enumerated(EnumType.STRING)
     @Convert(converter = SiteUserRoleConverter.class)
     private List<String> roles;
+    //private List<Authority> roles;
 
     @Column(name = "PASSWORD", length = 1023, nullable = false, columnDefinition = "VARCHAR(1023)")
     private String password;
@@ -96,9 +100,10 @@ public class SiteUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+        //Collection<GrantedAuthority> authorities = new ArrayList<>();
+        //authorities.add(new SimpleGrantedAuthority(this.getRoles().toString()));
+        //return authorities;
+        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
     @Override
