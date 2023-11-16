@@ -3,6 +3,7 @@ package com.example.demo.matching.controller;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.matching.dto.ApplyContents;
+import com.example.demo.matching.dto.FilterRequestDto;
 import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.service.MatchingService;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -158,7 +159,7 @@ class MatchingControllerTest {
         arrayList.add(matchingPreviewDto);
         Page<MatchingPreviewDto> pages = new PageImpl<>(arrayList, pageable, 1);
 
-        given(matchingService.getList(pageable))
+        given(matchingService.findFilteredMatching(new FilterRequestDto(), pageable))
                 .willReturn(pages);
 
         mockMvc.perform(get("/api/matches/list")
