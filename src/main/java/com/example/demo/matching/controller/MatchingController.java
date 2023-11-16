@@ -3,12 +3,11 @@ package com.example.demo.matching.controller;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.*;
-import com.example.demo.matching.service.AddressService;
+import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.openfeign.dto.address.AddressResponseDto;
-import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.service.MatchingService;
 
 import java.io.IOException;
