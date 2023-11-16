@@ -1,4 +1,4 @@
-package com.example.demo.matching.dto;
+package com.example.demo.openfeign.dto.address;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public class AddressRequestDto {
 
-    private Integer currentPage;
-    private Integer countPerPage;
+    private int currentPage;
+    private int countPerPage;
     private String keyword;
     private String resultType;
     private String hstryYn;
