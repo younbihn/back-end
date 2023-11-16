@@ -7,20 +7,13 @@ import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.exception.impl.*;
-import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.dto.ApplyMember;
-import com.example.demo.matching.dto.MatchingDetailDto;
-import com.example.demo.matching.dto.MatchingPreviewDto;
+import com.example.demo.matching.dto.*;
+import com.example.demo.matching.filter.Region;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.service.NotificationService;
 import com.example.demo.repository.SiteUserRepository;
-import com.example.demo.type.ApplyStatus;
-import com.example.demo.type.NotificationType;
-import com.example.demo.type.RecruitStatus;
+import com.example.demo.type.*;
 
-import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,21 +29,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class MatchingServiceImpl implements MatchingService {
 
-    @Value("${kakao-rest-api.key}")
-    private String apiKey;
-
     private final MatchingRepository matchingRepository;
     private final ApplyRepository applyRepository;
     private final FindEntity findEntity;
     private final SiteUserRepository siteUserRepository;
     private final NotificationService notificationService;
+    @Value("${kakao-rest-api.key}")
+    private String apiKey;
 
     private static boolean isOrganizer(long userId, Matching matching) {
         return matching.getSiteUser().getId() == userId;
@@ -123,25 +114,98 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public Page<MatchingPreviewDto> getList(Pageable pageable) {
-        // 매핑글 중에서 현재보다 마감일이 뒤에 있으면서 FULL이 아니라 OPEN되어있는 것만 조회
-        return matchingRepository.findByRecruitStatusAndRecruitDueDateTimeGreaterThan(RecruitStatus.OPEN, LocalDateTime.now(), pageable)
-                .map(MatchingPreviewDto::fromEntity);
-    }
-
-    @Override
-    public Page<MatchingPreviewDto> getListByDistance(Long userId, Pageable pageable) {
-        SiteUser siteUser = validateUserGivenId(userId);
+    public Page<MatchingPreviewDto> findFilteredMatching(FilterRequestDto filterRequestDto, Pageable pageable) {
+        //TODO: 이부분 외부에서 위경도 받게 수정해야 함
+        SiteUser siteUser = validateUserGivenId(1L);
         String address = siteUser.getAddress();
         String detailedAddress = getUserAddressInfo(address);
         Double lat = getLatLon(detailedAddress).get(0);
         Double lon = getLatLon(detailedAddress).get(1);
 
-        return matchingRepository.findByDistance(BigDecimal.valueOf(lon), BigDecimal.valueOf(lat), pageable)
+        // 필터링 없으면 정렬만 하고 반환
+        if(filterRequestDto == null){
+            return matchingRepository.findByRecruitStatusAndRecruitDueDateTimeGreaterThan(RecruitStatus.OPEN, LocalDateTime.now(), pageable)
+                    .map(MatchingPreviewDto::fromEntity);
+        }
+
+        // 필터링 있으면 쿼리 만들기
+        String query = makeFilterQuery(filterRequestDto);
+        System.out.println(query);
+        return matchingRepository.findFilteredMatching(query, pageable)
                 .map(MatchingPreviewDto::fromEntity);
     }
 
-    private String getUserAddressInfo(String address){
+    private String makeFilterQuery(FilterRequestDto filterRequestDto) {
+        StringBuilder select = new StringBuilder();
+        String from = " FROM Matching";
+        StringBuilder where = new StringBuilder(" WHERE RECRUIT_STATUS = 'OPEN' AND RECRUIT_DUE_DATE >= current_timestamp");
+
+        if (filterRequestDto.getLocation() != null) {
+            String lat = filterRequestDto.getLocation().getLat();
+            String lon = filterRequestDto.getLocation().getLon();
+            select.append(
+                    String.format(", ST_Distance_Sphere(POINT(%f, %f), POINT(LON, LAT)) as distance"
+                            , Double.parseDouble(lon), Double.parseDouble(lat)));
+        }
+        if (filterRequestDto.getFilters() != null) {
+            FilterDto filter = filterRequestDto.getFilters();
+            if (filter.getStartDate() != null) {
+                where.append(String.format("AND (DATE >= %s)", filter.getStartDate()));
+            }
+            if (filter.getEndDate() != null) {
+                where.append(String.format("AND (DATE <= %s)", filter.getEndDate()));
+            }
+            if (filter.getStartTime() != null) {
+                where.append(String.format("AND (START_TIME >= %s)", filter.getStartTime()));
+            }
+            if (filter.getEndTime() != null) {
+                where.append(String.format("AND (END_TIME <= %s)", filter.getEndTime()));
+            }
+
+            if (filter.getRegions().size() != 0) {
+                StringBuilder regionCondition = new StringBuilder("AND (");
+                List<Region> regions = filter.getRegions();
+                for (int i = 0; i < regions.size(); i++) {
+                    regionCondition.append(String.format("LOCATION LIKE '%%%s/%%'", regions.get(i).getKorean()));
+                    if (i != regions.size() - 1) {
+                        regionCondition.append("OR");
+                    }
+                }
+                regionCondition.append(")");
+                where.append(regionCondition);
+            }
+            if (filter.getMatchingTypes().size() != 0) {
+                StringBuilder mathingTypeCondition = new StringBuilder("AND (");
+                List<MatchingType> matchingTypes = filter.getMatchingTypes();
+                for (int i = 0; i < matchingTypes.size(); i++) {
+                    mathingTypeCondition.append(String.format("MATCHING_TYPE LIKE '%%%s/%%'", matchingTypes.get(i).name()));
+                    if (i != matchingTypes.size() - 1) {
+                        mathingTypeCondition.append("OR");
+                    }
+                }
+                mathingTypeCondition.append(")");
+                where.append(mathingTypeCondition);
+            }
+            if (filter.getNtrps().size() != 0) {
+                StringBuilder ntrpCondition = new StringBuilder("AND (");
+                List<Ntrp> ntrps = filter.getNtrps();
+                for (int i = 0; i < ntrps.size(); i++) {
+                    ntrpCondition.append(String.format("NTRP LIKE '%s'", ntrps.get(i).name()));
+                    if (i != ntrps.size() - 1) {
+                        ntrpCondition.append("OR");
+                    }
+                }
+                ntrpCondition.append(")");
+                where.append(ntrpCondition);
+            }
+        }
+        if (filterRequestDto.getLocation() != null) {
+            where.append(" ORDER BY distance");
+        }
+        return select + from + where;
+    }
+
+    private String getUserAddressInfo(String address) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://dapi.kakao.com/v2/local/search/address")
                 .defaultHeader("Authorization", apiKey)
@@ -156,7 +220,7 @@ public class MatchingServiceImpl implements MatchingService {
                 .block();
     }
 
-    private List<Double> getLatLon(String address){
+    private List<Double> getLatLon(String address) {
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject;
 

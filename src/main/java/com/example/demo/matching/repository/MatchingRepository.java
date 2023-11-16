@@ -24,14 +24,11 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
     boolean existsByIdAndSiteUser(Long id, SiteUser siteUser);
     Optional<List<Matching>> findAllByRecruitDueDateTime(LocalDateTime now);
     Optional<List<Matching>> findAllByDate(LocalDate today);
-
     Page<Matching> findByRecruitStatusAndRecruitDueDateTimeGreaterThan(RecruitStatus OPEN, LocalDateTime LocalDateTime , Pageable pageable);
-    @Query(value = "SELECT *, ST_Distance_Sphere(POINT(:lon, :lat), POINT(LON, LAT)) as distance " +
-            "FROM Matching " +
-            "WHERE RECRUIT_STATUS = 'OPEN' AND matching.RECRUIT_DUE_DATE >= current_timestamp " +
-            "ORDER BY distance",
+
+    @Query(value = "SELECT * :query ",
             countQuery = "SELECT COUNT(*) FROM Matching",
             nativeQuery = true
     )
-    Page<Matching> findByDistance(@Param("lon") BigDecimal lon, @Param("lat") BigDecimal lat, Pageable pageable);
+    Page<Matching> findFilteredMatching(@Param("query") String query, Pageable pageable);
 }
