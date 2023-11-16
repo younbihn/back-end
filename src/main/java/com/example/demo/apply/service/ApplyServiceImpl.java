@@ -9,9 +9,11 @@ import com.example.demo.exception.impl.AlreadyClosedMatchingException;
 import com.example.demo.exception.impl.AlreadyExistedApplyException;
 import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
+import com.example.demo.exception.impl.UserNotFoundException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.service.NotificationService;
+import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.NotificationType;
 import com.example.demo.type.RecruitStatus;
@@ -27,19 +29,20 @@ public class ApplyServiceImpl implements ApplyService {
 
     private final ApplyRepository applyRepository;
     private final MatchingRepository matchingRepository;
+    private final SiteUserRepository siteUserRepository;
     private final NotificationService notificationService;
     private final FindEntity findEntity;
 
     @Override
-    public Apply apply(long userId, long matchingId) {
-        var user = findEntity.findUser(userId);
+    public Apply apply(String email, long matchingId) {
+        var user = siteUserRepository.findByEmail(email).orElseThrow(() -> new  UserNotFoundException());
         var matching = findEntity.findMatching(matchingId);
         var organizer = matching.getSiteUser();
 
         validateRecruitStatus(matching); // 매칭 상태 검사
 
-        if (isAlreadyExisted(userId, matchingId)) { // 신청 중복 검사
-            var existApply = applyRepository.findBySiteUser_IdAndMatching_Id(userId, matchingId).get();
+        if (isAlreadyExisted(user.getId(), matchingId)) { // 신청 중복 검사
+            var existApply = applyRepository.findBySiteUser_IdAndMatching_Id(user.getId(), matchingId).get();
             validateApplyDuplication(existApply);
             existApply.changeApplyStatus(ApplyStatus.PENDING); // 취소 신청 내역 있을 경우 상태만 변경
             return existApply;

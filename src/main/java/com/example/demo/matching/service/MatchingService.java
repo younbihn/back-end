@@ -17,5 +17,5 @@ public interface MatchingService {
     Page<MatchingPreviewDto> getListByDistance(Long userId, Pageable pageable);
 
     MatchingDetailDto getDetail(Long matchingId);
-    ApplyContents getApplyContents(long userId, long matchId) throws JsonProcessingException;
+    ApplyContents getApplyContents(String email, long matchId) throws JsonProcessingException;
 }

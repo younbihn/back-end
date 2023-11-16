@@ -13,7 +13,7 @@ import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.service.NotificationService;
-import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.NotificationType;
 import com.example.demo.type.RecruitStatus;
@@ -197,7 +197,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public ApplyContents getApplyContents(long userId, long matchingId) {
+    public ApplyContents getApplyContents(String email, long matchingId) {
         var matching = findEntity.findMatching(matchingId);
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = matching.getConfirmedNum();
@@ -206,7 +206,7 @@ public class MatchingServiceImpl implements MatchingService {
         var appliedMembers = findAppliedMembers(matchingId);
         var confirmedMembers = findConfirmedMembers(matchingId);
 
-        if (isOrganizer(userId, matching)) {
+        if (isOrganizer(matching.getSiteUser().getId(), matching)) {
             var applyContentsForOrganizer = ApplyContents.builder()
                     .applyNum(applyNum)
                     .recruitNum(recruitNum)

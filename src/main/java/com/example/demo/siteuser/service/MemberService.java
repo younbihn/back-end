@@ -2,7 +2,7 @@ package com.example.demo.siteuser.service;
 
 import com.example.demo.entity.Auth;
 import com.example.demo.entity.SiteUser;
-import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.siteuser.repository.SiteUserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

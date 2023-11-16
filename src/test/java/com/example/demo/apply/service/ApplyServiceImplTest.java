@@ -20,13 +20,13 @@ import com.example.demo.exception.impl.OverRecruitNumberException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.service.NotificationService;
+import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
-import com.example.demo.common.FindEntity;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,6 +57,9 @@ class ApplyServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private SiteUserRepository siteUserRepository;
+
     @InjectMocks
     private ApplyServiceImpl applyService;
 
@@ -68,7 +71,7 @@ class ApplyServiceImplTest {
 
         Matching matching = getMatching(siteUser);
 
-        given(findEntity.findUser(1L))
+        given(siteUserRepository.findByEmail("emial@gmail.com").get())
                 .willReturn(siteUser);
 
         given(findEntity.findMatching(1L))
@@ -77,7 +80,7 @@ class ApplyServiceImplTest {
         ArgumentCaptor<Apply> captor = ArgumentCaptor.forClass(Apply.class);
 
         // when
-        applyService.apply(1L, 1L);
+        applyService.apply("emial@gmail.com", 1L);
 
         // then
         verify(applyRepository, times(1)).save(captor.capture()); // save 메서드가 한 번 실행되는 지 검증
@@ -94,8 +97,8 @@ class ApplyServiceImplTest {
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntity.findUser(2L))
-                .willReturn(siteUserForApply);
+        given(siteUserRepository.findByEmail("emial2@gmail.com").get())
+                .willReturn(siteUser);
 
         given(findEntity.findMatching(1L))
                 .willReturn(matching);
@@ -108,7 +111,7 @@ class ApplyServiceImplTest {
 
         // when
         AlreadyExistedApplyException exception = assertThrows(AlreadyExistedApplyException.class,
-                () -> applyService.apply(2L, 1L));
+                () -> applyService.apply("emial2@gmail.com", 1L));
 
         // then
         assertEquals(exception.getMessage(), "이미 참여 신청한 경기입니다.");
@@ -125,15 +128,15 @@ class ApplyServiceImplTest {
 
         Matching matching = getClosedMatching(siteUser);
 
-        given(findEntity.findUser(2L))
-                .willReturn(siteUserForApply);
+        given(siteUserRepository.findByEmail("emial2@gmail.com").get())
+                .willReturn(siteUser);
 
         given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         // when
         ClosedMatchingException exception = assertThrows(ClosedMatchingException.class,
-                () -> applyService.apply(2L, 1L));
+                () -> applyService.apply("emial2@gmail.com", 1L));
 
         // then
         assertEquals(exception.getMessage(), "신청 마감된 경기입니다.");
@@ -332,7 +335,7 @@ class ApplyServiceImplTest {
                 .id(2L)
                 .password("1234")
                 .nickname("nickname")
-                .email("emial@gmail.com")
+                .email("emial2@gmail.com")
                 .phoneNumber("010-1234-5678")
                 .gender(GenderType.FEMALE)
                 .ntrp(Ntrp.ADVANCE)
