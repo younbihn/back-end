@@ -3,6 +3,8 @@ package com.example.demo.siteuser.controller;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.siteuser.dto.*;
 import com.example.demo.siteuser.service.SiteUserInfoService;
+import com.example.demo.type.PenaltyCode;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -113,6 +115,22 @@ public class SiteUserInfoController {
         } catch (Exception e) {
             e.printStackTrace();  // Log the exception
             return new ResponseEntity<>("Error occurred while deleting the notification: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/penalty/{userId}")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> applyPenalty(@PathVariable Long userId, @RequestBody SiteUserPenaltyDto siteUserPenaltyDto) {
+        try {
+            // DTO에서 penaltyCode를 가져와서 enum으로 변환
+            PenaltyCode penaltyCode = PenaltyCode.fromString(siteUserPenaltyDto.getPenaltyCode().toUpperCase());
+            siteUserInfoService.updatePenaltyScore(userId, penaltyCode);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            // 여기서도 DTO의 값을 사용하여 오류 메시지를 생성
+            return new ResponseEntity<>("Invalid penalty code: " + siteUserPenaltyDto.getPenaltyCode(), HttpStatus.BAD_REQUEST);
         }
     }
 }

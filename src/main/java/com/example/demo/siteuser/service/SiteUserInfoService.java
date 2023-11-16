@@ -1,7 +1,7 @@
 package com.example.demo.siteuser.service;
 
-import com.example.demo.entity.Notification;
 import com.example.demo.siteuser.dto.*;
+import com.example.demo.type.PenaltyCode;
 
 import java.util.List;
 
@@ -16,4 +16,5 @@ public interface SiteUserInfoService {
     String getProfileUrl(Long userId);
     List<SiteUserNotificationDto> getNotificationBySiteUser(Long userId);
     void deleteNotification(Long userId, Long notificationId);
+    void updatePenaltyScore(Long userId, PenaltyCode penaltyCode);
 }

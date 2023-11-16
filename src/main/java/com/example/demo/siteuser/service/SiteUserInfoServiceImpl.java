@@ -9,6 +9,7 @@ import com.example.demo.notification.repository.NotificationRepository;
 import com.example.demo.siteuser.dto.*;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.siteuser.repository.SiteUserRepository;
+import com.example.demo.type.PenaltyCode;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -147,5 +148,18 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     @Override
     public void deleteNotification(Long userId, Long notificationId) {
         notificationRepository.deleteByIdAndSiteUser_Id(notificationId, userId);
+    }
+
+    @Override
+    @Transactional
+    public void updatePenaltyScore(Long userId, PenaltyCode penaltyCode) {
+        SiteUser user = siteUserRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+
+        int penaltyAmount = penaltyCode == PenaltyCode.OFFENSE_CHAT ||
+                penaltyCode == PenaltyCode.DELETE_MATCH_EVEN_SOMEONE_APPLIED ? -10 : -20;
+
+        user.setPenaltyScore(user.getPenaltyScore() == null ? penaltyAmount : user.getPenaltyScore() + penaltyAmount);
+        siteUserRepository.save(user);
     }
 }
