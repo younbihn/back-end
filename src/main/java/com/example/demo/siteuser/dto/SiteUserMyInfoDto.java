@@ -7,6 +7,7 @@ import com.example.demo.type.Ntrp;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -14,6 +15,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class SiteUserMyInfoDto {
+    private Long id;
+    private String password;
     private String nickname;
     private String email;
     private String phoneNumber;
@@ -21,13 +24,17 @@ public class SiteUserMyInfoDto {
     private Integer penaltyScore;
     private GenderType gender;
     private Ntrp ntrp;
-    private String locationSi;
-    private String locationGu;
+    private String address;
+    private String zipCode;
     private AgeGroup ageGroup;
     private String profileImg;
+    private Timestamp createDate;
+    private Boolean isPhoneVerified;
 
     public static SiteUserMyInfoDto fromEntity(SiteUser siteUser) {
         return SiteUserMyInfoDto.builder()
+                .id(siteUser.getId())
+                .password(siteUser.getPassword())
                 .nickname(siteUser.getNickname())
                 .email(siteUser.getEmail())
                 .phoneNumber(siteUser.getPhoneNumber())
@@ -35,10 +42,12 @@ public class SiteUserMyInfoDto {
                 .penaltyScore(siteUser.getPenaltyScore())
                 .gender(siteUser.getGender())
                 .ntrp(siteUser.getNtrp())
-                .locationSi(siteUser.getLocationSi())
-                .locationGu(siteUser.getLocationGu())
+                .address(siteUser.getAddress())
+                .zipCode(siteUser.getZipCode())
                 .ageGroup(siteUser.getAgeGroup())
                 .profileImg(siteUser.getProfileImg())
+                .createDate(siteUser.getCreateDate())
+                .isPhoneVerified(siteUser.getIsPhoneVerified())
                 .build();
     }
 }

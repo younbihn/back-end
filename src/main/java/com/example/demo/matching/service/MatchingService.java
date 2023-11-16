@@ -13,6 +13,9 @@ public interface MatchingService {
     Matching update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto);
     void delete(Long userId, Long matchingId);
     Page<MatchingPreviewDto> getList(Pageable pageable);
+
+    Page<MatchingPreviewDto> getListByDistance(Long userId, Pageable pageable);
+
     MatchingDetailDto getDetail(Long matchingId);
     ApplyContents getApplyContents(long userId, long matchId) throws JsonProcessingException;
 }

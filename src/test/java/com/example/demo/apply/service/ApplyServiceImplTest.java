@@ -160,7 +160,7 @@ class ApplyServiceImplTest {
         applyService.cancel(1L);
 
         // then
-        assertEquals(ApplyStatus.CANCELED, apply.getStatus());
+        assertEquals(ApplyStatus.CANCELED, apply.getApplyStatus());
     }
 
     @Test
@@ -297,7 +297,7 @@ class ApplyServiceImplTest {
                 .id(1L)
                 .matching(matching)
                 .siteUser(siteUser)
-                .status(ApplyStatus.PENDING)
+                .applyStatus(ApplyStatus.PENDING)
                 .build();
     }
 
@@ -306,7 +306,7 @@ class ApplyServiceImplTest {
                 .id(1L)
                 .matching(matching)
                 .siteUser(siteUser)
-                .status(ApplyStatus.CANCELED)
+                .applyStatus(ApplyStatus.CANCELED)
                 .build();
     }
 
@@ -319,8 +319,8 @@ class ApplyServiceImplTest {
                 .phoneNumber("010-1234-5678")
                 .gender(GenderType.FEMALE)
                 .ntrp(Ntrp.ADVANCE)
-                .locationSi("안양시")
-                .locationGu("동안구")
+                .address("안양시")
+                .zipCode("12345")
                 .ageGroup(AgeGroup.TWENTIES)
                 .createDate(Timestamp.valueOf(LocalDateTime.now()))
                 .isPhoneVerified(true)
@@ -336,8 +336,8 @@ class ApplyServiceImplTest {
                 .phoneNumber("010-1234-5678")
                 .gender(GenderType.FEMALE)
                 .ntrp(Ntrp.ADVANCE)
-                .locationSi("안양시")
-                .locationGu("동안구")
+                .address("안양시")
+                .zipCode("12345")
                 .ageGroup(AgeGroup.TWENTIES)
                 .createDate(Timestamp.valueOf(LocalDateTime.now()))
                 .isPhoneVerified(true)

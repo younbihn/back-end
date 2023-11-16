@@ -51,7 +51,7 @@ public class Apply {
     private LocalDateTime createTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "STATUS")
+    @Column(name = "APPLY_STATUS")
     private ApplyStatus applyStatus; // default 값 지정됨(PENDING)
 
     public static Apply fromDto(ApplyDto applyDto) {
