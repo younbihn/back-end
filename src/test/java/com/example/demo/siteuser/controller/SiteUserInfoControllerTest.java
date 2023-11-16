@@ -189,4 +189,16 @@ public class SiteUserInfoControllerTest {
 
         verify(siteUserInfoService).deleteNotification(userId, notificationId);
     }
+
+    @Test
+    public void updatePenaltyScoreTest() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(siteUserInfoController).build();
+
+        String jsonContent = "{\"penaltyCode\":\"OFFENSE_CHAT\"}";
+
+        mockMvc.perform(post("/api/users/penalty/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                .andExpect(status().isOk());
+    }
 }

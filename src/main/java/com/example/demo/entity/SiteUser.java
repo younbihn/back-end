@@ -170,4 +170,6 @@ public class SiteUser implements UserDetails {
     public void setProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
+
+    public void setPenaltyScore(Integer penaltyScore) { this.penaltyScore = penaltyScore; }
 }
