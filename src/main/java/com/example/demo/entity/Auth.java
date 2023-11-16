@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import com.example.demo.type.AgeGroup;
+import com.example.demo.type.Authority;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
 import lombok.Data;
@@ -30,8 +31,10 @@ public class Auth {
         private String zipCode;
         private AgeGroup ageGroup;
         private Timestamp createDate;
+        private String profileImg;
 
-        public SiteUser toUser() {
+
+        public SiteUser fromUser() {
             return SiteUser.builder()
                     .email(this.email)
                     .password(this.password)
@@ -43,6 +46,7 @@ public class Auth {
                     .address(this.address)
                     .zipCode(this.zipCode)
                     .ageGroup(this.ageGroup)
+                    .profileImg(this.profileImg)
                     .build();
         }
     }

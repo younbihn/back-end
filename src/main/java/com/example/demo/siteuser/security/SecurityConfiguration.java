@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -24,8 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final AuthenticationFailureHandler customFailureHandler;
+    private final CustomAuthFailureHandler customFailurHandler;
     private final JwtAuthenticationFilter authenticationFilter;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -35,14 +35,11 @@ public class SecurityConfiguration {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("api/auth/signup", "api/auth/signin",
-                                "api/auth/kakao/signup", "api/auth/kakao/callback",
-                                "api/matches/list", "api/matches/**", "api/users/**").permitAll()
+                        .requestMatchers("/api/auth/signup", "/api/auth/signin","/api/auth/upload-profile-image", "/api/auth/kakao/signup", "/api/auth/kakao/callback", "/api/matches/list", "/api/matches/**", "/api/users/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(this.authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.failureHandler(
-                                customFailureHandler)
-                        .defaultSuccessUrl("/api/matches/list"));
+                .formLogin(loginFail -> loginFail.disable());
+                //.defaultSuccessUrl("/api/matches/list"));
 
         return http.build();
     }
