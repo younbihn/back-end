@@ -1,9 +1,9 @@
 package com.example.demo.type;
 
 public enum PenaltyCode {
-    OFFENSE_CHAT(1),
-    DELETE_MATCH_EVEN_SOMEONE_APPLIED(2),
-    DELETE_MATCH_AFTER_CONFIRM(3);
+    OFFENSE_CHAT(0),
+    DELETE_MATCH_EVEN_SOMEONE_APPLIED(1),
+    DELETE_MATCH_AFTER_CONFIRM(2);
 
     private final int code;
 

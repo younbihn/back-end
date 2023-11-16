@@ -1,13 +1,11 @@
 package com.example.demo.siteuser.service;
 
 import com.example.demo.apply.repository.ApplyRepository;
-import com.example.demo.entity.Apply;
-import com.example.demo.entity.Matching;
-import com.example.demo.entity.Notification;
-import com.example.demo.entity.SiteUser;
+import com.example.demo.entity.*;
 import com.example.demo.notification.repository.NotificationRepository;
 import com.example.demo.siteuser.dto.*;
 import com.example.demo.matching.repository.MatchingRepository;
+import com.example.demo.siteuser.repository.PenaltyScoreRepository;
 import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.type.PenaltyCode;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,13 +22,15 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     private final SiteUserRepository siteUserRepository;
     private final MatchingRepository matchingRepository;
     private final ApplyRepository applyRepository;
+    private final PenaltyScoreRepository penaltyScoreRepository;
     private final NotificationRepository notificationRepository;
 
     @Autowired
-    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository, NotificationRepository notificationRepository) {
+    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository, PenaltyScoreRepository penaltyScoreRepository, NotificationRepository notificationRepository) {
         this.siteUserRepository = siteUserRepository;
         this.matchingRepository = matchingRepository;
         this.applyRepository = applyRepository;
+        this.penaltyScoreRepository = penaltyScoreRepository;
         this.notificationRepository = notificationRepository;
     }
 
@@ -160,6 +161,17 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
                 penaltyCode == PenaltyCode.DELETE_MATCH_EVEN_SOMEONE_APPLIED ? -10 : -20;
 
         user.setPenaltyScore(user.getPenaltyScore() == null ? penaltyAmount : user.getPenaltyScore() + penaltyAmount);
+
+        // PenaltyScore 객체 생성 및 초기화
+        PenaltyScore penaltyScore = new PenaltyScore();
+        penaltyScore.setSiteUser(user);
+        penaltyScore.setCode(penaltyCode);
+        penaltyScore.setScore(penaltyAmount);
+        penaltyScore.setCreateTime(new Timestamp(System.currentTimeMillis()));
+
+        // PenaltyScore 객체 저장
+        penaltyScoreRepository.save(penaltyScore);
+
         siteUserRepository.save(user);
     }
 }
