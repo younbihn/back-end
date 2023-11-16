@@ -8,7 +8,7 @@ import com.example.demo.entity.SiteUser;
 import com.example.demo.notification.repository.NotificationRepository;
 import com.example.demo.siteuser.dto.*;
 import com.example.demo.matching.repository.MatchingRepository;
-import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.siteuser.repository.SiteUserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

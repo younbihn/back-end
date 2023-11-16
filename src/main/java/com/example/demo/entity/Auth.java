@@ -43,7 +43,6 @@ public class Auth {
                     .address(this.address)
                     .zipCode(this.zipCode)
                     .ageGroup(this.ageGroup)
-                    .createDate(this.createDate)
                     .build();
         }
     }

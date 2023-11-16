@@ -18,7 +18,7 @@ import com.example.demo.entity.Notification;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.repository.NotificationRepository;
-import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

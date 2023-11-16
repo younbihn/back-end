@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final AuthenticationFailureHandler customFailurHandler;
+    private final AuthenticationFailureHandler customFailureHandler;
     private final JwtAuthenticationFilter authenticationFilter;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -35,10 +35,13 @@ public class SecurityConfiguration {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("api/auth/signup", "api/auth/signin", "api/auth/kakao/signup", "api/auth/kakao/callback", "api/matches/list", "api/matches/**", "api/users/**").permitAll()
+                        .requestMatchers("api/auth/signup", "api/auth/signin",
+                                "api/auth/kakao/signup", "api/auth/kakao/callback",
+                                "api/matches/list", "api/matches/**", "api/users/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(this.authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.failureHandler(customFailurHandler)
+                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.failureHandler(
+                                customFailureHandler)
                         .defaultSuccessUrl("/api/matches/list"));
 
         return http.build();
