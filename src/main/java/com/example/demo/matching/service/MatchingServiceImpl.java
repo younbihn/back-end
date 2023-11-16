@@ -124,7 +124,7 @@ public class MatchingServiceImpl implements MatchingService {
                     .map(MatchingPreviewDto::fromEntity);
         }
 
-        // 필터링 있으면 쿼리 만들기
+        // 필터링 있으면 필터링 후 반환
         return matchingRepository.searchWithFilter(filterRequestDto, pageable)
                 .map(MatchingPreviewDto::fromEntity);
     }
