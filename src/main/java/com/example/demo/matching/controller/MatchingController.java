@@ -109,7 +109,7 @@ public class MatchingController {
     @GetMapping("/address")
     public ResponseEntity<List<RoadAddressDto>> getAddress(@RequestParam String keyword) {
 
-        var result = addressServiceImpl.getAddress(keyword);
+        var result = addressService.getAddress(keyword);
 
         return ResponseEntity.ok(result);
     }

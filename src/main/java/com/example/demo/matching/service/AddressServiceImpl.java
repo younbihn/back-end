@@ -96,9 +96,11 @@ public class AddressServiceImpl implements AddressService {
             for (int i = 0; i < jusoList.size(); i++) {
                 JSONObject jusoData = (JSONObject) jusoList.get(i);
                 String roadAddr = jusoData.get("roadAddr").toString();
+                String jibunAddr = jusoData.get("jibunAddr").toString();
                 String zipNo = jusoData.get("zipNo").toString();
                 parseResults.add(RoadAddressDto.builder()
                         .roadAddr(roadAddr)
+                        .jibunAddr(jibunAddr)
                         .zipNo(zipNo)
                         .build());
             }

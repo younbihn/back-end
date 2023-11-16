@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class RoadAddressDto {
     private String roadAddr;
+    private String jibunAddr;
     private String zipNo;
 }
