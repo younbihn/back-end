@@ -1,5 +1,6 @@
-package com.example.demo.notification.dto;
+package com.example.demo.openfeign.dto.weather;
 
+import com.example.demo.notification.dto.LocationAndDateFromMatching;
 import lombok.Builder;
 import lombok.Getter;
 

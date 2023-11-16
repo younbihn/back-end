@@ -1,6 +1,6 @@
 package com.example.demo.type;
 
-import com.example.demo.notification.dto.WeatherDto;
+import com.example.demo.openfeign.dto.weather.WeatherResponseDto;
 
 public enum NotificationType {
     MODIFY_MATCHING("신청한 매칭글이 수정되었습니다."),
@@ -23,9 +23,9 @@ public enum NotificationType {
         return this.message;
     }
 
-    public static NotificationType makeWeatherMessage(WeatherDto weatherDto) {
-        String message = "오늘 " + weatherDto.getPrecipitationType().getMessage() + "가 예상됩니다. "
-                + "강수 확률은 " + weatherDto.getPrecipitationProbability() + "입니다."
+    public static NotificationType makeWeatherMessage(WeatherResponseDto weatherResponseDto) {
+        String message = "오늘 " + weatherResponseDto.getPrecipitationType().getMessage() + "가 예상됩니다. "
+                + "강수 확률은 " + weatherResponseDto.getPrecipitationProbability() + "입니다."
                 + "오늘 진행 예정인 경기를 취소하길 원하시면 취소를 진행해주세요. "
                 + "우천 시, 취소 패널티는 적용되지 않습니다.";
 

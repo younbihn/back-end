@@ -5,8 +5,8 @@ import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
-import com.example.demo.matching.dto.RoadAddressDto;
-import com.example.demo.matching.service.AddressService;
+import com.example.demo.openfeign.dto.address.AddressResponseDto;
+import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.service.MatchingService;
 
 import java.io.IOException;
@@ -17,9 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -132,9 +130,9 @@ public class MatchingController {
     }
 
     @GetMapping("/address")
-    public ResponseEntity<List<RoadAddressDto>> getAddress(@RequestParam String keyword) {
+    public ResponseEntity<List<AddressResponseDto>> getAddress(@RequestParam String keyword) {
 
-        var result = addressService.getAddress(keyword);
+        var result = addressService.getAddressService(keyword);
 
         return ResponseEntity.ok(result);
     }

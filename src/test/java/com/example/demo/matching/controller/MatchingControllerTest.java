@@ -3,7 +3,7 @@ package com.example.demo.matching.controller;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.service.AddressService;
+import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.service.MatchingService;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -20,18 +20,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
-import com.example.demo.matching.service.MatchingServiceImpl;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +40,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(MatchingController.class)
 class MatchingControllerTest {
