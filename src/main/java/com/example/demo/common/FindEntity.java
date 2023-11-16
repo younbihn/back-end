@@ -8,7 +8,7 @@ import com.example.demo.exception.impl.ApplyNotFoundException;
 import com.example.demo.exception.impl.MatchingNotFoundException;
 import com.example.demo.exception.impl.UserNotFoundException;
 import com.example.demo.matching.repository.MatchingRepository;
-import com.example.demo.repository.SiteUserRepository;
+import com.example.demo.siteuser.repository.SiteUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

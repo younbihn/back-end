@@ -10,6 +10,7 @@ import com.example.demo.matching.service.AddressService;
 import com.example.demo.matching.service.MatchingService;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,12 +119,14 @@ public class MatchingController {
     }
 
     @SneakyThrows
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{matching_id}/apply")
-    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId) {
+    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId,
+                                                          Principal principal) {
 
-        Long userId = 1L;
+        String email = principal.getName();
 
-        var result = matchingService.getApplyContents(userId, matchingId);
+        var result = matchingService.getApplyContents(email, matchingId);
 
         return ResponseEntity.ok(result);
     }

@@ -9,7 +9,7 @@ import com.example.demo.type.ApplyStatus;
 import java.util.List;
 
 public interface ApplyService {
-    Apply apply(long userId, long matchId);
+    Apply apply(String email, long matchId);
 
     Apply cancel(long applyId);
 

@@ -6,6 +6,7 @@ import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.service.AddressService;
 import com.example.demo.matching.service.MatchingService;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -67,7 +68,7 @@ class MatchingControllerTest {
     @Test
     void successConfirmMatching() throws Exception {
         // given
-        given(matchingService.getApplyContents(anyLong(), anyLong()))
+        given(matchingService.getApplyContents(anyString(), anyLong()))
                 .willReturn(ApplyContents.builder().build());
 
         // when
