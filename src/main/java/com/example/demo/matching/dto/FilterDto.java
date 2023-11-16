@@ -14,10 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class FilterDto {
-    private String startDate;
-    private String endDate;
-    private String startTime;
-    private String endTime;
+    private String date;
     private List<Region> regions;
     private List<MatchingType> matchingTypes;
     private List<AgeGroup> ageGroups;

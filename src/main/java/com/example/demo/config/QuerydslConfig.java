@@ -1,4 +1,3 @@
-/*
 package com.example.demo.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,4 +16,4 @@ public class QuerydslConfig {
     public JPAQueryFactory jpaQueryFactory(EntityManager em){
         return new JPAQueryFactory(em);
     }
-}*/
+}

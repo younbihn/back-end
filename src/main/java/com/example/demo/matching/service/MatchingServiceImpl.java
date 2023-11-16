@@ -8,7 +8,6 @@ import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
 import com.example.demo.exception.impl.*;
 import com.example.demo.matching.dto.*;
-import com.example.demo.matching.filter.Region;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.service.NotificationService;
 import com.example.demo.repository.SiteUserRepository;
@@ -40,6 +39,7 @@ public class MatchingServiceImpl implements MatchingService {
     private final FindEntity findEntity;
     private final SiteUserRepository siteUserRepository;
     private final NotificationService notificationService;
+
     @Value("${kakao-rest-api.key}")
     private String apiKey;
 
@@ -115,26 +115,16 @@ public class MatchingServiceImpl implements MatchingService {
 
     @Override
     public Page<MatchingPreviewDto> findFilteredMatching(FilterRequestDto filterRequestDto, Pageable pageable) {
-        //TODO: 이부분 외부에서 위경도 받게 수정해야 함
-        SiteUser siteUser = validateUserGivenId(1L);
-        String address = siteUser.getAddress();
-        String detailedAddress = getUserAddressInfo(address);
-        Double lat = getLatLon(detailedAddress).get(0);
-        Double lon = getLatLon(detailedAddress).get(1);
-
         // 필터링 없으면 정렬만 하고 반환
         if(filterRequestDto == null){
-            return matchingRepository.findByRecruitStatusAndRecruitDueDateTimeGreaterThan(RecruitStatus.OPEN, LocalDateTime.now(), pageable)
+            return matchingRepository.findByRecruitStatusAndRecruitDueDateTimeAfter(RecruitStatus.OPEN, LocalDateTime.now(), pageable)
                     .map(MatchingPreviewDto::fromEntity);
         }
 
         // 필터링 있으면 쿼리 만들기
-        String query = makeFilterQuery(filterRequestDto);
-        System.out.println(query);
-        return matchingRepository.findFilteredMatching(query, pageable)
+        return matchingRepository.searchWithFilter(filterRequestDto, pageable)
                 .map(MatchingPreviewDto::fromEntity);
     }
-
 
     private String getUserAddressInfo(String address) {
         WebClient webClient = WebClient.builder()

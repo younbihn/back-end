@@ -82,7 +82,7 @@ public class Matching {
     @Column(name = "END_TIME", nullable = false) // HH:mm
     private LocalTime endTime;
 
-    @Column(name = "RECRUIT_DUE_DATE", nullable = false) // yyyy-MM-dd HH:mm
+    @Column(name = "RECRUIT_DUE_DATE_TIME", nullable = false) // yyyy-MM-dd HH:mm
     private LocalDateTime recruitDueDateTime;
 
     @Column(name = "RECRUIT_NUM", nullable = false)
