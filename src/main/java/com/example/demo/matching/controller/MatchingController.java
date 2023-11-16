@@ -4,19 +4,24 @@ import com.example.demo.aws.S3Uploader;
 import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.*;
 import com.example.demo.matching.service.AddressService;
+import com.example.demo.matching.dto.ApplyContents;
+import com.example.demo.matching.dto.MatchingDetailDto;
+import com.example.demo.matching.dto.MatchingPreviewDto;
+import com.example.demo.openfeign.dto.address.AddressResponseDto;
+import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.service.MatchingService;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -113,20 +118,22 @@ public class MatchingController {
     }
 
     @SneakyThrows
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{matching_id}/apply")
-    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId) {
+    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId,
+                                                          Principal principal) {
 
-        Long userId = 1L;
+        String email = principal.getName();
 
-        var result = matchingService.getApplyContents(userId, matchingId);
+        var result = matchingService.getApplyContents(email, matchingId);
 
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/location")
-    public ResponseEntity<List<RoadAddressDto>> getAddress(@RequestBody KeywordDto keywordDto) {
+    @GetMapping("/address")
+    public ResponseEntity<List<AddressResponseDto>> getAddress(@RequestParam String keyword) {
 
-        var result = addressService.getAddress(keywordDto);
+        var result = addressService.getAddressService(keyword);
 
         return ResponseEntity.ok(result);
     }

@@ -4,9 +4,11 @@ import com.example.demo.entity.SiteUser;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
+import java.time.LocalDateTime;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -14,6 +16,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class SiteUserMyInfoDto {
+    private Long id;
+    private String password;
     private String nickname;
     private String email;
     private String phoneNumber;
@@ -25,9 +29,13 @@ public class SiteUserMyInfoDto {
     private String zipCode;
     private AgeGroup ageGroup;
     private String profileImg;
+    private LocalDateTime createDate;
+    private Boolean isPhoneVerified;
 
     public static SiteUserMyInfoDto fromEntity(SiteUser siteUser) {
         return SiteUserMyInfoDto.builder()
+                .id(siteUser.getId())
+                .password(siteUser.getPassword())
                 .nickname(siteUser.getNickname())
                 .email(siteUser.getEmail())
                 .phoneNumber(siteUser.getPhoneNumber())
@@ -39,6 +47,8 @@ public class SiteUserMyInfoDto {
                 .zipCode(siteUser.getZipCode())
                 .ageGroup(siteUser.getAgeGroup())
                 .profileImg(siteUser.getProfileImg())
+                .createDate(siteUser.getCreateDate())
+                .isPhoneVerified(siteUser.getIsPhoneVerified())
                 .build();
     }
 }

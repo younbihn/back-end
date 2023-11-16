@@ -3,13 +3,12 @@ package com.example.demo.siteuser.service;
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
+import com.example.demo.entity.Notification;
 import com.example.demo.entity.SiteUser;
-import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
+import com.example.demo.notification.repository.NotificationRepository;
+import com.example.demo.siteuser.dto.*;
 import com.example.demo.matching.repository.MatchingRepository;
-import com.example.demo.repository.SiteUserRepository;
-import com.example.demo.siteuser.dto.SiteUserInfoDto;
-import com.example.demo.siteuser.dto.SiteUserModifyDto;
-import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
+import com.example.demo.siteuser.repository.SiteUserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,12 +22,14 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     private final SiteUserRepository siteUserRepository;
     private final MatchingRepository matchingRepository;
     private final ApplyRepository applyRepository;
+    private final NotificationRepository notificationRepository;
 
     @Autowired
-    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository) {
+    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository, NotificationRepository notificationRepository) {
         this.siteUserRepository = siteUserRepository;
         this.matchingRepository = matchingRepository;
         this.applyRepository = applyRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     @Override
@@ -128,5 +129,23 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
         SiteUser siteUser = siteUserRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
         return siteUser.getProfileImg();
+    }
+
+    @Override
+    public List<SiteUserNotificationDto> getNotificationBySiteUser(Long userId) {
+        List<Notification> notificationList = notificationRepository.findBySiteUser_Id(userId);
+
+        if (notificationList != null && !notificationList.isEmpty()) {
+            return notificationList.stream()
+                    .map(SiteUserNotificationDto::fromEntity)
+                    .collect(Collectors.toList());
+        } else {
+            throw new EntityNotFoundException("No notification data found for user with ID: " + userId);
+        }
+    }
+
+    @Override
+    public void deleteNotification(Long userId, Long notificationId) {
+        notificationRepository.deleteByIdAndSiteUser_Id(notificationId, userId);
     }
 }

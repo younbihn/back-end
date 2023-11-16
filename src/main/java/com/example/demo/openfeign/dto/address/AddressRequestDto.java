@@ -1,4 +1,4 @@
-package com.example.demo.matching.dto;
+package com.example.demo.openfeign.dto.address;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,18 +7,18 @@ import lombok.Getter;
 @Getter
 public class AddressRequestDto {
 
-    private Integer currentPage;
-    private Integer countPerPage;
+    private int currentPage;
+    private int countPerPage;
     private String keyword;
     private String resultType;
     private String hstryYn;
     private String firstSort;
 
-    public static AddressRequestDto fromKeyword(KeywordDto keywordDto) {
+    public static AddressRequestDto fromKeyword(String keyword) {
         return AddressRequestDto.builder()
                 .currentPage(1)
                 .countPerPage(15)
-                .keyword(keywordDto.getKeyword())
+                .keyword(keyword)
                 .resultType("json")
                 .hstryYn("Y")
                 .firstSort("none")

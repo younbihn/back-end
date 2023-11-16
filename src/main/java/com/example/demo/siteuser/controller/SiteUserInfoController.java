@@ -1,14 +1,12 @@
 package com.example.demo.siteuser.controller;
 
 import com.example.demo.aws.S3Uploader;
-import com.example.demo.siteuser.dto.MatchingMyMatchingDto;
-import com.example.demo.siteuser.dto.SiteUserInfoDto;
-import com.example.demo.siteuser.dto.SiteUserModifyDto;
-import com.example.demo.siteuser.dto.SiteUserMyInfoDto;
+import com.example.demo.siteuser.dto.*;
 import com.example.demo.siteuser.service.SiteUserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,8 +21,8 @@ public class SiteUserInfoController {
     private final SiteUserInfoService siteUserInfoService;
     private final S3Uploader s3Uploader;
 
-    @GetMapping("/profile/{siteUser}")
-    public ResponseEntity<SiteUserInfoDto> getSiteUserInfoById(@PathVariable(value = "siteUser") Long siteUser) {
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<SiteUserInfoDto> getSiteUserInfoById(@PathVariable(value = "userId") Long siteUser) {
         SiteUserInfoDto siteUserInfoDto = siteUserInfoService.getSiteUserInfoById(siteUser);
 
         if (siteUserInfoDto != null) {
@@ -34,8 +32,8 @@ public class SiteUserInfoController {
         }
     }
 
-    @GetMapping("/my-page/{siteUser}")
-    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfoById(@PathVariable(value = "siteUser") Long siteUser) {
+    @GetMapping("/my-page/{userId}")
+    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfoById(@PathVariable(value = "userId") Long siteUser) {
         SiteUserMyInfoDto siteUserMyInfoDto = siteUserInfoService.getSiteUserMyInfoById(siteUser);
 
         if (siteUserMyInfoDto != null) {
@@ -45,8 +43,8 @@ public class SiteUserInfoController {
         }
     }
 
-    @GetMapping("/my-page/hosted/{siteUser}")
-    public ResponseEntity<List<MatchingMyMatchingDto>> getMatchingBySiteUser(@PathVariable(value = "siteUser") Long userId) {
+    @GetMapping("/my-page/hosted/{userId}")
+    public ResponseEntity<List<MatchingMyMatchingDto>> getMatchingBySiteUser(@PathVariable(value = "userId") Long userId) {
         List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getMatchingBySiteUser(userId);
 
         if (!matchingMyHostedDtos.isEmpty()) {
@@ -56,8 +54,8 @@ public class SiteUserInfoController {
         }
     }
 
-    @GetMapping("/my-page/apply/{siteUser}")
-    public ResponseEntity<List<MatchingMyMatchingDto>> findApplyBySiteUser_Id(@PathVariable(value = "siteUser") Long userId) {
+    @GetMapping("/my-page/apply/{userId}")
+    public ResponseEntity<List<MatchingMyMatchingDto>> findApplyBySiteUser_Id(@PathVariable(value = "userId") Long userId) {
         List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getApplyBySiteUser(userId);
 
         if (!matchingMyHostedDtos.isEmpty()) {
@@ -93,5 +91,28 @@ public class SiteUserInfoController {
     public ResponseEntity<?> updateSiteUser(@PathVariable Long userId, @RequestBody SiteUserModifyDto siteUserModifyDto) {
         siteUserInfoService.updateSiteUserInfo(userId, siteUserModifyDto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/my-page/notification/{userId}")
+    public ResponseEntity<List<SiteUserNotificationDto>> getNotificationBySiteUser(@PathVariable(value = "userId") Long userId) {
+        List<SiteUserNotificationDto> siteUserNotificationDtos = siteUserInfoService.getNotificationBySiteUser(userId);
+
+        if (!siteUserNotificationDtos.isEmpty()) {
+            return new ResponseEntity<>(siteUserNotificationDtos, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    @DeleteMapping("/my-page/notification/{userId}/{notificationId}")
+    public ResponseEntity<?> deleteNotification(@PathVariable Long userId, @PathVariable Long notificationId) {
+        try {
+            siteUserInfoService.deleteNotification(userId, notificationId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();  // Log the exception
+            return new ResponseEntity<>("Error occurred while deleting the notification: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

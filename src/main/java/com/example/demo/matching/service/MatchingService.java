@@ -6,7 +6,6 @@ import com.example.demo.matching.dto.FilterRequestDto;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,5 +15,5 @@ public interface MatchingService {
     void delete(Long userId, Long matchingId);
     Page<MatchingPreviewDto> findFilteredMatching(FilterRequestDto filterRequestDto, Pageable pageable);
     MatchingDetailDto getDetail(Long matchingId);
-    ApplyContents getApplyContents(long userId, long matchId) throws JsonProcessingException;
+    ApplyContents getApplyContents(String email, long matchId) throws JsonProcessingException;
 }

@@ -12,6 +12,10 @@ import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.service.NotificationService;
 import com.example.demo.repository.SiteUserRepository;
 import com.example.demo.type.*;
+import com.example.demo.siteuser.repository.SiteUserRepository;
+import com.example.demo.type.ApplyStatus;
+import com.example.demo.type.NotificationType;
+import com.example.demo.type.RecruitStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -182,16 +186,16 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public ApplyContents getApplyContents(long userId, long matchingId) {
+    public ApplyContents getApplyContents(String email, long matchingId) {
         var matching = findEntity.findMatching(matchingId);
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = matching.getConfirmedNum();
-        var applyNum = applyRepository.countByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING).get();
+        var applyNum = applyRepository.countByMatching_IdAndApplyStatus(matchingId, ApplyStatus.PENDING).get();
 
         var appliedMembers = findAppliedMembers(matchingId);
         var confirmedMembers = findConfirmedMembers(matchingId);
 
-        if (isOrganizer(userId, matching)) {
+        if (isOrganizer(matching.getSiteUser().getId(), matching)) {
             var applyContentsForOrganizer = ApplyContents.builder()
                     .applyNum(applyNum)
                     .recruitNum(recruitNum)
@@ -213,7 +217,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     private List<ApplyMember> findConfirmedMembers(long matchingId) {
-        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.ACCEPTED)
+        return applyRepository.findAllByMatching_IdAndApplyStatus(matchingId, ApplyStatus.ACCEPTED)
                 .get().stream().map((apply)
                         -> ApplyMember.builder()
                         .applyId(apply.getId())
@@ -223,7 +227,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     private List<ApplyMember> findAppliedMembers(long matchingId) {
-        return applyRepository.findAllByMatching_IdAndStatus(matchingId, ApplyStatus.PENDING)
+        return applyRepository.findAllByMatching_IdAndApplyStatus(matchingId, ApplyStatus.PENDING)
                 .orElseThrow(() -> new ApplyNotFoundException())
                 .stream().map((apply)
                         -> ApplyMember.builder()
