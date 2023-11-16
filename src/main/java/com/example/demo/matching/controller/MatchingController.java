@@ -2,6 +2,8 @@ package com.example.demo.matching.controller;
 
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.exception.impl.S3UploadFailException;
+import com.example.demo.matching.dto.*;
+import com.example.demo.matching.service.AddressService;
 import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
@@ -89,31 +91,30 @@ public class MatchingController {
         matchingService.delete(userId, matchingId);
     }
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     public ResponseEntity<Page<MatchingPreviewDto>> getMatchingList(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
-            @RequestParam(required = false) String sort) {
+            @RequestParam(required = false) String sort,
+            @RequestBody(required = false) FilterRequestDto filterRequestDto) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
         // 등록순 정렬
         if ("register".equals(sort)) {
             pageRequest = PageRequest.of(page, size, Sort.by("createTime").ascending());
-            return ResponseEntity.ok(matchingService.getList(pageRequest));
         }
         // 마감순 정렬
         else if ("due-date".equals(sort)) {
             pageRequest = PageRequest.of(page, size, Sort.by("recruitDueDateTime").ascending());
-            return ResponseEntity.ok(matchingService.getList(pageRequest));
         }
         // 거리순 정렬
         else if ("distance".equals(sort)) {
-            //TODO: 로그인 여부에 상관없이 사용자의 현 주소 받아오도록 해야 함
-            return ResponseEntity.ok(matchingService.getListByDistance(1L, pageRequest));
+            if(filterRequestDto.getLocation() != null)
+                return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
         }
         // 정렬 없을 때
-        return ResponseEntity.ok(matchingService.getList(pageRequest));
+        return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
     }
 
     @SneakyThrows
