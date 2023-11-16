@@ -159,7 +159,7 @@ class MatchingServiceImplTest {
                 .zipCode("12345")
                 .ageGroup(AgeGroup.TWENTIES)
                 .profileImg("http://example.com/img.jpg")
-                .createDate(new Timestamp(System.currentTimeMillis()))
+                .createDate(LocalDateTime.now())
                 .isPhoneVerified(true)
                 .hostedMatches(new ArrayList<>())
                 .applies(new ArrayList<>())

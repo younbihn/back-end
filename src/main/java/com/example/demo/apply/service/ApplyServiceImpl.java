@@ -134,7 +134,7 @@ public class ApplyServiceImpl implements ApplyService {
     @Override
     @Transactional
     public Matching accept(List<Long> appliedList, List<Long> confirmedList, long matchingId) {
-        var matching = matchingRepository.findById(matchingId).get();
+        var matching = findEntity.findMatching(matchingId);
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = confirmedList.size();
 
@@ -142,7 +142,7 @@ public class ApplyServiceImpl implements ApplyService {
 
         appliedList
                 .forEach(applyId
-                        -> applyRepository.findById(applyId).get().changeApplyStatus(ApplyStatus.PENDING));
+                        -> findEntity.findApply(applyId).changeApplyStatus(ApplyStatus.PENDING));
 
         confirmedList
                 .forEach(confirmedId

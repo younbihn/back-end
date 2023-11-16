@@ -27,7 +27,6 @@ import com.example.demo.type.GenderType;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -71,8 +70,8 @@ class ApplyServiceImplTest {
 
         Matching matching = getMatching(siteUser);
 
-        given(siteUserRepository.findByEmail("emial@gmail.com").get())
-                .willReturn(siteUser);
+        given(siteUserRepository.findByEmail("emial@gmail.com"))
+                .willReturn(Optional.ofNullable(siteUser));
 
         given(findEntity.findMatching(1L))
                 .willReturn(matching);
@@ -89,16 +88,16 @@ class ApplyServiceImplTest {
     @Test
     void applyFailByDuplication() {
         //given
-        SiteUser siteUser = getSiteUser();
+        SiteUser siteUser = getSiteUser(); // 1L
 
-        SiteUser siteUserForApply = getSiteUserForApply();
+        SiteUser siteUserForApply = getSiteUserForApply(); // 2L
 
         Matching matching = getMatching(siteUser);
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(siteUserRepository.findByEmail("emial2@gmail.com").get())
-                .willReturn(siteUser);
+        given(siteUserRepository.findByEmail("emial2@gmail.com"))
+                .willReturn(Optional.ofNullable(siteUserForApply));
 
         given(findEntity.findMatching(1L))
                 .willReturn(matching);
@@ -128,8 +127,8 @@ class ApplyServiceImplTest {
 
         Matching matching = getClosedMatching(siteUser);
 
-        given(siteUserRepository.findByEmail("emial2@gmail.com").get())
-                .willReturn(siteUser);
+        given(siteUserRepository.findByEmail("emial2@gmail.com"))
+                .willReturn(Optional.ofNullable(siteUserForApply));
 
         given(findEntity.findMatching(1L))
                 .willReturn(matching);
@@ -236,13 +235,13 @@ class ApplyServiceImplTest {
     @Test
     void applyAcceptSuccess() {
         //given
-        given(matchingRepository.findById(anyLong()))
-                .willReturn(Optional.of(Matching.builder()
+        given(findEntity.findMatching(anyLong()))
+                .willReturn(Matching.builder()
                         .id(1L)
                         .recruitStatus(RecruitStatus.OPEN)
-                        .recruitNum(3)
+                        .recruitNum(4)
                         .date(LocalDate.now())
-                        .build()));
+                        .build());
 
         List<Long> appliedList = new ArrayList<>();
         appliedList.add(1L);
@@ -250,33 +249,33 @@ class ApplyServiceImplTest {
         List<Long> confirmedList = new ArrayList<>();
         confirmedList.add(2L);
 
-        given(applyRepository.findById(1L))
-                .willReturn(Optional.of(Apply.builder()
+        given(findEntity.findApply(1L))
+                .willReturn(Apply.builder()
                         .id(1L)
-                        .build()));
+                        .build());
 
-        given(applyRepository.findById(2L))
-                .willReturn(Optional.of(Apply.builder()
+        given(findEntity.findApply(2L))
+                .willReturn(Apply.builder()
                         .id(2L)
-                        .build()));
+                        .build());
 
         // when
         applyService.accept(appliedList, confirmedList, 1L);
 
         // then
-        verify(applyRepository, times(2)).findById(anyLong());
+        verify(findEntity, times(3)).findApply(anyLong());
     }
 
     @Test
     void applyAcceptFailedByOverRecruitNumber() {
         //given
-        given(matchingRepository.findById(anyLong()))
-                .willReturn(Optional.of(Matching.builder()
+        given(findEntity.findMatching(anyLong()))
+                .willReturn(Matching.builder()
                         .id(1L)
                         .recruitStatus(RecruitStatus.OPEN)
                         .recruitNum(2)
                         .date(LocalDate.now())
-                        .build()));
+                        .build());
 
         List<Long> appliedList = new ArrayList<>();
         appliedList.add(1L);
@@ -325,7 +324,7 @@ class ApplyServiceImplTest {
                 .address("안양시")
                 .zipCode("12345")
                 .ageGroup(AgeGroup.TWENTIES)
-                .createDate(Timestamp.valueOf(LocalDateTime.now()))
+                .createDate(LocalDateTime.now())
                 .isPhoneVerified(true)
                 .build();
     }
@@ -342,7 +341,7 @@ class ApplyServiceImplTest {
                 .address("안양시")
                 .zipCode("12345")
                 .ageGroup(AgeGroup.TWENTIES)
-                .createDate(Timestamp.valueOf(LocalDateTime.now()))
+                .createDate(LocalDateTime.now())
                 .isPhoneVerified(true)
                 .build();
     }
