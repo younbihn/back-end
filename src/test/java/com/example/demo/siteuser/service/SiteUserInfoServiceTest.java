@@ -9,12 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.example.demo.apply.repository.ApplyRepository;
-import com.example.demo.entity.Apply;
-import com.example.demo.entity.Matching;
-import com.example.demo.entity.Notification;
-import com.example.demo.entity.SiteUser;
+import com.example.demo.entity.*;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.repository.NotificationRepository;
+import com.example.demo.siteuser.repository.ReportUserRepository;
 import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.*;
 import com.example.demo.type.PenaltyCode;
@@ -52,6 +50,8 @@ public class SiteUserInfoServiceTest {
     private ApplyRepository applyRepository;
     @Mock
     private NotificationRepository notificationRepository;
+    @Mock
+    private ReportUserRepository reportUserRepository;
 
     @InjectMocks
     private SiteUserInfoServiceImpl siteUserInfoService;
@@ -241,5 +241,38 @@ public class SiteUserInfoServiceTest {
 
         verify(siteUserRepository, times(1)).save(any(SiteUser.class));
         assertEquals(-10, mockUser.getPenaltyScore());
+    }
+
+    @Test
+    public void testCreateReportUser() {
+        ReportUserDto reportUserDto = new ReportUserDto(1L, "test title 1", "test content 1");
+        SiteUser mockSiteUser = SiteUser.builder()
+                .id(1L)
+                .build();
+        when(siteUserRepository.findById(anyLong())).thenReturn(Optional.of(mockSiteUser));
+
+        siteUserInfoService.createReportUser(reportUserDto);
+
+        verify(reportUserRepository).save(any(ReportUser.class));
+    }
+
+    @Test
+    public void testGetAllReports() {
+        SiteUser siteUser = SiteUser.builder().id(1L).build();
+        ReportUser reportUser = new ReportUser();
+        reportUser.setId(1L);
+        reportUser.setSiteUser(siteUser);
+        reportUser.setTitle("test title 1");
+        reportUser.setContent("test content 1");
+        reportUser.setCreateTime(LocalDateTime.now());
+
+        List<ReportUser> reportUsers = Arrays.asList(reportUser);
+        when(reportUserRepository.findAll()).thenReturn(reportUsers);
+
+        List<ViewReportsDto> result = siteUserInfoService.getAllReports();
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(reportUsers.size(), result.size());
     }
 }

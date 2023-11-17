@@ -17,4 +17,6 @@ public interface SiteUserInfoService {
     List<SiteUserNotificationDto> getNotificationBySiteUser(Long userId);
     void deleteNotification(Long userId, Long notificationId);
     void updatePenaltyScore(Long userId, PenaltyCode penaltyCode);
+    void createReportUser(ReportUserDto reportUserDto);
+    List<ViewReportsDto> getAllReports();
 }

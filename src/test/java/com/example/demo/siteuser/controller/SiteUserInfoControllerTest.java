@@ -1,6 +1,7 @@
 package com.example.demo.siteuser.controller;
 
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.entity.SiteUser;
 import com.example.demo.siteuser.dto.*;
 import com.example.demo.siteuser.service.SiteUserInfoService;
 import com.example.demo.type.MatchingType;
@@ -200,5 +201,32 @@ public class SiteUserInfoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonContent))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testCreateReportUser() throws Exception {
+        ReportUserDto mockReportUserDto = new ReportUserDto(1L, "Test Title 1", "Test Content 1");
+        doNothing().when(siteUserInfoService).createReportUser(any(ReportUserDto.class));
+
+        mockMvc.perform(post("/api/users/report")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(mockReportUserDto)))
+                .andExpect(status().isCreated())
+                .andExpect(content().string("Report created successfully"));
+
+        verify(siteUserInfoService).createReportUser(any(ReportUserDto.class));
+    }
+
+    @Test
+    public void testGetAllReports() throws Exception {
+        List<ViewReportsDto> mockReports = Arrays.asList(new ViewReportsDto(/* 필요한 파라미터 초기화 */));
+        when(siteUserInfoService.getAllReports()).thenReturn(mockReports);
+
+        mockMvc.perform(get("/api/users/reports")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(mockReports.size())));
+
+        verify(siteUserInfoService).getAllReports();
     }
 }

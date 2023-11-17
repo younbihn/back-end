@@ -6,6 +6,7 @@ import com.example.demo.notification.repository.NotificationRepository;
 import com.example.demo.siteuser.dto.*;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.siteuser.repository.PenaltyScoreRepository;
+import com.example.demo.siteuser.repository.ReportUserRepository;
 import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.type.PenaltyCode;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,14 +25,16 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     private final MatchingRepository matchingRepository;
     private final ApplyRepository applyRepository;
     private final PenaltyScoreRepository penaltyScoreRepository;
+    private final ReportUserRepository reportUserRepository;
     private final NotificationRepository notificationRepository;
 
     @Autowired
-    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository, PenaltyScoreRepository penaltyScoreRepository, NotificationRepository notificationRepository) {
+    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository, PenaltyScoreRepository penaltyScoreRepository, ReportUserRepository reportUserRepository, NotificationRepository notificationRepository) {
         this.siteUserRepository = siteUserRepository;
         this.matchingRepository = matchingRepository;
         this.applyRepository = applyRepository;
         this.penaltyScoreRepository = penaltyScoreRepository;
+        this.reportUserRepository = reportUserRepository;
         this.notificationRepository = notificationRepository;
     }
 
@@ -173,5 +177,31 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
         penaltyScoreRepository.save(penaltyScore);
 
         siteUserRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void createReportUser(ReportUserDto reportUserDto) {
+        SiteUser siteUser = siteUserRepository.findById(reportUserDto.getSiteUser())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + reportUserDto.getSiteUser()));
+
+        ReportUser reportUser = new ReportUser();
+        reportUser.setSiteUser(siteUser);
+        reportUser.setTitle(reportUserDto.getTitle());
+        reportUser.setContent(reportUserDto.getContent());
+        reportUser.setCreateTime(LocalDateTime.now());
+
+        reportUserRepository.save(reportUser);
+    }
+
+    @Override
+    public List<ViewReportsDto> getAllReports() {
+        List<ReportUser> reportUsers = reportUserRepository.findAll();
+        if (reportUsers.isEmpty()) {
+            throw new EntityNotFoundException("No reports found");
+        }
+        return reportUsers.stream()
+                .map(ViewReportsDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

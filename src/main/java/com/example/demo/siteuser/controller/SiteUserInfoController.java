@@ -133,4 +133,25 @@ public class SiteUserInfoController {
             return new ResponseEntity<>("Invalid penalty code: " + siteUserPenaltyDto.getPenaltyCode(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/report")
+    public ResponseEntity<?> createReportUser(@RequestBody ReportUserDto reportUserDto) {
+        try {
+            siteUserInfoService.createReportUser(reportUserDto);
+            return new ResponseEntity<>("Report created successfully", HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/reports")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<ViewReportsDto>> getAllReports() {
+        List<ViewReportsDto> reportList = siteUserInfoService.getAllReports();
+        if (reportList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(reportList, HttpStatus.OK);
+    }
 }
