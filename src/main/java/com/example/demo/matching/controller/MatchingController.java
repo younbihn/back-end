@@ -1,6 +1,8 @@
 package com.example.demo.matching.controller;
 
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.common.ResponseDto;
+import com.example.demo.common.ResponseUtil;
 import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.*;
 import com.example.demo.openfeign.service.address.AddressService;
@@ -128,23 +130,23 @@ public class MatchingController {
     }
 
     @SneakyThrows
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{matching_id}/apply")
-    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId,
-                                                          Principal principal) {
+    public ResponseDto<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId,
+                                        Principal principal) {
 
         String email = principal.getName();
 
         var result = matchingService.getApplyContents(email, matchingId);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 
     @GetMapping("/address")
-    public ResponseEntity<List<AddressResponseDto>> getAddress(@RequestParam String keyword) {
+    public ResponseDto<List<AddressResponseDto>> getAddress(@RequestParam String keyword) {
 
         var result = addressService.getAddressService(keyword);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 }

@@ -1,5 +1,7 @@
 package com.example.demo.matching.dto;
 
+import com.example.demo.util.serializer.ApplyContentsSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +14,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonSerialize(using = ApplyContentsSerializer.class)
 public class ApplyContents {
     private int applyNum;
     private int recruitNum;
