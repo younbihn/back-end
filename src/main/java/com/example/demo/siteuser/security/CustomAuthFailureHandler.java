@@ -11,13 +11,14 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.AuthenticationException;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 @Component
 public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
-        String errorMessage;
+        String errorMessage = null;
         if (exception instanceof BadCredentialsException) {
             errorMessage = "아이디 또는 비밀번호가 맞지 않습니다. 다시 확인해 주세요.";
         } else if (exception instanceof InternalAuthenticationServiceException) {
@@ -29,7 +30,10 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
         } else {
             errorMessage = "알 수 없는 이유로 로그인에 실패하였습니다 관리자에게 문의하세요.";
         }
-        setDefaultFailureUrl("/auth/signin?error=true&exception=" + errorMessage);
+
+        errorMessage = URLEncoder.encode(errorMessage, "UTF-8");
+        setDefaultFailureUrl("/api/matches/list");
+        //setDefaultFailureUrl("/api/matches/list?error=" + errorMessage);
         super.onAuthenticationFailure(request, response, exception);
     }
 }

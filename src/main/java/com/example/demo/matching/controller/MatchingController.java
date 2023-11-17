@@ -1,12 +1,15 @@
 package com.example.demo.matching.controller;
 
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.common.ResponseDto;
+import com.example.demo.common.ResponseUtil;
 import com.example.demo.exception.impl.S3UploadFailException;
+import com.example.demo.matching.dto.*;
+import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.dto.MatchingDetailDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
-import com.example.demo.matching.dto.RoadAddressDto;
-import com.example.demo.matching.service.AddressService;
+import com.example.demo.openfeign.dto.address.AddressResponseDto;
 import com.example.demo.matching.service.MatchingService;
 
 import java.io.IOException;
@@ -17,9 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -91,51 +92,61 @@ public class MatchingController {
         matchingService.delete(userId, matchingId);
     }
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     public ResponseEntity<Page<MatchingPreviewDto>> getMatchingList(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
-            @RequestParam(required = false) String sort) {
+            @RequestParam(required = false) String sort,
+            @RequestBody(required = false) FilterRequestDto filterRequestDto) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
         // 등록순 정렬
         if ("register".equals(sort)) {
             pageRequest = PageRequest.of(page, size, Sort.by("createTime").ascending());
-            return ResponseEntity.ok(matchingService.getList(pageRequest));
         }
         // 마감순 정렬
         else if ("due-date".equals(sort)) {
             pageRequest = PageRequest.of(page, size, Sort.by("recruitDueDateTime").ascending());
-            return ResponseEntity.ok(matchingService.getList(pageRequest));
         }
         // 거리순 정렬
         else if ("distance".equals(sort)) {
-            //TODO: 로그인 여부에 상관없이 사용자의 현 주소 받아오도록 해야 함
-            return ResponseEntity.ok(matchingService.getListByDistance(1L, pageRequest));
+            if (filterRequestDto.getLocation() != null)
+                return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
         }
         // 정렬 없을 때
-        return ResponseEntity.ok(matchingService.getList(pageRequest));
+        return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
+    }
+
+    @PostMapping("/list/map")
+    public ResponseEntity<Page<MatchingPreviewDto>> getCloseMatchingList(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "5") int size,
+            @RequestParam(required = false, defaultValue = "3") double distance,
+            @RequestBody(required = false) LocationDto locationDto) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return ResponseEntity.ok(matchingService.findCloseMatching(locationDto, distance ,pageRequest));
     }
 
     @SneakyThrows
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{matching_id}/apply")
-    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId,
-                                                          Principal principal) {
+    public ResponseDto<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId,
+                                        Principal principal) {
 
         String email = principal.getName();
 
         var result = matchingService.getApplyContents(email, matchingId);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 
     @GetMapping("/address")
-    public ResponseEntity<List<RoadAddressDto>> getAddress(@RequestParam String keyword) {
+    public ResponseDto<List<AddressResponseDto>> getAddress(@RequestParam String keyword) {
 
-        var result = addressService.getAddress(keyword);
+        var result = addressService.getAddressService(keyword);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 }

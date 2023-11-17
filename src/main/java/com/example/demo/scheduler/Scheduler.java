@@ -6,7 +6,7 @@ import com.example.demo.entity.Matching;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.dto.LocationAndDateFromMatching;
 import com.example.demo.notification.service.NotificationService;
-import com.example.demo.notification.service.WeatherService;
+import com.example.demo.openfeign.service.weather.WeatherService;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.NotificationType;
 import com.example.demo.type.RecruitStatus;
@@ -96,16 +96,19 @@ public class Scheduler {
         String now = LocalDateTime.now().format(formForWeather);
         matchesForWeatherNotification.forEach(
                 matching -> {
-                    String nx = String.valueOf((int) Math.round(matching.getLon()));
-                    String ny = String.valueOf((int) Math.round(matching.getLat()));
+                    String nx = String.valueOf((int) Math.round(matching.getLat()));
+                    String ny = String.valueOf((int) Math.round(matching.getLon()));
                     var locationAndDateFromMatching
                             = LocationAndDateFromMatching.builder()
                             .baseDate(now)
                             .nx(nx)
                             .ny(ny)
                             .build();
+
                     var weatherDto = weatherService.getWeather(locationAndDateFromMatching);
+
                     if (weatherDto != null) {
+                        log.info("강수확률: " + weatherDto.getPrecipitationProbability() + "강수량: " + weatherDto.getPrecipitationType().getMessage());
                         matching.changeRecruitStatus(RecruitStatus.WEATHER_ISSUE);
                         var applies = applyRepository
                                 .findAllByMatching_IdAndApplyStatus(matching.getId(), ApplyStatus.ACCEPTED);
