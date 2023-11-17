@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class FilterRequestDto {
-    private CurrentLocationDto location;
+    private LocationDto location;
     private FilterDto filters;
 }
