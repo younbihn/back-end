@@ -187,6 +187,7 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     public ApplyContents getApplyContents(String email, long matchingId) {
         var matching = findEntity.findMatching(matchingId);
+        var siteUser = siteUserRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
         var recruitNum = matching.getRecruitNum();
         var confirmedNum = matching.getConfirmedNum();
         var applyNum = applyRepository.countByMatching_IdAndApplyStatus(matchingId, ApplyStatus.PENDING).get();
@@ -194,7 +195,7 @@ public class MatchingServiceImpl implements MatchingService {
         var appliedMembers = findAppliedMembers(matchingId);
         var confirmedMembers = findConfirmedMembers(matchingId);
 
-        if (isOrganizer(matching.getSiteUser().getId(), matching)) {
+        if (isOrganizer(siteUser.getId(), matching)) {
             var applyContentsForOrganizer = ApplyContents.builder()
                     .applyNum(applyNum)
                     .recruitNum(recruitNum)
