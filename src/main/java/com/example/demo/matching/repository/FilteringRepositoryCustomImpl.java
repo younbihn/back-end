@@ -2,6 +2,7 @@ package com.example.demo.matching.repository;
 
 import com.example.demo.entity.Matching;
 import com.example.demo.matching.dto.FilterRequestDto;
+import com.example.demo.matching.dto.LocationDto;
 import com.example.demo.matching.filter.Region;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -66,6 +67,31 @@ public class FilteringRepositoryCustomImpl implements FilteringRepositoryCustom 
                 );
 
         return PageableExecutionUtils.getPage(matchingList, pageable, total::fetchCount);
+    }
+
+    @Override
+    public Page<Matching> searchWithin(LocationDto center, LocationDto northEastBound, LocationDto southWestBound, Pageable pageable) {
+        String haversineFormula = "ST_Distance_Sphere(point({0}, {1}), point("
+                + center.getLon() + ", " + center.getLat() + "))";
+
+        List<Matching> matchingList =  queryFactory.selectFrom(matching)
+                .where(
+                        within(southWestBound.getLat(), northEastBound.getLat(), southWestBound.getLon(), northEastBound.getLon())
+                )
+                .orderBy(Expressions.stringTemplate(haversineFormula, matching.lon, matching.lat).asc())
+                .fetch();
+
+        JPQLQuery<Matching> total = queryFactory.selectFrom(matching)
+                .where(
+                        within(southWestBound.getLat(), northEastBound.getLat(), southWestBound.getLon(), northEastBound.getLon())
+                );
+
+        return PageableExecutionUtils.getPage(matchingList, pageable, total::fetchCount);
+    }
+
+    private BooleanExpression within(Double latLowerBound, Double latUpperBound, Double lonLeftBound, Double lonRightBound){
+        return matching.lat.between(latLowerBound, latUpperBound)
+                .and(matching.lon.between(lonLeftBound, lonRightBound));
     }
 
     private BooleanExpression date(FilterRequestDto filterRequestDto){

@@ -111,11 +111,22 @@ public class MatchingController {
         }
         // 거리순 정렬
         else if ("distance".equals(sort)) {
-            if(filterRequestDto.getLocation() != null)
+            if (filterRequestDto.getLocation() != null)
                 return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
         }
         // 정렬 없을 때
         return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
+    }
+
+    @PostMapping("/list/map")
+    public ResponseEntity<Page<MatchingPreviewDto>> getCloseMatchingList(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "5") int size,
+            @RequestParam(required = false, defaultValue = "3") double distance,
+            @RequestBody(required = false) LocationDto locationDto) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return ResponseEntity.ok(matchingService.findCloseMatching(locationDto, distance ,pageRequest));
     }
 
     @SneakyThrows
