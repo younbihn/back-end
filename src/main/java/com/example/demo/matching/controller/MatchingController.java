@@ -55,12 +55,12 @@ public class MatchingController {
     }
 
     @GetMapping("/{matchingId}")
-    public ResponseEntity<MatchingDetailDto> getDetailedMatching(
+    public ResponseDto<MatchingDetailDto> getDetailedMatching(
             @PathVariable Long matchingId) {
 
         var result = matchingService.getDetail(matchingId);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 
     @PatchMapping("/{matchingId}")
@@ -98,7 +98,7 @@ public class MatchingController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<Page<MatchingPreviewDto>> getMatchingList(
+    public ResponseDto<Page<MatchingPreviewDto>> getMatchingList(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
             @RequestParam(required = false) String sort,
@@ -117,21 +117,21 @@ public class MatchingController {
         // 거리순 정렬
         else if ("distance".equals(sort)) {
             if (filterRequestDto.getLocation() != null)
-                return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
+                return ResponseUtil.SUCCESS(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
         }
         // 정렬 없을 때
-        return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
+        return ResponseUtil.SUCCESS(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
     }
 
     @PostMapping("/list/map")
-    public ResponseEntity<Page<MatchingPreviewDto>> getCloseMatchingList(
+    public ResponseDto<Page<MatchingPreviewDto>> getCloseMatchingList(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
             @RequestParam(required = false, defaultValue = "3") double distance,
             @RequestBody(required = false) LocationDto locationDto) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
-        return ResponseEntity.ok(matchingService.findCloseMatching(locationDto, distance, pageRequest));
+        return ResponseUtil.SUCCESS(matchingService.findCloseMatching(locationDto, distance, pageRequest));
     }
 
     @SneakyThrows
