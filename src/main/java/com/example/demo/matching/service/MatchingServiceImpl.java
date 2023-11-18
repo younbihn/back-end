@@ -50,8 +50,9 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public Matching create(Long userId, MatchingDetailDto matchingDetailDto) {
-        SiteUser siteUser = validateUserGivenId(userId);
+    public Matching create(String email, MatchingDetailDto matchingDetailDto) {
+        SiteUser siteUser = siteUserRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+
         Matching matching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
         saveApplyForOrganizer(matching, siteUser);
         return matching;
@@ -67,8 +68,9 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public Matching update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto) {
-        SiteUser siteUser = validateUserGivenId(userId);
+    public Matching update(String email, Long matchingId, MatchingDetailDto matchingDetailDto) {
+        SiteUser siteUser = siteUserRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+
         Matching matching = validateMatchingGivenId(matchingId);
 
         if (!isUserMadeThisMatching(matchingId, siteUser)) {
@@ -94,8 +96,9 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public void delete(Long userId, Long matchingId) {
-        SiteUser siteUser = validateUserGivenId(userId);
+    public void delete(String email, Long matchingId) {
+        SiteUser siteUser = siteUserRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+
         Matching matching = validateMatchingGivenId(matchingId);
 
         if (!isUserMadeThisMatching(matchingId, siteUser)) {
