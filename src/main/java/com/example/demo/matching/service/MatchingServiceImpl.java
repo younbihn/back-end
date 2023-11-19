@@ -31,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -121,7 +122,7 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     public Page<MatchingPreviewDto> findFilteredMatching(FilterRequestDto filterRequestDto, Pageable pageable) {
         // 필터링 없으면 정렬만 하고 반환
-        if(filterRequestDto == null){
+        if (checkFilterEmpty(filterRequestDto)) {
             return matchingRepository.findByRecruitStatusAndRecruitDueDateTimeAfter(RecruitStatus.OPEN, LocalDateTime.now(), pageable)
                     .map(MatchingPreviewDto::fromEntity);
         }
@@ -130,12 +131,29 @@ public class MatchingServiceImpl implements MatchingService {
         return matchingRepository.searchWithFilter(filterRequestDto, pageable)
                 .map(MatchingPreviewDto::fromEntity);
     }
+
+    private boolean checkFilterEmpty(FilterRequestDto filterRequestDto) {
+        // location
+        if (filterRequestDto.getLocation().getLat() == 0
+                && filterRequestDto.getLocation().getLon() == 0
+                && filterRequestDto.getFilters().getDate().length() == 0
+                && filterRequestDto.getFilters().getRegions().size() == 0
+                && filterRequestDto.getFilters().getMatchingTypes().size() == 0
+                && filterRequestDto.getFilters().getAgeGroups().size() == 0
+                && filterRequestDto.getFilters().getNtrps().size() == 0
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @Override
-    public Page<MatchingPreviewDto> findCloseMatching(LocationDto locationDto, Double distance, Pageable pageable){
+    public Page<MatchingPreviewDto> findCloseMatching(LocationDto locationDto, Double distance, Pageable pageable) {
         Double x = locationDto.getLat();
         Double y = locationDto.getLon();
-        LocationDto northEast = GeometryUtil.calculate(x, y, distance/2, 45.0);
-        LocationDto southWest = GeometryUtil.calculate(x, y, distance/2, 225.0);
+        LocationDto northEast = GeometryUtil.calculate(x, y, distance / 2, 45.0);
+        LocationDto southWest = GeometryUtil.calculate(x, y, distance / 2, 225.0);
         return matchingRepository.searchWithin(locationDto, northEast, southWest, pageable)
                 .map(MatchingPreviewDto::fromEntity);
     }

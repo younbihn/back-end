@@ -58,7 +58,7 @@ public class MatchingController {
     public ResponseDto<MatchingDetailDto> getDetailedMatching(
             @PathVariable Long matchingId) {
 
-        var result = matchingService.getDetail(matchingId);
+        MatchingDetailDto result = matchingService.getDetail(matchingId);
 
         return ResponseUtil.SUCCESS(result);
     }
@@ -104,6 +104,7 @@ public class MatchingController {
             @RequestParam(required = false) String sort,
             @RequestBody(required = false) FilterRequestDto filterRequestDto) {
 
+        // 정렬 없을 때
         PageRequest pageRequest = PageRequest.of(page, size);
 
         // 등록순 정렬
@@ -116,10 +117,10 @@ public class MatchingController {
         }
         // 거리순 정렬
         else if ("distance".equals(sort)) {
-            if (filterRequestDto.getLocation() != null)
+            if (filterRequestDto.getLocation().getLat() != null && filterRequestDto.getLocation().getLon() != null)
                 return ResponseUtil.SUCCESS(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
         }
-        // 정렬 없을 때
+
         return ResponseUtil.SUCCESS(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
     }
 

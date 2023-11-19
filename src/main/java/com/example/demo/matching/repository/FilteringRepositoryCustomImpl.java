@@ -95,7 +95,7 @@ public class FilteringRepositoryCustomImpl implements FilteringRepositoryCustom 
     }
 
     private BooleanExpression date(FilterRequestDto filterRequestDto){
-        if(filterRequestDto.getFilters() == null || filterRequestDto.getFilters().getDate() == null) {
+        if(filterRequestDto.getFilters().getDate().length() == 0) {
             return null;
         }
         LocalDate dateOfFilter = LocalDate.parse(filterRequestDto.getFilters().getDate());
@@ -103,14 +103,14 @@ public class FilteringRepositoryCustomImpl implements FilteringRepositoryCustom 
     }
 
     private BooleanExpression ageGroup(FilterRequestDto filterRequestDto){
-        if(filterRequestDto.getFilters() == null || filterRequestDto.getFilters().getAgeGroups() == null) {
+        if(filterRequestDto.getFilters().getAgeGroups().size() == 0) {
             return null;
         }
         return matching.age.in(filterRequestDto.getFilters().getAgeGroups());
     }
 
     private BooleanExpression region(FilterRequestDto filterRequestDto){
-        if(filterRequestDto.getFilters() == null || filterRequestDto.getFilters().getRegions() == null) {
+        if(filterRequestDto.getFilters().getRegions().size() == 0) {
             return null;
         }
 
@@ -127,14 +127,14 @@ public class FilteringRepositoryCustomImpl implements FilteringRepositoryCustom 
     }
 
     private BooleanExpression matchingType(FilterRequestDto filterRequestDto){
-        if(filterRequestDto.getFilters() == null || filterRequestDto.getFilters().getMatchingTypes() == null) {
+        if(filterRequestDto.getFilters().getMatchingTypes().size() == 0) {
             return null;
         }
         return matching.matchingType.in(filterRequestDto.getFilters().getMatchingTypes());
     }
 
     private BooleanExpression ntrp(FilterRequestDto filterRequestDto){
-        if(filterRequestDto.getFilters() == null || filterRequestDto.getFilters().getNtrps() == null) {
+        if(filterRequestDto.getFilters().getNtrps().size() == 0) {
             return null;
         }
         return matching.ntrp.in(filterRequestDto.getFilters().getNtrps());

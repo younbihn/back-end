@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithMockUser;
 
 @ExtendWith(MockitoExtension.class)
 class MatchingServiceImplTest {
@@ -54,6 +55,7 @@ class MatchingServiceImplTest {
     private MatchingServiceImpl matchingService;
 
     @Test
+    @WithMockUser(roles = "USER")
     @DisplayName("유저 아이디에 해당하는 유저와 함께 매칭이 저장됨")
     void create() {
         //given
@@ -68,7 +70,7 @@ class MatchingServiceImplTest {
                 .willReturn(Apply.fromDto(applyDto));
 
         //when
-        Matching savedMatching = matchingService.create(1L, matchingDetailDto);
+        Matching savedMatching = matchingService.create(siteUser.getEmail(), matchingDetailDto);
 
         //then
         assertThat(savedMatching.getSiteUser().getId()).isEqualTo(siteUser.getId());
@@ -109,7 +111,7 @@ class MatchingServiceImplTest {
                 .willReturn(Matching.fromDto(matchingDetailDto, siteUser));
 
         //when
-        Matching savedMatching = matchingService.update(1L, 1L, matchingDetailDto);
+        Matching savedMatching = matchingService.update(siteUser.getEmail(), 1L, matchingDetailDto);
 
         //then
         assertThat(savedMatching.getSiteUser().getId()).isEqualTo(siteUser.getId());
