@@ -27,25 +27,21 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final S3Uploader s3Uploader;
 
-    @PostMapping("/signup")
+    @PostMapping(path = "/signup", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> signup(@RequestParam("imageFile") MultipartFile imageFile,
                                     @RequestParam("userData") String userData) {
         try {
-            // Deserialize JSON String to Auth.SignUp Object
             Auth.SignUp request = new ObjectMapper().readValue(userData, Auth.SignUp.class);
 
-            // Upload image to S3 and get URL
             String profileImageUrl = s3Uploader.uploadFile(imageFile);
 
-            // Set the profile image URL in the SignUp object
             request.setProfileImg(profileImageUrl);
 
-            // Continue with the registration process
             var result = this.memberService.register(request);
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok("회원 가입 성공");
         } catch (IOException e) {
             e.printStackTrace();
-            return new ResponseEntity<>("Failed to process signup", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("회원 가입 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -166,14 +166,12 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
 
         user.setPenaltyScore(user.getPenaltyScore() == null ? penaltyAmount : user.getPenaltyScore() + penaltyAmount);
 
-        // PenaltyScore 객체 생성 및 초기화
         PenaltyScore penaltyScore = new PenaltyScore();
         penaltyScore.setSiteUser(user);
         penaltyScore.setCode(penaltyCode);
         penaltyScore.setScore(penaltyAmount);
         penaltyScore.setCreateTime(new Timestamp(System.currentTimeMillis()));
 
-        // PenaltyScore 객체 저장
         penaltyScoreRepository.save(penaltyScore);
 
         siteUserRepository.save(user);
