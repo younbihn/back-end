@@ -54,4 +54,9 @@ public class MemberService implements UserDetailsService {
 
         return siteUserRepository.existsByEmail(email);
     }
+
+    public boolean isNicknameExist(String nickname) {
+
+        return siteUserRepository.existsByNickname(nickname);
+    }
 }
