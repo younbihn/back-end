@@ -1,6 +1,6 @@
 package com.example.demo.entity;
 
-import com.example.demo.matching.dto.MatchingDetailDto;
+import com.example.demo.matching.dto.MatchingDetailRequestDto;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
@@ -15,24 +15,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -117,39 +112,39 @@ public class Matching {
     @Column(name = "CREATE_TIME") // yyyy-MM-dd HH:mm
     private LocalDateTime createTime;
 
-    public static Matching fromDto(MatchingDetailDto matchingDetailDto, SiteUser siteUser) {
+    public static Matching fromDto(MatchingDetailRequestDto matchingDetailRequestDto, SiteUser siteUser) {
         // 시간 파싱
         DateTimeFormatter formForDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         DateTimeFormatter formForTime = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter formForDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String recruitDueDateTimeFromDto = matchingDetailDto.getRecruitDueDate()
-                + " " + matchingDetailDto.getRecruitDueTime() + ":00";
+        String recruitDueDateTimeFromDto = matchingDetailRequestDto.getRecruitDueDate()
+                + " " + matchingDetailRequestDto.getRecruitDueTime() + ":00";
 
-        LocalDate date = LocalDate.parse(matchingDetailDto.getDate(), formForDate);
-        LocalTime startTime = LocalTime.parse(matchingDetailDto.getStartTime(), formForTime);
-        LocalTime endTime = LocalTime.parse(matchingDetailDto.getEndTime(), formForTime);
+        LocalDate date = LocalDate.parse(matchingDetailRequestDto.getDate(), formForDate);
+        LocalTime startTime = LocalTime.parse(matchingDetailRequestDto.getStartTime(), formForTime);
+        LocalTime endTime = LocalTime.parse(matchingDetailRequestDto.getEndTime(), formForTime);
         LocalDateTime recruitDueDateTime = LocalDateTime
                 .parse(recruitDueDateTimeFromDto, formForDateTime);
 
         return Matching.builder()
                 .siteUser(siteUser)
-                .title(matchingDetailDto.getTitle())
-                .content(matchingDetailDto.getContent())
-                .location(matchingDetailDto.getLocation())
-                .lat(matchingDetailDto.getLat())
-                .lon(matchingDetailDto.getLon())
-                .locationImg(matchingDetailDto.getLocationImg())
+                .title(matchingDetailRequestDto.getTitle())
+                .content(matchingDetailRequestDto.getContent())
+                .location(matchingDetailRequestDto.getLocation())
+                .lat(matchingDetailRequestDto.getLat())
+                .lon(matchingDetailRequestDto.getLon())
+                .locationImg(matchingDetailRequestDto.getLocationImg())
                 .date(date)
                 .startTime(startTime)
                 .endTime(endTime)
                 .recruitDueDateTime(recruitDueDateTime)
-                .recruitNum(matchingDetailDto.getRecruitNum())
-                .cost(matchingDetailDto.getCost())
-                .isReserved(matchingDetailDto.getIsReserved())
-                .ntrp(matchingDetailDto.getNtrp())
-                .age(matchingDetailDto.getAgeGroup())
-                .recruitStatus(matchingDetailDto.getRecruitStatus())
-                .matchingType(matchingDetailDto.getMatchingType())
+                .recruitNum(matchingDetailRequestDto.getRecruitNum())
+                .cost(matchingDetailRequestDto.getCost())
+                .isReserved(matchingDetailRequestDto.getIsReserved())
+                .ntrp(matchingDetailRequestDto.getNtrp())
+                .age(matchingDetailRequestDto.getAgeGroup())
+                .recruitStatus(matchingDetailRequestDto.getRecruitStatus())
+                .matchingType(matchingDetailRequestDto.getMatchingType())
                 .build();
     }
 

@@ -51,10 +51,12 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public Matching create(String email, MatchingDetailDto matchingDetailDto) {
+    public Matching create(String email, MatchingDetailRequestDto matchingDetailRequestDto) {
         SiteUser siteUser = siteUserRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-
-        Matching matching = matchingRepository.save(Matching.fromDto(matchingDetailDto, siteUser));
+        List<Double> latAndLon = getLatLon(getUserAddressInfo(matchingDetailRequestDto.getLocation()));
+        matchingDetailRequestDto.setLat(latAndLon.get(0));
+        matchingDetailRequestDto.setLon(latAndLon.get(1));
+        Matching matching = matchingRepository.save(Matching.fromDto(matchingDetailRequestDto, siteUser));
         saveApplyForOrganizer(matching, siteUser);
         return matching;
     }
@@ -69,7 +71,7 @@ public class MatchingServiceImpl implements MatchingService {
     }
 
     @Override
-    public Matching update(String email, Long matchingId, MatchingDetailDto matchingDetailDto) {
+    public Matching update(String email, Long matchingId, MatchingDetailRequestDto matchingDetailRequestDto) {
         SiteUser siteUser = siteUserRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
         Matching matching = validateMatchingGivenId(matchingId);
@@ -78,9 +80,16 @@ public class MatchingServiceImpl implements MatchingService {
             throw new NoPermissionToEditAndDeleteMatching();
         }
 
+        // 주소 다르다면 위경도 업데이트
+        if(!matchingDetailRequestDto.getLocation().equals(matching.getLocation())){
+            List<Double> latAndLon = getLatLon(getUserAddressInfo(matchingDetailRequestDto.getLocation()));
+            matchingDetailRequestDto.setLat(latAndLon.get(0));
+            matchingDetailRequestDto.setLon(latAndLon.get(1));
+        }
+
         sendNotificationToApplyUser(matchingId, siteUser, matching, NotificationType.MODIFY_MATCHING);
 
-        matching.update(Matching.fromDto(matchingDetailDto, siteUser));
+        matching.update(Matching.fromDto(matchingDetailRequestDto, siteUser));
         return matchingRepository.save(matching);
     }
 
@@ -185,16 +194,16 @@ public class MatchingServiceImpl implements MatchingService {
 
         JSONArray documents = (JSONArray) jsonObject.get("documents");
         JSONObject firstDocument = (JSONObject) documents.get(0);
-        double lon = Double.parseDouble((String) firstDocument.get("x"));
-        double lat = Double.parseDouble((String) firstDocument.get("y"));
+        double lon = Double.parseDouble((String) firstDocument.get("x")); // 경도
+        double lat = Double.parseDouble((String) firstDocument.get("y")); // 위도
 
         return List.of(lat, lon);
     }
 
     @Override
-    public MatchingDetailDto getDetail(Long matchingId) {
+    public MatchingDetailResponseDto getDetail(Long matchingId) {
         Matching matching = validateMatchingGivenId(matchingId);
-        return MatchingDetailDto.fromEntity(matching);
+        return MatchingDetailResponseDto.fromEntity(matching);
     }
 
     public SiteUser validateUserGivenId(Long userId) {

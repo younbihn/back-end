@@ -11,7 +11,7 @@ import com.example.demo.common.FindEntity;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
-import com.example.demo.matching.dto.MatchingDetailDto;
+import com.example.demo.matching.dto.MatchingDetailRequestDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.service.NotificationService;
@@ -21,8 +21,7 @@ import com.example.demo.type.GenderType;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
-import java.lang.annotation.Native;
-import java.sql.Timestamp;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -60,36 +59,36 @@ class MatchingServiceImplTest {
     void create() {
         //given
         SiteUser siteUser = makeSiteUser();
-        MatchingDetailDto matchingDetailDto = makeMatchingDetailDto();
-        ApplyDto applyDto = makeApplyDto(siteUser, Matching.fromDto(matchingDetailDto, siteUser));
+        MatchingDetailRequestDto matchingDetailRequestDto = makeMatchingDetailDto();
+        ApplyDto applyDto = makeApplyDto(siteUser, Matching.fromDto(matchingDetailRequestDto, siteUser));
         given(siteUserRepository.findById(anyLong()))
                 .willReturn(Optional.of(siteUser));
         given(matchingRepository.save(any(Matching.class)))
-                .willReturn(Matching.fromDto(matchingDetailDto, siteUser));
+                .willReturn(Matching.fromDto(matchingDetailRequestDto, siteUser));
         given(applyRepository.save(any(Apply.class)))
                 .willReturn(Apply.fromDto(applyDto));
 
         //when
-        Matching savedMatching = matchingService.create(siteUser.getEmail(), matchingDetailDto);
+        Matching savedMatching = matchingService.create(siteUser.getEmail(), matchingDetailRequestDto);
 
         //then
         assertThat(savedMatching.getSiteUser().getId()).isEqualTo(siteUser.getId());
-        assertThat(savedMatching.getTitle()).isEqualTo(matchingDetailDto.getTitle());
-        assertThat(savedMatching.getContent()).isEqualTo(matchingDetailDto.getContent());
-        assertThat(savedMatching.getLocation()).isEqualTo(matchingDetailDto.getLocation());
-        assertThat(savedMatching.getLat()).isEqualTo(matchingDetailDto.getLat());
-        assertThat(savedMatching.getLon()).isEqualTo(matchingDetailDto.getLon());
-        assertThat(savedMatching.getLocationImg()).isEqualTo(matchingDetailDto.getLocationImg());
-        assertThat(savedMatching.getDate()).isEqualTo(matchingDetailDto.getDate());
-        assertThat(savedMatching.getStartTime()).isEqualTo(matchingDetailDto.getStartTime());
-        assertThat(savedMatching.getEndTime()).isEqualTo(matchingDetailDto.getEndTime());
-        assertThat(savedMatching.getRecruitNum()).isEqualTo(matchingDetailDto.getRecruitNum());
-        assertThat(savedMatching.getCost()).isEqualTo(matchingDetailDto.getCost());
-        assertThat(savedMatching.getIsReserved()).isEqualTo(matchingDetailDto.getIsReserved());
-        assertThat(savedMatching.getNtrp()).isEqualTo(matchingDetailDto.getNtrp());
-        assertThat(savedMatching.getAge()).isEqualTo(matchingDetailDto.getAgeGroup());
-        assertThat(savedMatching.getRecruitStatus()).isEqualTo(matchingDetailDto.getRecruitStatus());
-        assertThat(savedMatching.getMatchingType()).isEqualTo(matchingDetailDto.getMatchingType());
+        assertThat(savedMatching.getTitle()).isEqualTo(matchingDetailRequestDto.getTitle());
+        assertThat(savedMatching.getContent()).isEqualTo(matchingDetailRequestDto.getContent());
+        assertThat(savedMatching.getLocation()).isEqualTo(matchingDetailRequestDto.getLocation());
+        assertThat(savedMatching.getLat()).isEqualTo(matchingDetailRequestDto.getLat());
+        assertThat(savedMatching.getLon()).isEqualTo(matchingDetailRequestDto.getLon());
+        assertThat(savedMatching.getLocationImg()).isEqualTo(matchingDetailRequestDto.getLocationImg());
+        assertThat(savedMatching.getDate()).isEqualTo(matchingDetailRequestDto.getDate());
+        assertThat(savedMatching.getStartTime()).isEqualTo(matchingDetailRequestDto.getStartTime());
+        assertThat(savedMatching.getEndTime()).isEqualTo(matchingDetailRequestDto.getEndTime());
+        assertThat(savedMatching.getRecruitNum()).isEqualTo(matchingDetailRequestDto.getRecruitNum());
+        assertThat(savedMatching.getCost()).isEqualTo(matchingDetailRequestDto.getCost());
+        assertThat(savedMatching.getIsReserved()).isEqualTo(matchingDetailRequestDto.getIsReserved());
+        assertThat(savedMatching.getNtrp()).isEqualTo(matchingDetailRequestDto.getNtrp());
+        assertThat(savedMatching.getAge()).isEqualTo(matchingDetailRequestDto.getAgeGroup());
+        assertThat(savedMatching.getRecruitStatus()).isEqualTo(matchingDetailRequestDto.getRecruitStatus());
+        assertThat(savedMatching.getMatchingType()).isEqualTo(matchingDetailRequestDto.getMatchingType());
     }
 
 
@@ -100,7 +99,7 @@ class MatchingServiceImplTest {
         // given
         SiteUser siteUser = makeSiteUser();
         Matching matching = makeMatching(siteUser);
-        MatchingDetailDto matchingDetailDto = makeMatchingDetailDto();
+        MatchingDetailRequestDto matchingDetailRequestDto = makeMatchingDetailDto();
         given(siteUserRepository.findById(anyLong()))
                 .willReturn(Optional.of(siteUser));
         given(matchingRepository.findById(anyLong()))
@@ -108,29 +107,29 @@ class MatchingServiceImplTest {
         given(matchingRepository.existsByIdAndSiteUser(anyLong(), any(SiteUser.class)))
                 .willReturn(true);
         given(matchingRepository.save(any(Matching.class)))
-                .willReturn(Matching.fromDto(matchingDetailDto, siteUser));
+                .willReturn(Matching.fromDto(matchingDetailRequestDto, siteUser));
 
         //when
-        Matching savedMatching = matchingService.update(siteUser.getEmail(), 1L, matchingDetailDto);
+        Matching savedMatching = matchingService.update(siteUser.getEmail(), 1L, matchingDetailRequestDto);
 
         //then
         assertThat(savedMatching.getSiteUser().getId()).isEqualTo(siteUser.getId());
-        assertThat(savedMatching.getTitle()).isEqualTo(matchingDetailDto.getTitle());
-        assertThat(savedMatching.getContent()).isEqualTo(matchingDetailDto.getContent());
-        assertThat(savedMatching.getLocation()).isEqualTo(matchingDetailDto.getLocation());
-        assertThat(savedMatching.getLat()).isEqualTo(matchingDetailDto.getLat());
-        assertThat(savedMatching.getLon()).isEqualTo(matchingDetailDto.getLon());
-        assertThat(savedMatching.getLocationImg()).isEqualTo(matchingDetailDto.getLocationImg());
-        assertThat(savedMatching.getDate()).isEqualTo(matchingDetailDto.getDate());
-        assertThat(savedMatching.getStartTime()).isEqualTo(matchingDetailDto.getStartTime());
-        assertThat(savedMatching.getEndTime()).isEqualTo(matchingDetailDto.getEndTime());
-        assertThat(savedMatching.getRecruitNum()).isEqualTo(matchingDetailDto.getRecruitNum());
-        assertThat(savedMatching.getCost()).isEqualTo(matchingDetailDto.getCost());
-        assertThat(savedMatching.getIsReserved()).isEqualTo(matchingDetailDto.getIsReserved());
-        assertThat(savedMatching.getNtrp()).isEqualTo(matchingDetailDto.getNtrp());
-        assertThat(savedMatching.getAge()).isEqualTo(matchingDetailDto.getAgeGroup());
-        assertThat(savedMatching.getRecruitStatus()).isEqualTo(matchingDetailDto.getRecruitStatus());
-        assertThat(savedMatching.getMatchingType()).isEqualTo(matchingDetailDto.getMatchingType());
+        assertThat(savedMatching.getTitle()).isEqualTo(matchingDetailRequestDto.getTitle());
+        assertThat(savedMatching.getContent()).isEqualTo(matchingDetailRequestDto.getContent());
+        assertThat(savedMatching.getLocation()).isEqualTo(matchingDetailRequestDto.getLocation());
+        assertThat(savedMatching.getLat()).isEqualTo(matchingDetailRequestDto.getLat());
+        assertThat(savedMatching.getLon()).isEqualTo(matchingDetailRequestDto.getLon());
+        assertThat(savedMatching.getLocationImg()).isEqualTo(matchingDetailRequestDto.getLocationImg());
+        assertThat(savedMatching.getDate()).isEqualTo(matchingDetailRequestDto.getDate());
+        assertThat(savedMatching.getStartTime()).isEqualTo(matchingDetailRequestDto.getStartTime());
+        assertThat(savedMatching.getEndTime()).isEqualTo(matchingDetailRequestDto.getEndTime());
+        assertThat(savedMatching.getRecruitNum()).isEqualTo(matchingDetailRequestDto.getRecruitNum());
+        assertThat(savedMatching.getCost()).isEqualTo(matchingDetailRequestDto.getCost());
+        assertThat(savedMatching.getIsReserved()).isEqualTo(matchingDetailRequestDto.getIsReserved());
+        assertThat(savedMatching.getNtrp()).isEqualTo(matchingDetailRequestDto.getNtrp());
+        assertThat(savedMatching.getAge()).isEqualTo(matchingDetailRequestDto.getAgeGroup());
+        assertThat(savedMatching.getRecruitStatus()).isEqualTo(matchingDetailRequestDto.getRecruitStatus());
+        assertThat(savedMatching.getMatchingType()).isEqualTo(matchingDetailRequestDto.getMatchingType());
     }
 
     // 이 이후는 jpa에서 기본으로 제공하는 method로만 이루어져서 테스트 안해도 될 듯
@@ -176,8 +175,8 @@ class MatchingServiceImplTest {
                 .build();
     }
 
-    private MatchingDetailDto makeMatchingDetailDto() {
-        return MatchingDetailDto.builder()
+    private MatchingDetailRequestDto makeMatchingDetailDto() {
+        return MatchingDetailRequestDto.builder()
                 .id(1L)
                 .title("제목")
                 .content("본문")

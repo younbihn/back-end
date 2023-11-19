@@ -5,7 +5,6 @@ import com.example.demo.entity.SiteUser;
 import com.example.demo.matching.dto.ApplyContents;
 import com.example.demo.matching.dto.ApplyMember;
 import com.example.demo.matching.dto.FilterRequestDto;
-import com.example.demo.openfeign.dto.address.AddressRequestDto;
 import com.example.demo.openfeign.dto.address.AddressResponseDto;
 import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.service.MatchingService;
@@ -22,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.demo.aws.S3Uploader;
-import com.example.demo.matching.dto.MatchingDetailDto;
+import com.example.demo.matching.dto.MatchingDetailRequestDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.siteuser.security.CustomAuthFailureHandler;
 import com.example.demo.siteuser.security.JwtAuthenticationFilter;
@@ -32,7 +31,6 @@ import com.example.demo.type.AgeGroup;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -101,10 +99,10 @@ class MatchingControllerTest {
     public void createMatchingTest() throws Exception {
         //given
         Matching matching = makeMatching();
-        MatchingDetailDto matchingDetailDto = makeMatchingDetailDto();
-        given(matchingService.create(anyString(), matchingDetailDto))
+        MatchingDetailRequestDto matchingDetailRequestDto = makeMatchingDetailDto();
+        given(matchingService.create(anyString(), matchingDetailRequestDto))
                 .willReturn(matching);
-        String content = objectMapper.writeValueAsString(matchingDetailDto);
+        String content = objectMapper.writeValueAsString(matchingDetailRequestDto);
 
         //when
         //then
@@ -118,9 +116,9 @@ class MatchingControllerTest {
     @DisplayName("매칭글 조회")
     public void getDetailedMatchingTest() throws Exception {
         //given
-        MatchingDetailDto matchingDetailDto = makeMatchingDetailDto();
+        MatchingDetailRequestDto matchingDetailRequestDto = makeMatchingDetailDto();
         given(matchingService.getDetail(1L))
-                .willReturn(matchingDetailDto);
+                .willReturn(matchingDetailRequestDto);
         //when
         //then
         MvcResult mvcResult = mockMvc.perform(get("/api/matches/1"))
@@ -135,10 +133,10 @@ class MatchingControllerTest {
     public void editMatchingTest() throws Exception {
         //given
         Matching matching = makeMatching();
-        MatchingDetailDto matchingDetailDto = makeMatchingDetailDto();
-        given(matchingService.update(anyString(), 1L, matchingDetailDto))
+        MatchingDetailRequestDto matchingDetailRequestDto = makeMatchingDetailDto();
+        given(matchingService.update(anyString(), 1L, matchingDetailRequestDto))
                 .willReturn(matching);
-        String content = objectMapper.writeValueAsString(matchingDetailDto);
+        String content = objectMapper.writeValueAsString(matchingDetailRequestDto);
 
         //when
         //then
@@ -228,8 +226,8 @@ class MatchingControllerTest {
                 .build();
     }
 
-    private MatchingDetailDto makeMatchingDetailDto(){
-        return MatchingDetailDto.builder()
+    private MatchingDetailRequestDto makeMatchingDetailDto(){
+        return MatchingDetailRequestDto.builder()
                 .id(1L)
                 .creatorUserId(1L)
                 .title("제목")

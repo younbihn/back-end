@@ -7,11 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface MatchingService {
-    Matching create(String email, MatchingDetailDto matchingDetailDto);
-    Matching update(String email, Long matchingId, MatchingDetailDto matchingDetailDto);
+    Matching create(String email, MatchingDetailRequestDto matchingDetailRequestDto);
+    Matching update(String email, Long matchingId, MatchingDetailRequestDto matchingDetailRequestDto);
     void delete(String email, Long matchingId);
     Page<MatchingPreviewDto> findFilteredMatching(FilterRequestDto filterRequestDto, Pageable pageable);
     Page<MatchingPreviewDto> findCloseMatching(LocationDto locationDto, Double distance, Pageable pageable);
-    MatchingDetailDto getDetail(Long matchingId);
+    MatchingDetailResponseDto getDetail(Long matchingId);
     ApplyContents getApplyContents(String email, long matchId) throws JsonProcessingException;
 }
