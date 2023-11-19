@@ -4,7 +4,7 @@ import com.example.demo.aws.S3Uploader;
 import com.example.demo.entity.Auth;
 import com.example.demo.siteuser.security.TokenProvider;
 import com.example.demo.siteuser.service.MemberService;
-import com.example.demo.type.Authority;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,11 +27,22 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final S3Uploader s3Uploader;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody Auth.SignUp request) {
-        // 회원가입을 위한 API
-        var result = this.memberService.register(request);
-        return ResponseEntity.ok(result);
+    @PostMapping(path = "/signup", produces = "text/plain;charset=UTF-8")
+    public ResponseEntity<?> signup(@RequestParam("imageFile") MultipartFile imageFile,
+                                    @RequestParam("userData") String userData) {
+        try {
+            Auth.SignUp request = new ObjectMapper().readValue(userData, Auth.SignUp.class);
+
+            String profileImageUrl = s3Uploader.uploadFile(imageFile);
+
+            request.setProfileImg(profileImageUrl);
+
+            var result = this.memberService.register(request);
+            return ResponseEntity.ok("회원 가입 성공");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("회원 가입 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/signin")
@@ -55,5 +66,11 @@ public class AuthController {
             e.printStackTrace();
             return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping(path = "/check-email", produces = "text/plain;charset=UTF-8")
+    public String checkEmailExistence(@RequestBody String email) {
+        boolean exists = memberService.isEmailExist(email);
+        return exists ? "사용 불가능한 이메일 입니다." : "사용 가능한 이메일 입니다.";
     }
 }

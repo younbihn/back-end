@@ -6,8 +6,6 @@ import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @NoArgsConstructor

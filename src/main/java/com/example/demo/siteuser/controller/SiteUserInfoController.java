@@ -1,6 +1,8 @@
 package com.example.demo.siteuser.controller;
 
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.common.ResponseDto;
+import com.example.demo.common.ResponseUtil;
 import com.example.demo.siteuser.dto.*;
 import com.example.demo.siteuser.service.SiteUserInfoService;
 import com.example.demo.type.PenaltyCode;
@@ -8,11 +10,13 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -24,46 +28,46 @@ public class SiteUserInfoController {
     private final S3Uploader s3Uploader;
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<SiteUserInfoDto> getSiteUserInfoById(@PathVariable(value = "userId") Long siteUser) {
+    public ResponseEntity<ResponseDto<SiteUserInfoDto>> getSiteUserInfoById(@PathVariable(value = "userId") Long siteUser) {
         SiteUserInfoDto siteUserInfoDto = siteUserInfoService.getSiteUserInfoById(siteUser);
 
         if (siteUserInfoDto != null) {
-            return new ResponseEntity<>(siteUserInfoDto, HttpStatus.OK);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(siteUserInfoDto), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(null), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/my-page/{userId}")
-    public ResponseEntity<SiteUserMyInfoDto> getSiteUserMyInfoById(@PathVariable(value = "userId") Long siteUser) {
+    public ResponseEntity<ResponseDto<SiteUserMyInfoDto>> getSiteUserMyInfoById(@PathVariable(value = "userId") Long siteUser) {
         SiteUserMyInfoDto siteUserMyInfoDto = siteUserInfoService.getSiteUserMyInfoById(siteUser);
 
         if (siteUserMyInfoDto != null) {
-            return new ResponseEntity<>(siteUserMyInfoDto, HttpStatus.OK);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(siteUserMyInfoDto), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(null), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/my-page/hosted/{userId}")
-    public ResponseEntity<List<MatchingMyMatchingDto>> getMatchingBySiteUser(@PathVariable(value = "userId") Long userId) {
+    public ResponseEntity<ResponseDto<List<MatchingMyMatchingDto>>> getMatchingBySiteUser(@PathVariable(value = "userId") Long userId) {
         List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getMatchingBySiteUser(userId);
 
         if (!matchingMyHostedDtos.isEmpty()) {
-            return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(matchingMyHostedDtos), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(Collections.emptyList()), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/my-page/apply/{userId}")
-    public ResponseEntity<List<MatchingMyMatchingDto>> findApplyBySiteUser_Id(@PathVariable(value = "userId") Long userId) {
-        List<MatchingMyMatchingDto> matchingMyHostedDtos = siteUserInfoService.getApplyBySiteUser(userId);
+    public ResponseEntity<ResponseDto<List<MatchingMyMatchingDto>>> findApplyBySiteUser_Id(@PathVariable(value = "userId") Long userId) {
+        List<MatchingMyMatchingDto> matchingMyAppliedDtos = siteUserInfoService.getApplyBySiteUser(userId);
 
-        if (!matchingMyHostedDtos.isEmpty()) {
-            return new ResponseEntity<>(matchingMyHostedDtos, HttpStatus.OK);
+        if (!matchingMyAppliedDtos.isEmpty()) {
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(matchingMyAppliedDtos), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(Collections.emptyList()), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -96,13 +100,13 @@ public class SiteUserInfoController {
     }
 
     @GetMapping("/my-page/notification/{userId}")
-    public ResponseEntity<List<SiteUserNotificationDto>> getNotificationBySiteUser(@PathVariable(value = "userId") Long userId) {
+    public ResponseEntity<ResponseDto<List<SiteUserNotificationDto>>> getNotificationBySiteUser(@PathVariable(value = "userId") Long userId) {
         List<SiteUserNotificationDto> siteUserNotificationDtos = siteUserInfoService.getNotificationBySiteUser(userId);
 
         if (!siteUserNotificationDtos.isEmpty()) {
-            return new ResponseEntity<>(siteUserNotificationDtos, HttpStatus.OK);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(siteUserNotificationDtos), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(Collections.emptyList()), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -131,6 +135,29 @@ public class SiteUserInfoController {
         } catch (IllegalArgumentException e) {
             // 여기서도 DTO의 값을 사용하여 오류 메시지를 생성
             return new ResponseEntity<>("Invalid penalty code: " + siteUserPenaltyDto.getPenaltyCode(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/report")
+    public ResponseEntity<?> createReportUser(@RequestBody ReportUserDto reportUserDto) {
+        try {
+            siteUserInfoService.createReportUser(reportUserDto);
+            return new ResponseEntity<>("Report created successfully", HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/reports")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseDto<List<ViewReportsDto>>> getAllReports() {
+        List<ViewReportsDto> reportList = siteUserInfoService.getAllReports();
+
+        if (!reportList.isEmpty()) {
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(reportList), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(ResponseUtil.SUCCESS(Collections.emptyList()), HttpStatus.NOT_FOUND);
         }
     }
 }
