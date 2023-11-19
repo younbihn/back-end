@@ -1,6 +1,5 @@
 package com.example.demo.siteuser.controller;
 
-import com.example.demo.aws.S3Uploader;
 import com.example.demo.common.ResponseDto;
 import com.example.demo.common.ResponseUtil;
 import com.example.demo.entity.Auth;
@@ -8,18 +7,14 @@ import com.example.demo.siteuser.dto.EmailRequestDto;
 import com.example.demo.siteuser.dto.NicknameRequestDto;
 import com.example.demo.siteuser.security.TokenProvider;
 import com.example.demo.siteuser.service.MemberService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -29,7 +24,6 @@ public class AuthController {
 
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
-    private final S3Uploader s3Uploader;
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto<String>> signup(@RequestBody Auth.SignUp request) {
@@ -39,17 +33,6 @@ public class AuthController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(ResponseUtil.SUCCESS("회원 가입 실패"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/upload-image")
-    public ResponseEntity<ResponseDto<String>> uploadImage(@RequestParam("imageFile") MultipartFile imageFile) {
-        try {
-            String profileImageUrl = s3Uploader.uploadFile(imageFile);
-            return ResponseEntity.ok(ResponseUtil.SUCCESS(profileImageUrl));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(ResponseUtil.SUCCESS("이미지 업로드 실패"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

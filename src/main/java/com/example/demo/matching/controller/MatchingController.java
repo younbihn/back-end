@@ -1,9 +1,7 @@
 package com.example.demo.matching.controller;
 
-import com.example.demo.aws.S3Uploader;
 import com.example.demo.common.ResponseDto;
 import com.example.demo.common.ResponseUtil;
-import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.*;
 import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.dto.ApplyContents;
@@ -12,7 +10,6 @@ import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.openfeign.dto.address.AddressResponseDto;
 import com.example.demo.matching.service.MatchingService;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -23,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,25 +28,15 @@ public class MatchingController {
 
     private final MatchingService matchingService;
     private final AddressService addressService;
-    private final S3Uploader s3Uploader;
 
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public void createMatching(
             @RequestBody MatchingDetailRequestDto matchingDetailRequestDto,
-            @RequestParam(value = "file", required = false) MultipartFile file,
             Principal principal) {
 
         String email = principal.getName();
         matchingService.create(email, matchingDetailRequestDto);
-
-        if (file != null) {
-            try {
-                s3Uploader.uploadFile(file);
-            } catch (IOException exception) {
-                throw new S3UploadFailException();
-            }
-        }
     }
 
     @GetMapping("/{matchingId}")
@@ -67,22 +53,10 @@ public class MatchingController {
     public void editMatching(
             @RequestBody MatchingDetailRequestDto matchingDetailRequestDto,
             @PathVariable Long matchingId,
-            @RequestParam(value = "file", required = false) MultipartFile file,
             Principal principal) {
 
         String email = principal.getName();
         matchingService.update(email, matchingId, matchingDetailRequestDto);
-
-        // 구장 이미지 변경
-        if (file != null && !file.toString().equals(matchingDetailRequestDto.getLocationImg())) {
-            try {
-                //TODO : S3에 있는 파일 삭제
-                s3Uploader.uploadFile(file);
-                matchingDetailRequestDto.setLocationImg(file.toString());
-            } catch (IOException exception) {
-                throw new S3UploadFailException();
-            }
-        }
     }
 
     @DeleteMapping("/{matchingId}")
