@@ -127,7 +127,7 @@ public class MatchingController {
     @PostMapping("/list/map")
     public ResponseDto<Page<MatchingPreviewDto>> getCloseMatchingList(
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "5") int size,
+            @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "3") double distance,
             @RequestBody(required = false) LocationDto locationDto) {
 
