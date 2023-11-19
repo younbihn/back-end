@@ -7,7 +7,7 @@ import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.*;
 import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.dto.MatchingDetailDto;
+import com.example.demo.matching.dto.MatchingDetailRequestDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.openfeign.dto.address.AddressResponseDto;
 import com.example.demo.matching.service.MatchingService;
@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,12 +37,12 @@ public class MatchingController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public void createMatching(
-            @RequestBody MatchingDetailDto matchingDetailDto,
+            @RequestBody MatchingDetailRequestDto matchingDetailRequestDto,
             @RequestParam(value = "file", required = false) MultipartFile file,
             Principal principal) {
 
         String email = principal.getName();
-        matchingService.create(email, matchingDetailDto);
+        matchingService.create(email, matchingDetailRequestDto);
 
         if (file != null) {
             try {
@@ -55,10 +54,10 @@ public class MatchingController {
     }
 
     @GetMapping("/{matchingId}")
-    public ResponseDto<MatchingDetailDto> getDetailedMatching(
+    public ResponseDto<MatchingDetailResponseDto> getDetailedMatching(
             @PathVariable Long matchingId) {
 
-        MatchingDetailDto result = matchingService.getDetail(matchingId);
+        MatchingDetailResponseDto result = matchingService.getDetail(matchingId);
 
         return ResponseUtil.SUCCESS(result);
     }
@@ -66,21 +65,20 @@ public class MatchingController {
     @PatchMapping("/{matchingId}")
     @PreAuthorize("hasRole('USER')")
     public void editMatching(
-            @RequestBody MatchingDetailDto matchingDetailDto,
+            @RequestBody MatchingDetailRequestDto matchingDetailRequestDto,
             @PathVariable Long matchingId,
             @RequestParam(value = "file", required = false) MultipartFile file,
             Principal principal) {
 
         String email = principal.getName();
-        matchingService.update(email, matchingId, matchingDetailDto);
+        matchingService.update(email, matchingId, matchingDetailRequestDto);
 
         // 구장 이미지 변경
-        //TODO: 이미 존재하는 이미지인지 검증하는 로직이 이게 맞나..?
-        if (file != null && !file.toString().equals(matchingDetailDto.getLocationImg())) {
+        if (file != null && !file.toString().equals(matchingDetailRequestDto.getLocationImg())) {
             try {
                 //TODO : S3에 있는 파일 삭제
                 s3Uploader.uploadFile(file);
-                matchingDetailDto.setLocationImg(file.toString());
+                matchingDetailRequestDto.setLocationImg(file.toString());
             } catch (IOException exception) {
                 throw new S3UploadFailException();
             }
