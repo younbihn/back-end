@@ -1,7 +1,10 @@
 package com.example.demo.siteuser.controller;
 
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.common.ResponseDto;
+import com.example.demo.common.ResponseUtil;
 import com.example.demo.entity.Auth;
+import com.example.demo.siteuser.dto.EmailRequestDto;
 import com.example.demo.siteuser.security.TokenProvider;
 import com.example.demo.siteuser.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,9 +71,10 @@ public class AuthController {
         }
     }
 
-    @PostMapping(path = "/check-email", produces = "text/plain;charset=UTF-8")
-    public String checkEmailExistence(@RequestBody String email) {
-        boolean exists = memberService.isEmailExist(email);
-        return exists ? "사용 불가능한 이메일 입니다." : "사용 가능한 이메일 입니다.";
+    @PostMapping(path = "/check-email")
+    public ResponseEntity<ResponseDto<String>> checkEmailExistence(@RequestBody EmailRequestDto emailRequestDto) {
+        boolean exists = memberService.isEmailExist(emailRequestDto.getEmail());
+        String message = exists ? "사용 불가능한 이메일 입니다." : "사용 가능한 이메일 입니다.";
+        return ResponseEntity.ok(ResponseUtil.SUCCESS(message));
     }
 }

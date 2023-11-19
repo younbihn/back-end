@@ -51,6 +51,7 @@ public class MemberService implements UserDetailsService {
     }
 
     public boolean isEmailExist(String email) {
+
         return siteUserRepository.existsByEmail(email);
     }
 }
