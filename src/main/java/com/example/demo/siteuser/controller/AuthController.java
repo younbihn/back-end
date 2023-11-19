@@ -5,6 +5,7 @@ import com.example.demo.common.ResponseDto;
 import com.example.demo.common.ResponseUtil;
 import com.example.demo.entity.Auth;
 import com.example.demo.siteuser.dto.EmailRequestDto;
+import com.example.demo.siteuser.dto.NicknameRequestDto;
 import com.example.demo.siteuser.security.TokenProvider;
 import com.example.demo.siteuser.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,6 +67,13 @@ public class AuthController {
     public ResponseEntity<ResponseDto<String>> checkEmailExistence(@RequestBody EmailRequestDto emailRequestDto) {
         boolean exists = memberService.isEmailExist(emailRequestDto.getEmail());
         String message = exists ? "사용 불가능한 이메일 입니다." : "사용 가능한 이메일 입니다.";
+        return ResponseEntity.ok(ResponseUtil.SUCCESS(message));
+    }
+
+    @PostMapping(path = "/check-nickname")
+    public ResponseEntity<ResponseDto<String>> checkNicknameExistence(@RequestBody NicknameRequestDto nicknameRequestDto) {
+        boolean exists = memberService.isNicknameExist(nicknameRequestDto.getNickname());
+        String message = exists ? "사용 불가능한 닉네임 입니다." : "사용 가능한 닉네임 입니다.";
         return ResponseEntity.ok(ResponseUtil.SUCCESS(message));
     }
 }
