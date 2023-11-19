@@ -14,6 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class MatchingPreviewDto {
+    private Long id;
     private boolean isReserved;
     private MatchingType matchingType;
     private Ntrp ntrp;
@@ -22,6 +23,7 @@ public class MatchingPreviewDto {
 
     public static MatchingPreviewDto fromEntity(Matching matching){
         return MatchingPreviewDto.builder()
+                .id(matching.getId())
                 .isReserved(matching.getIsReserved())
                 .matchingType(matching.getMatchingType())
                 .ntrp(matching.getNtrp())

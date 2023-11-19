@@ -4,15 +4,13 @@ import com.example.demo.entity.Matching;
 import com.example.demo.matching.dto.FilterRequestDto;
 import com.example.demo.matching.dto.LocationDto;
 import com.example.demo.matching.filter.Region;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberPath;
-import com.querydsl.core.types.dsl.StringExpression;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.domain.Page;
+import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.data.jpa.repository.support.Querydsl;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,14 +19,16 @@ import static com.example.demo.entity.QMatching.matching;
 
 public class FilteringRepositoryCustomImpl implements FilteringRepositoryCustom {
     private final JPAQueryFactory queryFactory;
+    private final EntityManager entityManager;
 
-    public FilteringRepositoryCustomImpl(JPAQueryFactory queryFactory) {
+    public FilteringRepositoryCustomImpl(JPAQueryFactory queryFactory, EntityManager entityManager) {
         this.queryFactory = queryFactory;
+        this.entityManager = entityManager;
     }
 
     @Override
-    public Page<Matching> searchWithFilter(FilterRequestDto filterRequestDto, Pageable pageable) {
-        List<Matching> matchingList;
+    public PageImpl<Matching> searchWithFilter(FilterRequestDto filterRequestDto, Pageable pageable) {
+        JPQLQuery<Matching> matchingList;
         if(filterRequestDto.getLocation() == null){
             matchingList =  queryFactory.selectFrom(matching)
                     .where(
@@ -37,13 +37,10 @@ public class FilteringRepositoryCustomImpl implements FilteringRepositoryCustom 
                             matchingType(filterRequestDto),
                             ageGroup(filterRequestDto),
                             ntrp(filterRequestDto)
-                    )
-                    .limit(pageable.getPageSize())
-                    .fetch();
+                    );
         } else {
             String haversineFormula = "ST_Distance_Sphere(point({0}, {1}), point("
                     + filterRequestDto.getLocation().getLon() + ", " + filterRequestDto.getLocation().getLat() + "))";
-
             matchingList = queryFactory.selectFrom(matching)
                     .where(
                             date(filterRequestDto),
@@ -52,41 +49,40 @@ public class FilteringRepositoryCustomImpl implements FilteringRepositoryCustom 
                             ageGroup(filterRequestDto),
                             ntrp(filterRequestDto)
                     )
-                    .orderBy(Expressions.stringTemplate(haversineFormula, matching.lon, matching.lat).asc())
-                    .limit(pageable.getPageSize())
-                    .fetch();
+                    .orderBy(Expressions.stringTemplate(haversineFormula, matching.lon, matching.lat).asc());
         }
 
-        JPQLQuery<Matching> total =  queryFactory.selectFrom(matching)
-                .where(
-                        date(filterRequestDto),
-                        region(filterRequestDto),
-                        matchingType(filterRequestDto),
-                        ageGroup(filterRequestDto),
-                        ntrp(filterRequestDto)
-                );
+        return getPageImpl(pageable, matchingList, Matching.class);
+    }
 
-        return PageableExecutionUtils.getPage(matchingList, pageable, total::fetchCount);
+    private Querydsl getQuerydsl(Class clazz) {    // 1)
+        PathBuilder<Matching> builder = new PathBuilderFactory().create(clazz);
+        return new Querydsl(entityManager, builder);
+    }
+
+    private <T> PageImpl<T> getPageImpl(Pageable pageable, JPQLQuery<T> query, Class clazz) {    // 2)
+        long totalCount = query.fetchCount();
+        List<T> results = getQuerydsl(clazz).applyPagination(pageable, query).fetch();
+        return new PageImpl<>(results, pageable, totalCount);
     }
 
     @Override
-    public Page<Matching> searchWithin(LocationDto center, LocationDto northEastBound, LocationDto southWestBound, Pageable pageable) {
+    public PageImpl<Matching> searchWithin(LocationDto center, LocationDto northEastBound, LocationDto southWestBound, Pageable pageable) {
         String haversineFormula = "ST_Distance_Sphere(point({0}, {1}), point("
                 + center.getLon() + ", " + center.getLat() + "))";
 
-        List<Matching> matchingList =  queryFactory.selectFrom(matching)
+        JPQLQuery<Matching> matchingList =  queryFactory.selectFrom(matching)
                 .where(
                         within(southWestBound.getLat(), northEastBound.getLat(), southWestBound.getLon(), northEastBound.getLon())
                 )
-                .orderBy(Expressions.stringTemplate(haversineFormula, matching.lon, matching.lat).asc())
-                .fetch();
+                .orderBy(Expressions.stringTemplate(haversineFormula, matching.lon, matching.lat).asc());
 
         JPQLQuery<Matching> total = queryFactory.selectFrom(matching)
                 .where(
                         within(southWestBound.getLat(), northEastBound.getLat(), southWestBound.getLon(), northEastBound.getLon())
                 );
 
-        return PageableExecutionUtils.getPage(matchingList, pageable, total::fetchCount);
+        return getPageImpl(pageable, matchingList, Matching.class);
     }
 
     private BooleanExpression within(Double latLowerBound, Double latUpperBound, Double lonLeftBound, Double lonRightBound){
