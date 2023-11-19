@@ -56,5 +56,4 @@ public class AuthController {
             return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

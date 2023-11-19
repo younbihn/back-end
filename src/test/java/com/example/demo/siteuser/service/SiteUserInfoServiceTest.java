@@ -7,9 +7,6 @@ import static com.example.demo.type.Ntrp.DEVELOPMENT;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
 
 import com.example.demo.apply.repository.ApplyRepository;
 import com.example.demo.entity.Apply;
@@ -20,6 +17,7 @@ import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.notification.repository.NotificationRepository;
 import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.siteuser.dto.*;
+import com.example.demo.type.PenaltyCode;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -41,7 +39,7 @@ import static com.example.demo.type.GenderType.MALE;
 import static com.example.demo.type.Ntrp.DEVELOPMENT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SiteUserInfoServiceTest {
@@ -126,7 +124,7 @@ public class SiteUserInfoServiceTest {
                 .siteUser(siteUser)
                 .title("testTitle")
                 .content("testContent")
-                .date(Date.valueOf(LocalDate.of(2022,10,01)).toLocalDate())
+                .date(Date.valueOf(LocalDate.of(2022, 10, 01)).toLocalDate())
                 .build();
         List<Matching> matchings = Arrays.asList(matching);
         when(matchingRepository.findBySiteUser_Id(any())).thenReturn(matchings);
@@ -157,7 +155,7 @@ public class SiteUserInfoServiceTest {
                 .siteUser(siteUser)
                 .title("testTitle")
                 .content("testContent")
-                .date(Date.valueOf(LocalDate.of(2022,10,01)).toLocalDate())
+                .date(Date.valueOf(LocalDate.of(2022, 10, 01)).toLocalDate())
                 .build();
 
         Apply apply = Apply.builder()
@@ -206,7 +204,7 @@ public class SiteUserInfoServiceTest {
     public void getNotificationBySiteUserTest() {
         Long userId = 1L;
         List<Notification> mockNotifications = Arrays.asList(
-                new Notification(1L, SiteUser.builder().id(1L).build(), Matching.builder().id(1L).build(), MODIFY_MATCHING,"Notification Content 1", LocalDateTime.now()),
+                new Notification(1L, SiteUser.builder().id(1L).build(), Matching.builder().id(1L).build(), MODIFY_MATCHING, "Notification Content 1", LocalDateTime.now()),
                 new Notification(2L, SiteUser.builder().id(1L).build(), Matching.builder().id(1L).build(), MODIFY_MATCHING, "Notification Content 2", LocalDateTime.now())
         );
 
@@ -230,5 +228,18 @@ public class SiteUserInfoServiceTest {
         siteUserInfoService.deleteNotification(userId, notificationId);
 
         verify(notificationRepository).deleteByIdAndSiteUser_Id(notificationId, userId);
+    }
+
+    @Test
+    public void updatePenaltyScoreTest() {
+        SiteUser mockUser = new SiteUser();
+        mockUser.setPenaltyScore(0);
+        when(siteUserRepository.findById(any(Long.class))).thenReturn(Optional.of(mockUser));
+        when(siteUserRepository.save(any(SiteUser.class))).thenReturn(mockUser);
+
+        siteUserInfoService.updatePenaltyScore(1L, PenaltyCode.OFFENSE_CHAT);
+
+        verify(siteUserRepository, times(1)).save(any(SiteUser.class));
+        assertEquals(-10, mockUser.getPenaltyScore());
     }
 }

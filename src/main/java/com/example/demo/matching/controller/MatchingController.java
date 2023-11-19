@@ -1,6 +1,8 @@
 package com.example.demo.matching.controller;
 
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.common.ResponseDto;
+import com.example.demo.common.ResponseUtil;
 import com.example.demo.exception.impl.S3UploadFailException;
 import com.example.demo.matching.dto.*;
 import com.example.demo.openfeign.service.address.AddressService;
@@ -34,12 +36,14 @@ public class MatchingController {
     private final S3Uploader s3Uploader;
 
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     public void createMatching(
             @RequestBody MatchingDetailDto matchingDetailDto,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            Principal principal) {
 
-        Long userId = 1L;
-        matchingService.create(userId, matchingDetailDto);
+        String email = principal.getName();
+        matchingService.create(email, matchingDetailDto);
 
         if (file != null) {
             try {
@@ -51,22 +55,24 @@ public class MatchingController {
     }
 
     @GetMapping("/{matchingId}")
-    public ResponseEntity<MatchingDetailDto> getDetailedMatching(
+    public ResponseDto<MatchingDetailDto> getDetailedMatching(
             @PathVariable Long matchingId) {
 
-        var result = matchingService.getDetail(matchingId);
+        MatchingDetailDto result = matchingService.getDetail(matchingId);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 
     @PatchMapping("/{matchingId}")
+    @PreAuthorize("hasRole('USER')")
     public void editMatching(
             @RequestBody MatchingDetailDto matchingDetailDto,
             @PathVariable Long matchingId,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            Principal principal) {
 
-        Long userId = 1L;
-        matchingService.update(userId, matchingId, matchingDetailDto);
+        String email = principal.getName();
+        matchingService.update(email, matchingId, matchingDetailDto);
 
         // 구장 이미지 변경
         //TODO: 이미 존재하는 이미지인지 검증하는 로직이 이게 맞나..?
@@ -82,21 +88,23 @@ public class MatchingController {
     }
 
     @DeleteMapping("/{matchingId}")
+    @PreAuthorize("hasRole('USER')")
     public void deleteMatching(
-            @PathVariable Long matchingId) {
+            @PathVariable Long matchingId,
+            Principal principal) {
 
-        Long userId = 1L;
-
-        matchingService.delete(userId, matchingId);
+        String email = principal.getName();
+        matchingService.delete(email, matchingId);
     }
 
     @PostMapping("/list")
-    public ResponseEntity<Page<MatchingPreviewDto>> getMatchingList(
+    public ResponseDto<Page<MatchingPreviewDto>> getMatchingList(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
             @RequestParam(required = false) String sort,
             @RequestBody(required = false) FilterRequestDto filterRequestDto) {
 
+        // 정렬 없을 때
         PageRequest pageRequest = PageRequest.of(page, size);
 
         // 등록순 정렬
@@ -109,42 +117,42 @@ public class MatchingController {
         }
         // 거리순 정렬
         else if ("distance".equals(sort)) {
-            if (filterRequestDto.getLocation() != null)
-                return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
+            if (filterRequestDto.getLocation().getLat() != null && filterRequestDto.getLocation().getLon() != null)
+                return ResponseUtil.SUCCESS(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
         }
-        // 정렬 없을 때
-        return ResponseEntity.ok(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
+
+        return ResponseUtil.SUCCESS(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
     }
 
     @PostMapping("/list/map")
-    public ResponseEntity<Page<MatchingPreviewDto>> getCloseMatchingList(
+    public ResponseDto<Page<MatchingPreviewDto>> getCloseMatchingList(
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "5") int size,
+            @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "3") double distance,
             @RequestBody(required = false) LocationDto locationDto) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
-        return ResponseEntity.ok(matchingService.findCloseMatching(locationDto, distance ,pageRequest));
+        return ResponseUtil.SUCCESS(matchingService.findCloseMatching(locationDto, distance, pageRequest));
     }
 
     @SneakyThrows
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{matching_id}/apply")
-    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId,
-                                                          Principal principal) {
+    public ResponseDto<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId,
+                                                       Principal principal) {
 
         String email = principal.getName();
 
         var result = matchingService.getApplyContents(email, matchingId);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 
     @GetMapping("/address")
-    public ResponseEntity<List<AddressResponseDto>> getAddress(@RequestParam String keyword) {
+    public ResponseDto<List<AddressResponseDto>> getAddress(@RequestParam String keyword) {
 
         var result = addressService.getAddressService(keyword);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 }

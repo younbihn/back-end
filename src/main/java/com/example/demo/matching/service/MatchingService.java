@@ -7,9 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface MatchingService {
-    Matching create(Long userId, MatchingDetailDto matchingDetailDto);
-    Matching update(Long userId, Long matchingId, MatchingDetailDto matchingDetailDto);
-    void delete(Long userId, Long matchingId);
+    Matching create(String email, MatchingDetailDto matchingDetailDto);
+    Matching update(String email, Long matchingId, MatchingDetailDto matchingDetailDto);
+    void delete(String email, Long matchingId);
     Page<MatchingPreviewDto> findFilteredMatching(FilterRequestDto filterRequestDto, Pageable pageable);
     Page<MatchingPreviewDto> findCloseMatching(LocationDto locationDto, Double distance, Pageable pageable);
     MatchingDetailDto getDetail(Long matchingId);
