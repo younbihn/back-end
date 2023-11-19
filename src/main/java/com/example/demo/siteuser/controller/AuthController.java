@@ -30,21 +30,25 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final S3Uploader s3Uploader;
 
-    @PostMapping(path = "/signup", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<?> signup(@RequestParam("imageFile") MultipartFile imageFile,
-                                    @RequestParam("userData") String userData) {
+    @PostMapping("/signup")
+    public ResponseEntity<ResponseDto<String>> signup(@RequestBody Auth.SignUp request) {
         try {
-            Auth.SignUp request = new ObjectMapper().readValue(userData, Auth.SignUp.class);
+            memberService.register(request);
+            return ResponseEntity.ok(ResponseUtil.SUCCESS("회원 가입 성공"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(ResponseUtil.SUCCESS("회원 가입 실패"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    @PostMapping("/upload-image")
+    public ResponseEntity<ResponseDto<String>> uploadImage(@RequestParam("imageFile") MultipartFile imageFile) {
+        try {
             String profileImageUrl = s3Uploader.uploadFile(imageFile);
-
-            request.setProfileImg(profileImageUrl);
-
-            var result = this.memberService.register(request);
-            return ResponseEntity.ok("회원 가입 성공");
+            return ResponseEntity.ok(ResponseUtil.SUCCESS(profileImageUrl));
         } catch (IOException e) {
             e.printStackTrace();
-            return new ResponseEntity<>("회원 가입 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS("이미지 업로드 실패"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -56,19 +60,6 @@ public class AuthController {
         //role.add(member.getRoles().toString());
         var token = this.tokenProvider.generateToken(member.getEmail(), member.getRoles());
         return ResponseEntity.ok(token);
-    }
-
-    @PostMapping("/upload-profile-image")
-    public ResponseEntity<?> uploadOrUpdateProfileImage(@RequestParam("imageFile") MultipartFile imageFile) {
-        try {
-            // 새 이미지 업로드 및 URL 반환
-            String newImageUrl = s3Uploader.uploadFile(imageFile);
-
-            return new ResponseEntity<>(newImageUrl, HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PostMapping(path = "/check-email")
