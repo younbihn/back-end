@@ -4,7 +4,7 @@ import com.example.demo.aws.S3Uploader;
 import com.example.demo.entity.Auth;
 import com.example.demo.siteuser.security.TokenProvider;
 import com.example.demo.siteuser.service.MemberService;
-import com.example.demo.type.Authority;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,10 +28,25 @@ public class AuthController {
     private final S3Uploader s3Uploader;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody Auth.SignUp request) {
-        // 회원가입을 위한 API
-        var result = this.memberService.register(request);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<?> signup(@RequestParam("imageFile") MultipartFile imageFile,
+                                    @RequestParam("userData") String userData) {
+        try {
+            // Deserialize JSON String to Auth.SignUp Object
+            Auth.SignUp request = new ObjectMapper().readValue(userData, Auth.SignUp.class);
+
+            // Upload image to S3 and get URL
+            String profileImageUrl = s3Uploader.uploadFile(imageFile);
+
+            // Set the profile image URL in the SignUp object
+            request.setProfileImg(profileImageUrl);
+
+            // Continue with the registration process
+            var result = this.memberService.register(request);
+            return ResponseEntity.ok(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Failed to process signup", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/signin")
@@ -57,4 +72,9 @@ public class AuthController {
         }
     }
 
+    @PostMapping(path = "/check-email", produces = "text/plain;charset=UTF-8")
+    public String checkEmailExistence(@RequestBody String email) {
+        boolean exists = memberService.isEmailExist(email);
+        return exists ? "사용 불가능한 이메일 입니다." : "사용 가능한 이메일 입니다.";
+    }
 }

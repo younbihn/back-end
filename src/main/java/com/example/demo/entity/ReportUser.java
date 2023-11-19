@@ -1,6 +1,5 @@
 package com.example.demo.entity;
 
-import com.example.demo.siteuser.dto.ReportUserDto;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -22,6 +21,9 @@ public class ReportUser {
 
     @Column(name = "CONTENT", length = 1023)
     private String content;
+
+    @Column(name = "EMAIL", length = 1023)
+    private String email;
 
     @CreatedDate
     @Column(name = "CREATE_TIME") // yyyy-MM-dd HH:mm
@@ -56,6 +58,14 @@ public class ReportUser {
     public LocalDateTime getCreateTime() {
         return createTime;
     }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }

@@ -30,4 +30,10 @@ public class Review {
 
     @Column(name = "CREATE_TIME", nullable = false)
     private Timestamp createTime;
+
+    @Column(name = "POSITIVE_SCORE", nullable = false)
+    private Integer positiveScore;
+
+    @Column(name = "NEGATIVE_SCORE", nullable = false)
+    private Integer negativeScore;
 }
