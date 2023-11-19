@@ -1,7 +1,10 @@
 package com.example.demo.siteuser.controller;
 
 import com.example.demo.aws.S3Uploader;
+import com.example.demo.common.ResponseDto;
+import com.example.demo.common.ResponseUtil;
 import com.example.demo.entity.Auth;
+import com.example.demo.siteuser.dto.EmailRequestDto;
 import com.example.demo.siteuser.security.TokenProvider;
 import com.example.demo.siteuser.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,21 +30,25 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final S3Uploader s3Uploader;
 
-    @PostMapping(path = "/signup", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<?> signup(@RequestParam("imageFile") MultipartFile imageFile,
-                                    @RequestParam("userData") String userData) {
+    @PostMapping("/signup")
+    public ResponseEntity<ResponseDto<String>> signup(@RequestBody Auth.SignUp request) {
         try {
-            Auth.SignUp request = new ObjectMapper().readValue(userData, Auth.SignUp.class);
+            memberService.register(request);
+            return ResponseEntity.ok(ResponseUtil.SUCCESS("회원 가입 성공"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(ResponseUtil.SUCCESS("회원 가입 실패"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    @PostMapping("/upload-image")
+    public ResponseEntity<ResponseDto<String>> uploadImage(@RequestParam("imageFile") MultipartFile imageFile) {
+        try {
             String profileImageUrl = s3Uploader.uploadFile(imageFile);
-
-            request.setProfileImg(profileImageUrl);
-
-            var result = this.memberService.register(request);
-            return ResponseEntity.ok("회원 가입 성공");
+            return ResponseEntity.ok(ResponseUtil.SUCCESS(profileImageUrl));
         } catch (IOException e) {
             e.printStackTrace();
-            return new ResponseEntity<>("회원 가입 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ResponseUtil.SUCCESS("이미지 업로드 실패"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -55,22 +62,10 @@ public class AuthController {
         return ResponseEntity.ok(token);
     }
 
-    @PostMapping("/upload-profile-image")
-    public ResponseEntity<?> uploadOrUpdateProfileImage(@RequestParam("imageFile") MultipartFile imageFile) {
-        try {
-            // 새 이미지 업로드 및 URL 반환
-            String newImageUrl = s3Uploader.uploadFile(imageFile);
-
-            return new ResponseEntity<>(newImageUrl, HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping(path = "/check-email", produces = "text/plain;charset=UTF-8")
-    public String checkEmailExistence(@RequestBody String email) {
-        boolean exists = memberService.isEmailExist(email);
-        return exists ? "사용 불가능한 이메일 입니다." : "사용 가능한 이메일 입니다.";
+    @PostMapping(path = "/check-email")
+    public ResponseEntity<ResponseDto<String>> checkEmailExistence(@RequestBody EmailRequestDto emailRequestDto) {
+        boolean exists = memberService.isEmailExist(emailRequestDto.getEmail());
+        String message = exists ? "사용 불가능한 이메일 입니다." : "사용 가능한 이메일 입니다.";
+        return ResponseEntity.ok(ResponseUtil.SUCCESS(message));
     }
 }
