@@ -23,13 +23,16 @@ public class AuthController {
 
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
-    private final EmailService emailService;
+    // private final EmailService emailService; // 이메일
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto<String>> signup(@RequestBody Auth.SignUp request) {
         try {
-            SiteUser siteUser = memberService.register(request);
-            emailService.sendEmail(siteUser.getId(), siteUser.getEmail()); // 이메일 전송
+            memberService.register(request);
+            // 이메일
+            // SiteUser siteUser = memberService.register(request);
+            // emailService.sendEmail(siteUser.getId(), siteUser.getEmail());
+
             return ResponseEntity.ok(ResponseUtil.SUCCESS("회원 가입 성공! 메일 인증 후 로그인하세요."));
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,8 +64,9 @@ public class AuthController {
         return ResponseEntity.ok(ResponseUtil.SUCCESS(message));
     }
 
+/*
     @GetMapping("/email-verify")
     public void viewConfirmEmail(@RequestParam String token) {
         emailService.verifyEmail(token);
-    }
+    }*/
 }

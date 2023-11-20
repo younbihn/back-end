@@ -91,8 +91,9 @@ public class SiteUser implements UserDetails {
     @Column(name = "IS_PHONE_VERIFIED") // 1:true, 0:false, default = 0
     private Boolean isPhoneVerified;
 
-    @Column(name = "IS_MAIL_VERIFIED") // 1:true, 0:false, default = 0
-    private Boolean isMailVerified;
+    // 이메일
+    // @Column(name = "IS_MAIL_VERIFIED") // 1:true, 0:false, default = 0
+    // private Boolean isMailVerified;
 
     @OneToMany(mappedBy = "siteUser")
     private List<Matching> hostedMatches; // 주최한 매칭
@@ -180,7 +181,8 @@ public class SiteUser implements UserDetails {
         this.penaltyScore = penaltyScore;
     }
 
-    public void setEmailVerified() {
+    // 이메일
+/*    public void setEmailVerified() {
         this.isMailVerified = true;
-    }
+    }*/
 }
