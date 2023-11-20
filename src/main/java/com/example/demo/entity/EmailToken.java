@@ -25,22 +25,14 @@ public class EmailToken {
 
     private LocalDateTime expirationDate;
 
-    private boolean expired;
-
     private Long siteUserId;
 
     // 이메일 인증 토큰 생성
-    public static EmailToken createEmailToken(Long memberId) {
+    public static EmailToken createEmailToken(Long siteUserId) {
         EmailToken emailToken = new EmailToken();
         emailToken.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME_VALUE); // 5분 후 만료
-        emailToken.expired = false;
-        emailToken.siteUserId = memberId;
+        emailToken.siteUserId = siteUserId;
 
         return emailToken;
-    }
-
-    // 토큰 만료
-    public void setTokenToUsed() {
-        this.expired = true;
     }
 }
