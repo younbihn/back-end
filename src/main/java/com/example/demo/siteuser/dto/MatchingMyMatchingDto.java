@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class MatchingMyMatchingDto {
+    private Long id;
     private String title;
     private String location;
     private String date;
@@ -19,6 +20,7 @@ public class MatchingMyMatchingDto {
 
     public static MatchingMyMatchingDto fromEntity(Matching matching) {
         return MatchingMyMatchingDto.builder()
+                .id(matching.getId())
                 .title(matching.getTitle())
                 .location(matching.getLocation())
                 .date(matching.getDate().toString())
