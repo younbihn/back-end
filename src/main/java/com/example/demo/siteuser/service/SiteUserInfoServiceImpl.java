@@ -7,10 +7,14 @@ import com.example.demo.siteuser.dto.*;
 import com.example.demo.matching.repository.MatchingRepository;
 import com.example.demo.siteuser.repository.PenaltyScoreRepository;
 import com.example.demo.siteuser.repository.ReportUserRepository;
+import com.example.demo.siteuser.repository.ReviewRepository;
 import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.type.PenaltyCode;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,15 +31,17 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     private final PenaltyScoreRepository penaltyScoreRepository;
     private final ReportUserRepository reportUserRepository;
     private final NotificationRepository notificationRepository;
+    private final ReviewRepository reviewRepository;
 
     @Autowired
-    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository, PenaltyScoreRepository penaltyScoreRepository, ReportUserRepository reportUserRepository, NotificationRepository notificationRepository) {
+    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository, PenaltyScoreRepository penaltyScoreRepository, ReportUserRepository reportUserRepository, NotificationRepository notificationRepository, ReviewRepository reviewRepository) {
         this.siteUserRepository = siteUserRepository;
         this.matchingRepository = matchingRepository;
         this.applyRepository = applyRepository;
         this.penaltyScoreRepository = penaltyScoreRepository;
         this.reportUserRepository = reportUserRepository;
         this.notificationRepository = notificationRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     @Override
@@ -180,13 +186,27 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     @Override
     @Transactional
     public void createReportUser(ReportUserDto reportUserDto) {
-        SiteUser siteUser = siteUserRepository.findById(reportUserDto.getSiteUser())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + reportUserDto.getSiteUser()));
+        // 현재 로그인한 유저의 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        String currentUseremail;
+
+        if (principal instanceof UserDetails) {
+            currentUseremail = ((UserDetails) principal).getUsername();
+        } else {
+            currentUseremail = principal.toString();
+        }
+
+        // 로그인한 유저의 정보로 조회
+        SiteUser siteUser = siteUserRepository.findByEmail(currentUseremail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + currentUseremail));
 
         ReportUser reportUser = new ReportUser();
         reportUser.setSiteUser(siteUser);
         reportUser.setTitle(reportUserDto.getTitle());
         reportUser.setContent(reportUserDto.getContent());
+        reportUser.setEmail(siteUser.getEmail());
         reportUser.setCreateTime(LocalDateTime.now());
 
         reportUserRepository.save(reportUser);
@@ -201,5 +221,58 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
         return reportUsers.stream()
                 .map(ViewReportsDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void processReviewCheckboxes(Long matchingId, Long objectUserId, ReviewCheckboxDto reviewDto) {
+        SiteUser objectSiteUser = siteUserRepository.findById(objectUserId)
+                .orElseThrow(() -> new EntityNotFoundException("ObjectSiteUser not found with id: " + objectUserId));
+        Matching matching = matchingRepository.findById(matchingId)
+                .orElseThrow(() -> new EntityNotFoundException("Matching not found with id: " + matchingId));
+
+        int positiveCount = countTrueCheckboxes(
+                reviewDto.isPositive1(), reviewDto.isPositive2(), reviewDto.isPositive3(),
+                reviewDto.isPositive4(), reviewDto.isPositive5());
+
+        int negativeCount = countTrueCheckboxes(
+                reviewDto.isNegative1(), reviewDto.isNegative2(), reviewDto.isNegative3(),
+                reviewDto.isNegative4(), reviewDto.isNegative5()) * -1;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        String currentUseremail;
+
+        if (principal instanceof UserDetails) {
+            currentUseremail = ((UserDetails) principal).getUsername();
+        } else {
+            currentUseremail = principal.toString();
+        }
+
+        SiteUser siteUser = siteUserRepository.findByEmail(currentUseremail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + currentUseremail));
+
+        Review review = new Review();
+        review.setMatching(matching);
+        review.setObjectUser(objectSiteUser);
+        review.setSubjectUser(siteUser);
+        review.setPositiveScore(positiveCount);
+        review.setNegativeScore(negativeCount);
+        review.setScore(positiveCount + negativeCount);
+        review.setCreateTime(LocalDateTime.now());
+        reviewRepository.save(review);
+
+        objectSiteUser.setMannerScore(objectSiteUser.getMannerScore() + (positiveCount + negativeCount) / matching.getConfirmedNum());
+        siteUserRepository.save(objectSiteUser);
+    }
+
+    private int countTrueCheckboxes(boolean... checkboxes) {
+        int count = 0;
+        for (boolean checkbox : checkboxes) {
+            if (checkbox) {
+                count++;
+            }
+        }
+        return count;
     }
 }
