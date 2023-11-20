@@ -28,6 +28,7 @@ CREATE TABLE `SITE_USER`
     `PROFILE_IMG`       varchar(1023) NULL,
     `CREATE_DATE`       TIMESTAMP     NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS',
     `IS_PHONE_VERIFIED` BOOL NULL DEFAULT 0 COMMENT 'true = 1 / false = 0',
+    `IS_MAIL_VERIFIED` BOOL NULL DEFAULT 0 COMMENT 'true = 1 / false = 0',
     `ROLES`             varchar(50)
 );
 

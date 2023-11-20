@@ -5,12 +5,14 @@ import com.example.demo.type.Authority;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
 import jakarta.persistence.*;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -88,6 +90,9 @@ public class SiteUser implements UserDetails {
 
     @Column(name = "IS_PHONE_VERIFIED", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean isPhoneVerified;
+
+    @Column(name = "IS_MAIL_VERIFIED", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean isMailVerified;
 
     @OneToMany(mappedBy = "siteUser")
     private List<Matching> hostedMatches; // 주최한 매칭
@@ -171,5 +176,11 @@ public class SiteUser implements UserDetails {
         this.profileImg = profileImg;
     }
 
-    public void setPenaltyScore(Integer penaltyScore) { this.penaltyScore = penaltyScore; }
+    public void setPenaltyScore(Integer penaltyScore) {
+        this.penaltyScore = penaltyScore;
+    }
+
+    public void setEmailVerified() {
+        this.isMailVerified = true;
+    }
 }
