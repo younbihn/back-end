@@ -48,9 +48,11 @@ public class MemberService implements UserDetailsService {
             throw new AuthWrongPasswordException();
         }
 
+/* // 이메일
         if(!user.getIsMailVerified()){
             throw new EmailNotVerifiedException();
         }
+*/
 
         return user;
     }

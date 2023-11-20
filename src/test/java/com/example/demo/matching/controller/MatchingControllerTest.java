@@ -2,9 +2,7 @@ package com.example.demo.matching.controller;
 
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
-import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.dto.ApplyMember;
-import com.example.demo.matching.dto.FilterRequestDto;
+import com.example.demo.matching.dto.*;
 import com.example.demo.openfeign.dto.address.AddressResponseDto;
 import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.service.MatchingService;
@@ -21,8 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.demo.aws.S3Uploader;
-import com.example.demo.matching.dto.MatchingDetailRequestDto;
-import com.example.demo.matching.dto.MatchingPreviewDto;
 import com.example.demo.siteuser.security.CustomAuthFailureHandler;
 import com.example.demo.siteuser.security.JwtAuthenticationFilter;
 import com.example.demo.siteuser.security.SecurityConfiguration;
@@ -116,7 +112,7 @@ class MatchingControllerTest {
     @DisplayName("매칭글 조회")
     public void getDetailedMatchingTest() throws Exception {
         //given
-        MatchingDetailRequestDto matchingDetailRequestDto = makeMatchingDetailDto();
+        MatchingDetailResponseDto matchingDetailResponseDto = makeMatchingDetailDto();
         given(matchingService.getDetail(1L))
                 .willReturn(matchingDetailRequestDto);
         //when

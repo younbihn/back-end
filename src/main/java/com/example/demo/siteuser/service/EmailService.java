@@ -1,3 +1,4 @@
+/*
 package com.example.demo.siteuser.service;
 
 import com.example.demo.entity.EmailToken;
@@ -60,4 +61,4 @@ public class EmailService {
         // 토큰이 없다면 예외 발생
         return emailToken.orElseThrow(InvalidEmailTokenException::new);
     }
-}
+}*/
