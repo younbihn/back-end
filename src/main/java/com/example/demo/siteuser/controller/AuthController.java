@@ -7,7 +7,7 @@ import com.example.demo.entity.SiteUser;
 import com.example.demo.siteuser.dto.EmailRequestDto;
 import com.example.demo.siteuser.dto.NicknameRequestDto;
 import com.example.demo.siteuser.security.TokenProvider;
-import com.example.demo.siteuser.service.EmailService;
+//import com.example.demo.siteuser.service.EmailService;
 import com.example.demo.siteuser.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
