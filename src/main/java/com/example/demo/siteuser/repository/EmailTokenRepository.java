@@ -7,5 +7,5 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface EmailTokenRepository extends JpaRepository<EmailToken, String> {
-    Optional<EmailToken> findByIdAndExpirationDateAfter(String emailTokenId, LocalDateTime now);
+    Optional<EmailToken> findByIdAndExpirationTimeAfter(String emailTokenId, LocalDateTime now);
 }

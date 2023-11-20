@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS MANNER_SCORE;
 DROP TABLE IF EXISTS PENALTY_SCORE;
 DROP TABLE IF EXISTS REVIEW;
 DROP TABLE IF EXISTS REPORT_USER;
+DROP TABLE IF EXISTS EMAIL_TOKEN;
 
 CREATE TABLE `SITE_USER`
 (
@@ -22,39 +23,39 @@ CREATE TABLE `SITE_USER`
     `PENALTY_SCORE`     INT NULL DEFAULT 0,
     `GENDER`            varchar(50)   NOT NULL COMMENT 'MALE, FEMALE',
     `NTRP`              VARCHAR(50)   NOT NULL,
-    `ADDRESS`           varchar(255)   NOT NULL,
+    `ADDRESS`           varchar(255)  NOT NULL,
     `ZIP_CODE`          varchar(50)   NOT NULL,
     `AGE_GROUP`         varchar(50)   NOT NULL COMMENT 'TWENTIES, THIRTIES , FORTIES , SENIOR',
     `PROFILE_IMG`       varchar(1023) NULL,
     `CREATE_DATE`       TIMESTAMP     NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS',
     `IS_PHONE_VERIFIED` BOOL NULL DEFAULT 0 COMMENT 'true = 1 / false = 0',
-    `IS_MAIL_VERIFIED` BOOL NULL DEFAULT 0 COMMENT 'true = 1 / false = 0',
+    `IS_MAIL_VERIFIED`  BOOL NULL DEFAULT 0 COMMENT 'true = 1 / false = 0',
     `ROLES`             varchar(50)
 );
 
 CREATE TABLE `MATCHING`
 (
-    `ID`               BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `SITE_USER_ID`     BIGINT       NOT NULL,
-    `TITLE`            varchar(50)  NOT NULL,
-    `CONTENT`          varchar(1023) NULL,
-    `LOCATION`         varchar(255) NOT NULL,
-    `LAT` DOUBLE NOT NULL COMMENT '위도',
-    `LON` DOUBLE NOT NULL COMMENT '경도',
-    `LOCATION_IMG`     varchar(1023) NULL,
-    `DATE`             DATE         NOT NULL COMMENT 'YYYY-MM-DD',
-    `START_TIME`       TIME         NOT NULL COMMENT 'HH:MM:SS',
-    `END_TIME`         TIME         NOT NULL COMMENT 'HH:MM:SS',
+    `ID`                    BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `SITE_USER_ID`          BIGINT       NOT NULL,
+    `TITLE`                 varchar(50)  NOT NULL,
+    `CONTENT`               varchar(1023) NULL,
+    `LOCATION`              varchar(255) NOT NULL,
+    `LAT`                   DOUBLE       NOT NULL COMMENT '위도',
+    `LON`                   DOUBLE       NOT NULL COMMENT '경도',
+    `LOCATION_IMG`          varchar(1023) NULL,
+    `DATE`                  DATE         NOT NULL COMMENT 'YYYY-MM-DD',
+    `START_TIME`            TIME         NOT NULL COMMENT 'HH:MM:SS',
+    `END_TIME`              TIME         NOT NULL COMMENT 'HH:MM:SS',
     `RECRUIT_DUE_DATE_TIME` TIMESTAMP    NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS',
-    `RECRUIT_NUM`      INT          NOT NULL,
-    `COST`             INT          NOT NULL,
-    `IS_RESERVED`      BOOL        DEFAULT 0 COMMENT 'true = 1 / false = 0',
-    `NTRP`             VARCHAR(50)  NOT NULL,
-    `AGE`              VARCHAR(50)  NOT NULL,
-    `RECRUIT_STATUS`   VARCHAR(50) DEFAULT 'OPEN',
-    `CREATE_TIME`      TIMESTAMP COMMENT 'YYYY-MM-DD HH:MM:SS',
-    `MATCHING_TYPE`    VARCHAR(50)  NOT NULL COMMENT 'SINGLE, DOUBLE, MIXED_DOUBLE, OTHER',
-    `CONFIRMED_NUM`    INT         DEFAULT 1
+    `RECRUIT_NUM`           INT          NOT NULL,
+    `COST`                  INT          NOT NULL,
+    `IS_RESERVED`           BOOL        DEFAULT 0 COMMENT 'true = 1 / false = 0',
+    `NTRP`                  VARCHAR(50)  NOT NULL,
+    `AGE`                   VARCHAR(50)  NOT NULL,
+    `RECRUIT_STATUS`        VARCHAR(50) DEFAULT 'OPEN',
+    `CREATE_TIME`           TIMESTAMP COMMENT 'YYYY-MM-DD HH:MM:SS',
+    `MATCHING_TYPE`         VARCHAR(50)  NOT NULL COMMENT 'SINGLE, DOUBLE, MIXED_DOUBLE, OTHER',
+    `CONFIRMED_NUM`         INT         DEFAULT 1
 );
 
 CREATE TABLE `AUTH_DATA`
@@ -70,7 +71,7 @@ CREATE TABLE `APPLY`
     `MATCHING_ID`  BIGINT                        NOT NULL,
     `SITE_USER_ID` BIGINT                        NOT NULL,
     `CREATE_TIME`  TIMESTAMP                     NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS',
-    `APPLY_STATUS`       VARCHAR(50) DEFAULT 'PENDING' NOT NULL COMMENT 'PENDING, ACCEPTED, CANCELED'
+    `APPLY_STATUS` VARCHAR(50) DEFAULT 'PENDING' NOT NULL COMMENT 'PENDING, ACCEPTED, CANCELED'
 );
 
 CREATE TABLE `NOTIFICATION`
@@ -113,9 +114,16 @@ CREATE TABLE `REVIEW`
 
 CREATE TABLE `REPORT_USER`
 (
-    `ID`              BIGINT    NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `SITE_USER_ID` BIGINT    NOT NULL,
-    `TITLE`            varchar(50)  NOT NULL,
-    `CONTENT`          varchar(1023) NULL,
-    `CREATE_TIME`     TIMESTAMP NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS'
+    `ID`           BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `SITE_USER_ID` BIGINT      NOT NULL,
+    `TITLE`        varchar(50) NOT NULL,
+    `CONTENT`      varchar(1023) NULL,
+    `CREATE_TIME`  TIMESTAMP   NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS'
+);
+
+CREATE TABLE `EMAIL_TOKEN`
+(
+    `ID`              VARCHAR(1023) NOT NULL,
+    `SITE_USER_ID`    BIGINT        NOT NULL,
+    `EXPIRATION_TIME` TIMESTAMP     NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS'
 );

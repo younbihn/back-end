@@ -56,7 +56,7 @@ public class Matching {
     @Column(name = "CONTENT", length = 1023)
     private String content;
 
-    @Column(name = "LOCATION", length = 255, nullable = false)
+    @Column(name = "LOCATION", nullable = false)
     private String location;
 
     @Column(name = "LAT", nullable = false)

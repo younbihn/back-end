@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -30,7 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @Entity(name = "SITE_USER")
 @Table(name = "SITE_USER")
-@DynamicUpdate
+@DynamicInsert
 @EntityListeners(AuditingEntityListener.class)
 public class SiteUser implements UserDetails {
 
@@ -44,16 +45,16 @@ public class SiteUser implements UserDetails {
     private List<String> roles;
     //private List<Authority> roles;
 
-    @Column(name = "PASSWORD", length = 1023, nullable = false, columnDefinition = "VARCHAR(1023)")
+    @Column(name = "PASSWORD", length = 1023, nullable = false)
     private String password;
 
-    @Column(name = "NICKNAME", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
+    @Column(name = "NICKNAME", length = 50, nullable = false)
     private String nickname;
 
-    @Column(name = "EMAIL", unique = true, length = 255, nullable = false, columnDefinition = "VARCHAR(255)")
+    @Column(name = "EMAIL", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "PHONE_NUMBER", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
+    @Column(name = "PHONE_NUMBER", length = 50, nullable = false)
     private String phoneNumber;
 
     @Column(name = "MANNER_SCORE")
@@ -63,35 +64,34 @@ public class SiteUser implements UserDetails {
     private Integer penaltyScore;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "GENDER", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
+    @Column(name = "GENDER", length = 50, nullable = false)
     private GenderType gender;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "NTRP")
     private Ntrp ntrp;
 
-    @Column(name = "ADDRESS", length = 50, nullable = false, columnDefinition = "VARCHAR(255)")
+    @Column(name = "ADDRESS", nullable = false)
     private String address;
 
-    @Column(name = "ZIP_CODE", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
-
+    @Column(name = "ZIP_CODE", length = 50, nullable = false)
     private String zipCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "AGE_GROUP", length = 50, nullable = false, columnDefinition = "VARCHAR(50)")
+    @Column(name = "AGE_GROUP", length = 50, nullable = false)
     private AgeGroup ageGroup;
 
-    @Column(name = "PROFILE_IMG", length = 1023, columnDefinition = "VARCHAR(1023)")
+    @Column(name = "PROFILE_IMG", length = 1023)
     private String profileImg;
 
     @CreatedDate
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;
 
-    @Column(name = "IS_PHONE_VERIFIED", columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(name = "IS_PHONE_VERIFIED") // 1:true, 0:false, default = 0
     private Boolean isPhoneVerified;
 
-    @Column(name = "IS_MAIL_VERIFIED", columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(name = "IS_MAIL_VERIFIED") // 1:true, 0:false, default = 0
     private Boolean isMailVerified;
 
     @OneToMany(mappedBy = "siteUser")
