@@ -1,11 +1,11 @@
-insert into SITE_USER (PASSWORD, NICKNAME, EMAIL, PHONE_NUMBER, GENDER, NTRP, ADDRESS, ZIP_CODE, AGE_GROUP, CREATE_DATE, IS_PHONE_VERIFIED, ROLES)
+insert into SITE_USER (PASSWORD, NICKNAME, EMAIL, PHONE_NUMBER, GENDER, NTRP, ADDRESS, ZIP_CODE, AGE_GROUP, CREATE_DATE, IS_PHONE_VERIFIED, IS_MAIL_VERIFIED, ROLES)
 values
-    ('1234', 'nickname12', 'email1@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 강남구 가로수길 5 (신사동)', '06035', 'TWENTIES', '2023-10-31 10:00:00', 1, 'USER'),
-    ('111', 'nickname34', 'email2@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 광진구 강변북로 2140 (자양동)', '05089', 'TWENTIES', '2023-10-31 10:00:00', 1, 'USER'),
-    ('2222', 'nickname56', 'email3@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 동대문구 겸재로 16 (휘경동)', '02512', 'TWENTIES', '2023-10-31 10:00:00', 1, 'USER'),
-    ('3333', 'nickname78', 'email4@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 성동구 난계로 100 (하왕십리동, 왕십리자이)', '04711', 'TWENTIES', '2023-10-31 10:00:00', 1, 'USER'),
-    ('4444', 'nickname91', 'email5@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 성북구 동소문로 177 (돈암동, 미아리고개예술극장)', '02829', 'TWENTIES', '2023-10-31 10:00:00', 1, 'USER'),
-    ('5555', 'nickname96', 'email6@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 성동구 청계천로 500 (마장동, 서울시청운복지관)', '04704', 'TWENTIES', '2023-10-31 10:00:00', 1, 'USER');
+    ('1234', 'nickname12', 'email1@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 강남구 가로수길 5 (신사동)', '06035', 'TWENTIES', '2023-10-31 10:00:00', 1, 1, 'ROLE_USER'),
+    ('111', 'nickname34', 'email2@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 광진구 강변북로 2140 (자양동)', '05089', 'TWENTIES', '2023-10-31 10:00:00', 1, 1, 'ROLE_USER'),
+    ('2222', 'nickname56', 'email3@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 동대문구 겸재로 16 (휘경동)', '02512', 'TWENTIES', '2023-10-31 10:00:00', 1, 1, 'ROLE_USER'),
+    ('3333', 'nickname78', 'email4@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 성동구 난계로 100 (하왕십리동, 왕십리자이)', '04711', 'TWENTIES', '2023-10-31 10:00:00', 1, 1, 'ROLE_USER'),
+    ('4444', 'nickname91', 'email5@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 성북구 동소문로 177 (돈암동, 미아리고개예술극장)', '02829', 'TWENTIES', '2023-10-31 10:00:00', 1, 1, 'ROLE_USER'),
+    ('5555', 'nickname96', 'email6@naver.com', '010-1234-5678', 'MALE', 'BEGINNER', '서울특별시 성동구 청계천로 500 (마장동, 서울시청운복지관)', '04704', 'TWENTIES', '2023-10-31 10:00:00', 1, 1, 'ROLE_USER');
 
 INSERT INTO MATCHING (SITE_USER_ID, TITLE, CONTENT, LOCATION, LAT, LON, LOCATION_IMG, DATE, START_TIME, END_TIME, RECRUIT_DUE_DATE_TIME, RECRUIT_NUM, COST, NTRP, AGE, RECRUIT_STATUS, MATCHING_TYPE, CREATE_TIME)
 VALUES
