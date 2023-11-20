@@ -105,6 +105,10 @@ public class Matching {
     @Column(name = "MATCHING_TYPE")
     private MatchingType matchingType;
 
+    public Integer getConfirmedNum() {
+        return confirmedNum;
+    }
+
     @Column(name = "CONFIRMED_NUM")
     private Integer confirmedNum;
 

@@ -22,7 +22,10 @@ public class SiteUserInfoDto{
     private Integer penaltyScore;
     private AgeGroup ageGroup;
 
+
     public static SiteUserInfoDto fromEntity(SiteUser siteUser) {
+        int roundedMannerScore = (int) Math.round(siteUser.getMannerScore());
+
         return SiteUserInfoDto.builder()
                 .profileImg(siteUser.getProfileImg())
                 .nickname(siteUser.getNickname())
@@ -30,7 +33,7 @@ public class SiteUserInfoDto{
                 .zipCode(siteUser.getZipCode())
                 .ntrp(siteUser.getNtrp())
                 .gender(siteUser.getGender())
-                .mannerScore(siteUser.getMannerScore())
+                .mannerScore(roundedMannerScore)
                 .penaltyScore(siteUser.getPenaltyScore())
                 .ageGroup(siteUser.getAgeGroup())
                 .build();

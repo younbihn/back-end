@@ -33,13 +33,15 @@ public class SiteUserMyInfoDto {
     private Boolean isPhoneVerified;
 
     public static SiteUserMyInfoDto fromEntity(SiteUser siteUser) {
+        int roundedMannerScore = (int) Math.round(siteUser.getMannerScore());
+
         return SiteUserMyInfoDto.builder()
                 .id(siteUser.getId())
                 .password(siteUser.getPassword())
                 .nickname(siteUser.getNickname())
                 .email(siteUser.getEmail())
                 .phoneNumber(siteUser.getPhoneNumber())
-                .mannerScore(siteUser.getMannerScore())
+                .mannerScore(roundedMannerScore)
                 .penaltyScore(siteUser.getPenaltyScore())
                 .gender(siteUser.getGender())
                 .ntrp(siteUser.getNtrp())

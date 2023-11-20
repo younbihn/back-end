@@ -3,6 +3,8 @@ package com.example.demo.siteuser.controller;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.common.ResponseDto;
 import com.example.demo.common.ResponseUtil;
+import com.example.demo.entity.Matching;
+import com.example.demo.entity.SiteUser;
 import com.example.demo.siteuser.dto.*;
 import com.example.demo.siteuser.service.SiteUserInfoService;
 import com.example.demo.type.PenaltyCode;
@@ -123,7 +125,7 @@ public class SiteUserInfoController {
     }
 
     @PostMapping("/penalty/{userId}")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> applyPenalty(@PathVariable Long userId, @RequestBody SiteUserPenaltyDto siteUserPenaltyDto) {
         try {
             // DTO에서 penaltyCode를 가져와서 enum으로 변환
@@ -142,7 +144,7 @@ public class SiteUserInfoController {
     public ResponseEntity<?> createReportUser(@RequestBody ReportUserDto reportUserDto) {
         try {
             siteUserInfoService.createReportUser(reportUserDto);
-            return new ResponseEntity<>("Report created successfully", HttpStatus.CREATED);
+            return new ResponseEntity<>(null, HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -159,5 +161,14 @@ public class SiteUserInfoController {
         } else {
             return new ResponseEntity<>(ResponseUtil.SUCCESS(Collections.emptyList()), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PostMapping("/register-review/{matchingId}/{objectUserId}")
+    public ResponseEntity<ResponseDto<Void>> submitReview(@PathVariable Long matchingId,
+                                                          @PathVariable Long objectUserId,
+                                                          @RequestBody ReviewCheckboxDto reviewDto) {
+        siteUserInfoService.processReviewCheckboxes(matchingId, objectUserId, reviewDto);
+        ResponseDto<Void> response = ResponseUtil.SUCCESS(null);
+        return ResponseEntity.ok(response);
     }
 }

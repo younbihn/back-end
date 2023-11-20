@@ -58,7 +58,15 @@ public class SiteUser implements UserDetails {
     private String phoneNumber;
 
     @Column(name = "MANNER_SCORE")
-    private Integer mannerScore;
+    private Double mannerScore;
+
+    public Double getMannerScore() {
+        return mannerScore;
+    }
+
+    public void setMannerScore(Double mannerScore) {
+        this.mannerScore = mannerScore;
+    }
 
     @Column(name = "PENALTY_SCORE")
     private Integer penaltyScore;
