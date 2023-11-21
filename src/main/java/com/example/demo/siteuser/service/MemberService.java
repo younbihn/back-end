@@ -39,6 +39,17 @@ public class MemberService implements UserDetailsService {
         return result;
     }
 
+    public SiteUser withdraw(Auth.Quit member) {
+        var user = this.siteUserRepository.findByEmail(member.getEmail())
+                .orElseThrow(() -> new AuthEmailNotFoundException());
+
+        if (!this.passwordEncoder.matches(member.getPassword(), user.getPassword())) {
+            throw new AuthWrongPasswordException();
+        }
+        this.siteUserRepository.delete(user);
+        return user;
+    }
+
     public SiteUser authenticate(Auth.SignIn member) {
 
         var user = this.siteUserRepository.findByEmail(member.getEmail())

@@ -1,12 +1,11 @@
 package com.example.demo.entity;
 
 import com.example.demo.type.AgeGroup;
-import com.example.demo.type.Authority;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -50,4 +49,46 @@ public class Auth {
                     .build();
         }
     }
+
+    @Data
+    public static class Reissue {
+        @NotBlank(message = "accessToken을 입력해주세요.")
+        private String accessToken;
+
+        @NotBlank(message = "refreshToken을 입력해주세요.")
+        private String refreshToken;
+    }
+
+    @Data
+    public static class SignOut {
+        @NotBlank(message = "잘못된 요청입니다.")
+        private String accessToken;
+
+        @NotBlank(message = "잘못된 요청입니다.")
+        private String refreshToken;
+    }
+
+    @Data
+    public static class Quit {
+        @NotBlank(message = "잘못된 요청입니다.")
+        private String accessToken;
+
+        @NotBlank(message = "잘못된 요청입니다.")
+        private String refreshToken;
+
+        @NotBlank(message = "잘못된 요청입니다.")
+        private String email;
+
+        @NotBlank(message = "잘못된 요청입니다.")
+        private String password;
+    }
+
+    @Data
+    public static class SignKakao {
+        @NotBlank(message = "잘못된 요청입니다.")
+        private String code;
+        @NotBlank(message = "잘못된 요청입니다.")
+        private String provider;
+    }
+
 }

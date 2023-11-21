@@ -26,12 +26,17 @@ ext {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
     implementation 'org.springframework.boot:spring-boot-starter-webflux:3.1.2'
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.1.2'
     compileOnly 'org.projectlombok:lombok'
@@ -48,20 +53,19 @@ dependencies {
 */
 
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // com.sun.xml.bind
     implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
     implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
     // javax.xml.bind
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
     compileOnly 'org.projectlombok:lombok'
-
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.awaitility:awaitility:3.0.0'
     testImplementation 'junit:junit:4.13.1'
-
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }
 
