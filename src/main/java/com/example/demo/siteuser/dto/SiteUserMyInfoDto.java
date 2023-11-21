@@ -7,9 +7,6 @@ import com.example.demo.type.Ntrp;
 import java.time.LocalDateTime;
 import lombok.*;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,6 +15,7 @@ import java.sql.Timestamp;
 public class SiteUserMyInfoDto {
     private Long id;
     private String password;
+    private String siteusername;
     private String nickname;
     private String email;
     private String phoneNumber;
@@ -37,6 +35,7 @@ public class SiteUserMyInfoDto {
 
         return SiteUserMyInfoDto.builder()
                 .id(siteUser.getId())
+                .siteusername(siteUser.getSiteusername())
                 .password(siteUser.getPassword())
                 .nickname(siteUser.getNickname())
                 .email(siteUser.getEmail())

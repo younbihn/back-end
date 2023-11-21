@@ -245,7 +245,7 @@ public class SiteUserInfoServiceTest {
 
     @Test
     public void testCreateReportUser() {
-        ReportUserDto reportUserDto = new ReportUserDto(1L, "test title 1", "test content 1");
+        ReportUserDto reportUserDto = new ReportUserDto(1L, 2L, "test title 1", "test content 1");
         SiteUser mockSiteUser = SiteUser.builder()
                 .id(1L)
                 .build();
@@ -261,7 +261,7 @@ public class SiteUserInfoServiceTest {
         SiteUser siteUser = SiteUser.builder().id(1L).build();
         ReportUser reportUser = new ReportUser();
         reportUser.setId(1L);
-        reportUser.setSiteUser(siteUser);
+        reportUser.setReportedUser(siteUser);
         reportUser.setTitle("test title 1");
         reportUser.setContent("test content 1");
         reportUser.setCreateTime(LocalDateTime.now());

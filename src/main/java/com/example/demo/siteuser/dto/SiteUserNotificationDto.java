@@ -16,12 +16,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class SiteUserNotificationDto {
+    private Long matchingId;
     private String title;
     private String content;
     private String createTime;
 
     public static SiteUserNotificationDto fromEntity(Notification notification) {
         return SiteUserNotificationDto.builder()
+                .matchingId(notification.getMatching().getId())
                 .title(notification.getMatching().getTitle())
                 .content(notification.getContent())
                 .createTime(notification.getCreateTime().toString())

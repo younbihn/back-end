@@ -10,7 +10,8 @@ import lombok.*;
 @Builder
 public class ViewReportsDto {
     private Long id;
-    private Long siteUser;
+    private Long reportingUserId;
+    private Long reportedUserId;
     private String title;
     private String content;
     private String createTime;
@@ -18,7 +19,8 @@ public class ViewReportsDto {
     public static ViewReportsDto fromEntity(ReportUser reportUser) {
         return ViewReportsDto.builder()
                 .id(reportUser.getId())
-                .siteUser(reportUser.getSiteUser().getId())
+                .reportingUserId(reportUser.getReportingUser().getId())
+                .reportedUserId(reportUser.getReportedUser().getId())
                 .title(reportUser.getTitle())
                 .content(reportUser.getContent())
                 .createTime(reportUser.getCreateTime().toString())

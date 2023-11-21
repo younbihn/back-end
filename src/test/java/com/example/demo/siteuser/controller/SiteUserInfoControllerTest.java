@@ -162,8 +162,8 @@ public class SiteUserInfoControllerTest {
     public void testGetNotificationBySiteUser() throws Exception {
         Long userId = 1L;
         List<SiteUserNotificationDto> mockNotifications = Arrays.asList(
-                new SiteUserNotificationDto("Notification Title 1", "Notification Content 1", LocalDateTime.now().toString()),
-                new SiteUserNotificationDto("Notification Title 2", "Notification Content 2", LocalDateTime.now().toString())
+                new SiteUserNotificationDto(1L, "Notification Title 1", "Notification Content 1", LocalDateTime.now().toString()),
+                new SiteUserNotificationDto(2L, "Notification Title 2", "Notification Content 2", LocalDateTime.now().toString())
         );
 
         when(siteUserInfoService.getNotificationBySiteUser(userId)).thenReturn(mockNotifications);
@@ -205,7 +205,7 @@ public class SiteUserInfoControllerTest {
 
     @Test
     public void testCreateReportUser() throws Exception {
-        ReportUserDto mockReportUserDto = new ReportUserDto(1L, "Test Title 1", "Test Content 1");
+        ReportUserDto mockReportUserDto = new ReportUserDto(1L, 2L, "Test Title 1", "Test Content 1");
         doNothing().when(siteUserInfoService).createReportUser(any(ReportUserDto.class));
 
         mockMvc.perform(post("/api/users/report")

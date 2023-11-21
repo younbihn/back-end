@@ -8,18 +8,27 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ReportUserDto {
-    private Long siteUser;
+    public Long getReportingUserId() {
+        return reportingUserId;
+    }
+
+    public void setReportingUserId(Long reportingUserId) {
+        this.reportingUserId = reportingUserId;
+    }
+
+    public Long getReportedUserId() {
+        return reportedUserId;
+    }
+
+    public void setReportedUserId(Long reportedUserId) {
+        this.reportedUserId = reportedUserId;
+    }
+
+    private Long reportingUserId;
+    private Long reportedUserId;
     private String title;
     private String content;
-//    private String email;
 
-    public Long getSiteUser() {
-        return siteUser;
-    }
-
-    public void setSiteUser(Long siteUser) {
-        this.siteUser = siteUser;
-    }
 
     public String getTitle() {
         return title;
@@ -36,12 +45,4 @@ public class ReportUserDto {
     public void setContent(String content) {
         this.content = content;
     }
-
-//    public String getEmail() {
-//        return email;
-//    }
-//
-//    public void setEmail(String email) {
-//        this.email = email;
-//    }
 }

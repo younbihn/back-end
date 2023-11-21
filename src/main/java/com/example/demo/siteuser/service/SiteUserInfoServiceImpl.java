@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +33,10 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     private final ReportUserRepository reportUserRepository;
     private final NotificationRepository notificationRepository;
     private final ReviewRepository reviewRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository, PenaltyScoreRepository penaltyScoreRepository, ReportUserRepository reportUserRepository, NotificationRepository notificationRepository, ReviewRepository reviewRepository) {
+    public SiteUserInfoServiceImpl(SiteUserRepository siteUserRepository, MatchingRepository matchingRepository, ApplyRepository applyRepository, PenaltyScoreRepository penaltyScoreRepository, ReportUserRepository reportUserRepository, NotificationRepository notificationRepository, ReviewRepository reviewRepository, PasswordEncoder passwordEncoder) {
         this.siteUserRepository = siteUserRepository;
         this.matchingRepository = matchingRepository;
         this.applyRepository = applyRepository;
@@ -42,6 +44,7 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
         this.reportUserRepository = reportUserRepository;
         this.notificationRepository = notificationRepository;
         this.reviewRepository = reviewRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -126,7 +129,7 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
             siteUser.setAgeGroup(dto.getAgeGroup());
         }
         if (dto.getPassword() != null) {
-            siteUser.setPassword(dto.getPassword());
+            siteUser.setPassword(passwordEncoder.encode(dto.getPassword());
         }
         if (dto.getEmail() != null) {
             siteUser.setEmail(dto.getEmail());
@@ -186,27 +189,32 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
     @Override
     @Transactional
     public void createReportUser(ReportUserDto reportUserDto) {
-        // 현재 로그인한 유저의 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
+//        // 현재 로그인한 유저의 정보 가져오기
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Object principal = authentication.getPrincipal();
+//
+//        String currentUseremail;
+//
+//        if (principal instanceof UserDetails) {
+//            currentUseremail = ((UserDetails) principal).getUsername();
+//        } else {
+//            currentUseremail = principal.toString();
+//        }
+//
+//        // 로그인한 유저의 정보로 조회
+//        SiteUser siteUser = siteUserRepository.findByEmail(currentUseremail)
+//                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + currentUseremail));
+        SiteUser reportingUser = siteUserRepository.findById(reportUserDto.getReportingUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with user id: " + reportUserDto.getReportingUserId()));
 
-        String currentUseremail;
-
-        if (principal instanceof UserDetails) {
-            currentUseremail = ((UserDetails) principal).getUsername();
-        } else {
-            currentUseremail = principal.toString();
-        }
-
-        // 로그인한 유저의 정보로 조회
-        SiteUser siteUser = siteUserRepository.findByEmail(currentUseremail)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + currentUseremail));
+        SiteUser reportinedUser = siteUserRepository.findById(reportUserDto.getReportedUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with user id: " + reportUserDto.getReportedUserId()));
 
         ReportUser reportUser = new ReportUser();
-        reportUser.setSiteUser(siteUser);
+        reportUser.setReportingUser(reportingUser);
         reportUser.setTitle(reportUserDto.getTitle());
         reportUser.setContent(reportUserDto.getContent());
-        reportUser.setEmail(siteUser.getEmail());
+        reportUser.setReportedUser(reportinedUser);
         reportUser.setCreateTime(LocalDateTime.now());
 
         reportUserRepository.save(reportUser);

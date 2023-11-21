@@ -12,9 +12,29 @@ public class ReportUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public SiteUser getReportingUser() {
+        return reportingUser;
+    }
+
+    public void setReportingUser(SiteUser reportingUser) {
+        this.reportingUser = reportingUser;
+    }
+
+    public SiteUser getReportedUser() {
+        return reportedUser;
+    }
+
+    public void setReportedUser(SiteUser reportedUser) {
+        this.reportedUser = reportedUser;
+    }
+
     @ManyToOne
-    @JoinColumn(name = "SITE_USER_ID", nullable = false)
-    private SiteUser siteUser;
+    @JoinColumn(name = "REPORTING_SITE_USER_ID", nullable = false)
+    private SiteUser reportingUser;
+
+    @ManyToOne
+    @JoinColumn(name = "REPORTED_SITE_USER_ID", nullable = false)
+    private SiteUser reportedUser;
 
     @Column(name = "TITLE", length = 50, nullable = false)
     private String title;
@@ -22,8 +42,6 @@ public class ReportUser {
     @Column(name = "CONTENT", length = 1023)
     private String content;
 
-    @Column(name = "EMAIL", length = 1023)
-    private String email;
 
     @CreatedDate
     @Column(name = "CREATE_TIME") // yyyy-MM-dd HH:mm
@@ -37,12 +55,6 @@ public class ReportUser {
         this.id = id;
     }
 
-    public SiteUser getSiteUser() {
-        return siteUser;
-    }
-    public void setSiteUser(SiteUser siteUser) {
-        this.siteUser = siteUser;
-    }
     public String getTitle() {
         return title;
     }
@@ -57,13 +69,6 @@ public class ReportUser {
     }
     public LocalDateTime getCreateTime() {
         return createTime;
-    }
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public void setCreateTime(LocalDateTime createTime) {
