@@ -1,14 +1,11 @@
 package com.example.demo.entity;
 
 import com.example.demo.type.AgeGroup;
-import com.example.demo.type.Authority;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.Ntrp;
 import jakarta.persistence.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +15,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -81,6 +77,17 @@ public class SiteUser implements UserDetails {
 
     @Column(name = "ADDRESS", nullable = false)
     private String address;
+
+    public String getSiteusername() {
+        return siteusername;
+    }
+
+    public void setSiteusername(String siteusername) {
+        this.siteusername = siteusername;
+    }
+
+    @Column(name = "NAME", nullable = false)
+    private String siteusername;
 
     @Column(name = "ZIP_CODE", length = 50, nullable = false)
     private String zipCode;

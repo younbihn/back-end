@@ -31,7 +31,7 @@ public class Auth {
         private AgeGroup ageGroup;
         private Timestamp createDate;
         private String profileImg;
-
+        private String siteusername;
 
         public SiteUser fromUser() {
             return SiteUser.builder()
@@ -46,6 +46,7 @@ public class Auth {
                     .zipCode(this.zipCode)
                     .ageGroup(this.ageGroup)
                     .profileImg(this.profileImg)
+                    .siteusername(this.siteusername)
                     .build();
         }
     }

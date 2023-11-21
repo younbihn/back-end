@@ -16,6 +16,7 @@ CREATE TABLE `SITE_USER`
 (
     `ID`                BIGINT        NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `PASSWORD`          VARCHAR(1023) NOT NULL COMMENT '암호화해야함',
+    `NAME`              varchar(50)   NOT NULL,
     `NICKNAME`          varchar(50)   NOT NULL COMMENT '숫자와 문자로만',
     `EMAIL`             varchar(255)  NOT NULL,
     `PHONE_NUMBER`      varchar(50)   NOT NULL,
@@ -117,10 +118,10 @@ CREATE TABLE `REVIEW`
 CREATE TABLE `REPORT_USER`
 (
     `ID`           BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `SITE_USER_ID` BIGINT      NOT NULL,
+    `REPORTING_SITE_USER_ID` BIGINT      NOT NULL,
+    `REPORTED_SITE_USER_ID` BIGINT      NOT NULL,
     `TITLE`        varchar(50) NOT NULL,
     `CONTENT`      varchar(1023) NULL,
-    `EMAIL`             varchar(255)  NOT NULL,
     `CREATE_TIME`  TIMESTAMP   NOT NULL COMMENT 'YYYY-MM-DD HH:MM:SS'
 );
 
