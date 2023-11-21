@@ -129,7 +129,7 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
             siteUser.setAgeGroup(dto.getAgeGroup());
         }
         if (dto.getPassword() != null) {
-            siteUser.setPassword(passwordEncoder.encode(dto.getPassword());
+            siteUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
         if (dto.getEmail() != null) {
             siteUser.setEmail(dto.getEmail());
