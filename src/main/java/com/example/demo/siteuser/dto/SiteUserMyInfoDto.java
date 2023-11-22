@@ -27,7 +27,7 @@ public class SiteUserMyInfoDto {
     private String zipCode;
     private AgeGroup ageGroup;
     private String profileImg;
-    private LocalDateTime createDate;
+    private String createDate;
     private Boolean isPhoneVerified;
 
     public static SiteUserMyInfoDto fromEntity(SiteUser siteUser) {
@@ -48,7 +48,7 @@ public class SiteUserMyInfoDto {
                 .zipCode(siteUser.getZipCode())
                 .ageGroup(siteUser.getAgeGroup())
                 .profileImg(siteUser.getProfileImg())
-                .createDate(siteUser.getCreateDate())
+                .createDate(siteUser.getCreateDate().toString())
                 .isPhoneVerified(siteUser.getIsPhoneVerified())
                 .build();
     }

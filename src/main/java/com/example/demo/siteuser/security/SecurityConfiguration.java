@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/auth/signup", "/api/auth/signin/**", "/api/auth/reissue","/api/auth/signout", "/api/auth/quit", "/api/auth/upload-profile-image", "/api/matches/list", "/api/matches/**", "/api/users/**", "/api/aws/**").permitAll()
+                        .requestMatchers("/api/auth/signup", "/api/auth/signin/**", "/api/auth/reissue","/api/auth/signout", "/api/auth/quit", "/api/auth/upload-profile-image", "/api/matches/list", "/api/matches/**", "/api/users/**", "/api/aws/**", "/api/auth/check-nickname").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(this.authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(this.jwtExceptionFilter, JwtAuthenticationFilter.class)
