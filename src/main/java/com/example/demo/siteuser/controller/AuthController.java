@@ -5,6 +5,7 @@ import com.example.demo.common.ResponseUtil;
 import com.example.demo.aws.S3Uploader;
 import com.example.demo.entity.Auth;
 import com.example.demo.entity.SiteUser;
+import com.example.demo.exception.impl.NicknameUnavailableException;
 import com.example.demo.oauth2.dto.AccessToken;
 import com.example.demo.oauth2.dto.ProfileDto;
 import com.example.demo.oauth2.service.ProviderService;
@@ -175,8 +176,12 @@ public class AuthController {
     @PostMapping(path = "/check-nickname")
     public ResponseEntity<ResponseDto<String>> checkNicknameExistence(@RequestBody NicknameRequestDto nicknameRequestDto) {
         boolean exists = memberService.isNicknameExist(nicknameRequestDto.getNickname());
-        String message = exists ? "사용 불가능한 닉네임 입니다." : "사용 가능한 닉네임 입니다.";
-        return ResponseEntity.ok(ResponseUtil.SUCCESS(message));
+
+        if (exists) {
+            throw new NicknameUnavailableException();
+        } else {
+            return ResponseEntity.ok(ResponseUtil.SUCCESS("사용 가능한 닉네임 입니다."));
+        }
     }
 
 /*
