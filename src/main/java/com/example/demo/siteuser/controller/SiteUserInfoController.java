@@ -125,7 +125,7 @@ public class SiteUserInfoController {
     }
 
     @PostMapping("/penalty/{userId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> applyPenalty(@PathVariable Long userId, @RequestBody SiteUserPenaltyDto siteUserPenaltyDto) {
         try {
             // DTO에서 penaltyCode를 가져와서 enum으로 변환
