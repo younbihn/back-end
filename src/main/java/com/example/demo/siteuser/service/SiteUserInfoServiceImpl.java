@@ -137,6 +137,10 @@ public class SiteUserInfoServiceImpl implements SiteUserInfoService {
         if (dto.getPhoneNumber() != null) {
             siteUser.setPhoneNumber(dto.getPhoneNumber());
         }
+
+        if (dto.getProfileImg() != null) {
+            siteUser.setProfileImg(dto.getProfileImg());
+        }
     }
 
     @Override
