@@ -21,10 +21,12 @@ public class SiteUserModifyDto{
     private Ntrp ntrp;
     private GenderType gender;
     private AgeGroup ageGroup;
+    private String profileImg;
 
     public static SiteUserModifyDto fromEntity(SiteUser siteUser) {
         return SiteUserModifyDto.builder()
                 .password(siteUser.getPassword())
+                .profileImg(siteUser.getProfileImg())
                 .email(siteUser.getEmail())
                 .nickname(siteUser.getNickname())
                 .address(siteUser.getAddress())
