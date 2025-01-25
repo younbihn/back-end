@@ -2,14 +2,13 @@ package com.example.demo.apply.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.example.demo.apply.repository.ApplyRepository;
+import com.example.demo.common.FindEntity;
 import com.example.demo.entity.Apply;
 import com.example.demo.entity.Matching;
 import com.example.demo.entity.SiteUser;
@@ -20,14 +19,14 @@ import com.example.demo.exception.impl.ClosedMatchingException;
 import com.example.demo.exception.impl.OverRecruitNumberException;
 import com.example.demo.exception.impl.YourOwnPostingCancelException;
 import com.example.demo.matching.repository.MatchingRepository;
+import com.example.demo.notification.service.NotificationService;
+import com.example.demo.siteuser.repository.SiteUserRepository;
 import com.example.demo.type.AgeGroup;
 import com.example.demo.type.ApplyStatus;
 import com.example.demo.type.GenderType;
 import com.example.demo.type.MatchingType;
 import com.example.demo.type.Ntrp;
 import com.example.demo.type.RecruitStatus;
-import com.example.demo.util.FindEntityUtils;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -52,7 +51,13 @@ class ApplyServiceImplTest {
     private MatchingRepository matchingRepository;
 
     @Mock
-    private FindEntityUtils findEntityUtils;
+    private FindEntity findEntity;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private SiteUserRepository siteUserRepository;
 
     @InjectMocks
     private ApplyServiceImpl applyService;
@@ -65,16 +70,16 @@ class ApplyServiceImplTest {
 
         Matching matching = getMatching(siteUser);
 
-        given(findEntityUtils.findUser(1L))
-                .willReturn(siteUser);
+        given(siteUserRepository.findByEmail("emial@gmail.com"))
+                .willReturn(Optional.ofNullable(siteUser));
 
-        given(findEntityUtils.findMatching(1L))
+        given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         ArgumentCaptor<Apply> captor = ArgumentCaptor.forClass(Apply.class);
 
         // when
-        applyService.apply(1L, 1L);
+        applyService.apply("emial@gmail.com", 1L);
 
         // then
         verify(applyRepository, times(1)).save(captor.capture()); // save 메서드가 한 번 실행되는 지 검증
@@ -83,18 +88,18 @@ class ApplyServiceImplTest {
     @Test
     void applyFailByDuplication() {
         //given
-        SiteUser siteUser = getSiteUser();
+        SiteUser siteUser = getSiteUser(); // 1L
 
-        SiteUser siteUserForApply = getSiteUserForApply();
+        SiteUser siteUserForApply = getSiteUserForApply(); // 2L
 
         Matching matching = getMatching(siteUser);
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findUser(2L))
-                .willReturn(siteUserForApply);
+        given(siteUserRepository.findByEmail("emial2@gmail.com"))
+                .willReturn(Optional.ofNullable(siteUserForApply));
 
-        given(findEntityUtils.findMatching(1L))
+        given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         given(applyRepository.existsBySiteUser_IdAndMatching_Id(2L, 1L))
@@ -105,7 +110,7 @@ class ApplyServiceImplTest {
 
         // when
         AlreadyExistedApplyException exception = assertThrows(AlreadyExistedApplyException.class,
-                () -> applyService.apply(2L, 1L));
+                () -> applyService.apply("emial2@gmail.com", 1L));
 
         // then
         assertEquals(exception.getMessage(), "이미 참여 신청한 경기입니다.");
@@ -122,15 +127,15 @@ class ApplyServiceImplTest {
 
         Matching matching = getClosedMatching(siteUser);
 
-        given(findEntityUtils.findUser(2L))
-                .willReturn(siteUserForApply);
+        given(siteUserRepository.findByEmail("emial2@gmail.com"))
+                .willReturn(Optional.ofNullable(siteUserForApply));
 
-        given(findEntityUtils.findMatching(1L))
+        given(findEntity.findMatching(1L))
                 .willReturn(matching);
 
         // when
         ClosedMatchingException exception = assertThrows(ClosedMatchingException.class,
-                () -> applyService.apply(2L, 1L));
+                () -> applyService.apply("emial2@gmail.com", 1L));
 
         // then
         assertEquals(exception.getMessage(), "신청 마감된 경기입니다.");
@@ -150,14 +155,14 @@ class ApplyServiceImplTest {
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
 
         // when
         applyService.cancel(1L);
 
         // then
-        assertEquals(ApplyStatus.CANCELED, apply.getStatus());
+        assertEquals(ApplyStatus.CANCELED, apply.getApplyStatus());
     }
 
     @Test
@@ -171,7 +176,7 @@ class ApplyServiceImplTest {
 
         Apply apply = getApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
         // when
         AlreadyClosedMatchingException exception = assertThrows(AlreadyClosedMatchingException.class,
@@ -193,7 +198,7 @@ class ApplyServiceImplTest {
         apply.changeApplyStatus(ApplyStatus.ACCEPTED);
 
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
 
         // when
@@ -215,7 +220,7 @@ class ApplyServiceImplTest {
 
         Apply apply = getCancelApply(matching, siteUserForApply);
 
-        given(findEntityUtils.findApply(1L))
+        given(findEntity.findApply(1L))
                 .willReturn(apply);
         // when
         AlreadyCanceledApplyException exception = assertThrows(AlreadyCanceledApplyException.class,
@@ -230,13 +235,13 @@ class ApplyServiceImplTest {
     @Test
     void applyAcceptSuccess() {
         //given
-        given(matchingRepository.findById(anyLong()))
-                .willReturn(Optional.of(Matching.builder()
+        given(findEntity.findMatching(anyLong()))
+                .willReturn(Matching.builder()
                         .id(1L)
                         .recruitStatus(RecruitStatus.OPEN)
-                        .recruitNum(3)
+                        .recruitNum(4)
                         .date(LocalDate.now())
-                        .build()));
+                        .build());
 
         List<Long> appliedList = new ArrayList<>();
         appliedList.add(1L);
@@ -244,33 +249,33 @@ class ApplyServiceImplTest {
         List<Long> confirmedList = new ArrayList<>();
         confirmedList.add(2L);
 
-        given(applyRepository.findById(1L))
-                .willReturn(Optional.of(Apply.builder()
+        given(findEntity.findApply(1L))
+                .willReturn(Apply.builder()
                         .id(1L)
-                        .build()));
+                        .build());
 
-        given(applyRepository.findById(2L))
-                .willReturn(Optional.of(Apply.builder()
+        given(findEntity.findApply(2L))
+                .willReturn(Apply.builder()
                         .id(2L)
-                        .build()));
+                        .build());
 
         // when
         applyService.accept(appliedList, confirmedList, 1L);
 
         // then
-        verify(applyRepository, times(2)).findById(anyLong());
+        verify(findEntity, times(3)).findApply(anyLong());
     }
 
     @Test
     void applyAcceptFailedByOverRecruitNumber() {
         //given
-        given(matchingRepository.findById(anyLong()))
-                .willReturn(Optional.of(Matching.builder()
+        given(findEntity.findMatching(anyLong()))
+                .willReturn(Matching.builder()
                         .id(1L)
                         .recruitStatus(RecruitStatus.OPEN)
                         .recruitNum(2)
                         .date(LocalDate.now())
-                        .build()));
+                        .build());
 
         List<Long> appliedList = new ArrayList<>();
         appliedList.add(1L);
@@ -294,7 +299,7 @@ class ApplyServiceImplTest {
                 .id(1L)
                 .matching(matching)
                 .siteUser(siteUser)
-                .status(ApplyStatus.PENDING)
+                .applyStatus(ApplyStatus.PENDING)
                 .build();
     }
 
@@ -303,7 +308,7 @@ class ApplyServiceImplTest {
                 .id(1L)
                 .matching(matching)
                 .siteUser(siteUser)
-                .status(ApplyStatus.CANCELED)
+                .applyStatus(ApplyStatus.CANCELED)
                 .build();
     }
 
@@ -316,10 +321,10 @@ class ApplyServiceImplTest {
                 .phoneNumber("010-1234-5678")
                 .gender(GenderType.FEMALE)
                 .ntrp(Ntrp.ADVANCE)
-                .locationSi("안양시")
-                .locationGu("동안구")
+                .address("안양시")
+                .zipCode("12345")
                 .ageGroup(AgeGroup.TWENTIES)
-                .createDate(Timestamp.valueOf(LocalDateTime.now()))
+                .createDate(LocalDateTime.now())
                 .isPhoneVerified(true)
                 .build();
     }
@@ -329,14 +334,14 @@ class ApplyServiceImplTest {
                 .id(2L)
                 .password("1234")
                 .nickname("nickname")
-                .email("emial@gmail.com")
+                .email("emial2@gmail.com")
                 .phoneNumber("010-1234-5678")
                 .gender(GenderType.FEMALE)
                 .ntrp(Ntrp.ADVANCE)
-                .locationSi("안양시")
-                .locationGu("동안구")
+                .address("안양시")
+                .zipCode("12345")
                 .ageGroup(AgeGroup.TWENTIES)
-                .createDate(Timestamp.valueOf(LocalDateTime.now()))
+                .createDate(LocalDateTime.now())
                 .isPhoneVerified(true)
                 .build();
     }

@@ -21,7 +21,7 @@ public class ApplyDto {
                 .matching(apply.getMatching())
                 .siteUser(apply.getSiteUser())
                 .createTime(apply.getCreateTime().toString())
-                .applyStatus(apply.getStatus())
+                .applyStatus(apply.getApplyStatus())
                 .build();
     }
 }

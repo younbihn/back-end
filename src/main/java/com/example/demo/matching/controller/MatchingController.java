@@ -1,122 +1,130 @@
 package com.example.demo.matching.controller;
 
-import com.example.demo.aws.S3Uploader;
-import com.example.demo.exception.impl.S3UploadFailException;
+import com.example.demo.common.ResponseDto;
+import com.example.demo.common.ResponseUtil;
+import com.example.demo.matching.dto.*;
+import com.example.demo.openfeign.service.address.AddressService;
 import com.example.demo.matching.dto.ApplyContents;
-import com.example.demo.matching.dto.KeywordDto;
-import com.example.demo.matching.dto.MatchingDetailDto;
+import com.example.demo.matching.dto.MatchingDetailRequestDto;
 import com.example.demo.matching.dto.MatchingPreviewDto;
-import com.example.demo.matching.dto.RoadAddressDto;
-import com.example.demo.matching.service.AddressServiceImpl;
-import com.example.demo.matching.service.MatchingServiceImpl;
-import java.io.IOException;
+import com.example.demo.openfeign.dto.address.AddressResponseDto;
+import com.example.demo.matching.service.MatchingService;
+
+import java.security.Principal;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/matches")
 public class MatchingController {
 
-    private final MatchingServiceImpl matchingServiceImpl;
-    private final AddressServiceImpl addressServiceImpl;
-    private final S3Uploader s3Uploader;
+    private final MatchingService matchingService;
+    private final AddressService addressService;
 
     @PostMapping
-    public ResponseEntity createMatching (
-            @RequestBody MatchingDetailDto matchingDetailDto,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+    @PreAuthorize("hasRole('USER')")
+    public void createMatching(
+            @RequestBody MatchingDetailRequestDto matchingDetailRequestDto,
+            Principal principal) {
 
-        Long userId = 1L;
-        matchingServiceImpl.create(userId, matchingDetailDto);
-
-        if(file != null){
-            try{
-                s3Uploader.uploadFile(file);
-            } catch(IOException exception){
-                throw new S3UploadFailException();
-            }
-        }
-
-        return ResponseEntity.ok().build();
+        String email = principal.getName();
+        matchingService.create(email, matchingDetailRequestDto);
     }
 
     @GetMapping("/{matchingId}")
-    public ResponseEntity<MatchingDetailDto> getDetailedMatching(
-            @PathVariable Long matchingId){
+    public ResponseDto<MatchingDetailResponseDto> getDetailedMatching(
+            @PathVariable Long matchingId) {
 
-        var result = matchingServiceImpl.getDetail(matchingId);
+        MatchingDetailResponseDto result = matchingService.getDetail(matchingId);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 
     @PatchMapping("/{matchingId}")
-    public ResponseEntity editMatching(
-            @RequestBody MatchingDetailDto matchingDetailDto,
+    @PreAuthorize("hasRole('USER')")
+    public void editMatching(
+            @RequestBody MatchingDetailRequestDto matchingDetailRequestDto,
             @PathVariable Long matchingId,
-            @RequestParam(value = "file", required = false) MultipartFile file){
+            Principal principal) {
 
-        Long userId = 1L;
-        matchingServiceImpl.update(userId, matchingId, matchingDetailDto);
-
-        // 구장 이미지 변경
-        //TODO: 이미 존재하는 이미지인지 검증하는 로직이 이게 맞나..?
-        if(file!=null && !file.toString().equals(matchingDetailDto.getLocationImg())){
-            try{
-                //TODO : S3에 있는 파일 삭제
-                s3Uploader.uploadFile(file);
-                matchingDetailDto.setLocationImg(file.toString());
-            } catch(IOException exception){
-                throw new S3UploadFailException();
-            }
-        }
-
-        return ResponseEntity.ok().build();
+        String email = principal.getName();
+        matchingService.update(email, matchingId, matchingDetailRequestDto);
     }
 
     @DeleteMapping("/{matchingId}")
-    public ResponseEntity deleteMatching(
-            @PathVariable Long matchingId){
+    @PreAuthorize("hasRole('USER')")
+    public void deleteMatching(
+            @PathVariable Long matchingId,
+            Principal principal) {
 
-        Long userId = 1L;
-
-        matchingServiceImpl.delete(userId, matchingId);
-
-        return ResponseEntity.ok().build();
+        String email = principal.getName();
+        matchingService.delete(email, matchingId);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<Page<MatchingPreviewDto>> getMatchingList(
-            @PageableDefault(page = 0, size = 10) Pageable pageable){
+    @PostMapping("/list")
+    public ResponseDto<Page<MatchingPreviewDto>> getMatchingList(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "5") int size,
+            @RequestParam(required = false) String sort,
+            @RequestBody(required = false) FilterRequestDto filterRequestDto) {
 
-        var result = matchingServiceImpl.getList(pageable);
+        // 정렬 없을 때
+        PageRequest pageRequest = PageRequest.of(page, size);
 
-        return ResponseEntity.ok(result);
+        // 등록순 정렬
+        if ("register".equals(sort)) {
+            pageRequest = PageRequest.of(page, size, Sort.by("createTime").ascending());
+        }
+        // 마감순 정렬
+        else if ("due-date".equals(sort)) {
+            pageRequest = PageRequest.of(page, size, Sort.by("recruitDueDateTime").ascending());
+        }
+        // 거리순 정렬
+        else if ("distance".equals(sort)) {
+            if (filterRequestDto.getLocation().getLat() != null && filterRequestDto.getLocation().getLon() != null)
+                return ResponseUtil.SUCCESS(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
+        }
+
+        return ResponseUtil.SUCCESS(matchingService.findFilteredMatching(filterRequestDto, pageRequest));
+    }
+
+    @PostMapping("/list/map")
+    public ResponseDto<Page<MatchingPreviewDto>> getCloseMatchingList(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "3") double distance,
+            @RequestBody(required = false) LocationDto locationDto) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return ResponseUtil.SUCCESS(matchingService.findCloseMatching(locationDto, distance, pageRequest));
     }
 
     @SneakyThrows
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{matching_id}/apply")
-    public ResponseEntity<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId) {
+    public ResponseDto<ApplyContents> getApplyContents(@PathVariable(value = "matching_id") long matchingId,
+                                                       Principal principal) {
 
-        Long userId = 1L;
+        String email = principal.getName();
 
-        var result = matchingServiceImpl.getApplyContents(userId, matchingId);
+        var result = matchingService.getApplyContents(email, matchingId);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 
-    @GetMapping("/location")
-    public ResponseEntity<List<RoadAddressDto>> getAddress(@RequestBody KeywordDto keywordDto) {
+    @GetMapping("/address")
+    public ResponseDto<List<AddressResponseDto>> getAddress(@RequestParam String keyword) {
 
-        var result = addressServiceImpl.getAddress(keywordDto);
+        var result = addressService.getAddressService(keyword);
 
-        return ResponseEntity.ok(result);
+        return ResponseUtil.SUCCESS(result);
     }
 }

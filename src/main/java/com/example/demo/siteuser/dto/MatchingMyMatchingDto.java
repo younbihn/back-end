@@ -12,16 +12,18 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class MatchingMyMatchingDto {
+    private Long id;
     private String title;
     private String location;
-    private LocalDate date;
+    private String date;
     private MatchingType matchingType;
 
     public static MatchingMyMatchingDto fromEntity(Matching matching) {
         return MatchingMyMatchingDto.builder()
+                .id(matching.getId())
                 .title(matching.getTitle())
                 .location(matching.getLocation())
-                .date(matching.getDate().toLocalDate())
+                .date(matching.getDate().toString())
                 .matchingType(matching.getMatchingType())
                 .build();
     }

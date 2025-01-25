@@ -3,25 +3,19 @@ package com.example.demo.aws;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Optional;
 
 
 @RequiredArgsConstructor
@@ -76,5 +70,17 @@ public class S3Uploader {
             System.out.println("object = " + object.toString());
         }
         return amazonS3.getUrl(bucket, fileName).toString();
+    }
+
+    public void deleteFile(String fileName) {
+        try {
+            amazonS3.deleteObject(bucket, fileName);
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+            throw new RuntimeException("S3에서 파일 삭제 중 에러 발생", e);
+        } catch (SdkClientException e) {
+            e.printStackTrace();
+            throw new RuntimeException("S3 클라이언트에서 에러 발생", e);
+        }
     }
 }

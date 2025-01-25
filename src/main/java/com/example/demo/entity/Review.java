@@ -1,16 +1,14 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 
 @Entity
+@Table(name = "REVIEW")
 public class Review {
 
     @Id
@@ -32,6 +30,77 @@ public class Review {
     @Column(name = "SCORE", nullable = false)
     private Integer score;
 
-    @Column(name = "CREATE_TIME", nullable = false)
-    private Timestamp createTime;
+    @CreatedDate
+    @Column(name = "CREATE_TIME")
+    private LocalDateTime createTime;
+
+    @Column(name = "POSITIVE_SCORE", nullable = false)
+    private Integer positiveScore;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setMatching(Matching matching) {
+        this.matching = matching;
+    }
+
+    public void setObjectUser(SiteUser objectUser) {
+        this.objectUser = objectUser;
+    }
+
+    public void setSubjectUser(SiteUser subjectUser) {
+        this.subjectUser = subjectUser;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public void setPositiveScore(Integer positiveScore) {
+        this.positiveScore = positiveScore;
+    }
+
+    public void setNegativeScore(Integer negativeScore) {
+        this.negativeScore = negativeScore;
+    }
+
+    @Column(name = "NEGATIVE_SCORE", nullable = false)
+    private Integer negativeScore;
+
+    public Long getId() {
+        return id;
+    }
+
+    public Matching getMatching() {
+        return matching;
+    }
+
+    public SiteUser getObjectUser() {
+        return objectUser;
+    }
+
+    public SiteUser getSubjectUser() {
+        return subjectUser;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public Integer getPositiveScore() {
+        return positiveScore;
+    }
+
+    public Integer getNegativeScore() {
+        return negativeScore;
+    }
 }

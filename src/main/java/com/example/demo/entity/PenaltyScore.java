@@ -20,7 +20,7 @@ public class PenaltyScore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "SITE_USER_ID", nullable = false)
@@ -29,14 +29,26 @@ public class PenaltyScore {
     @Column(name = "SCORE", nullable = false)
     private int score;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "STATUS", length = 50, columnDefinition = "DEFAULT 'PENDING'")
-    private ApplyStatus status;
-
     @Column(name = "CREATE_TIME", nullable = false)
     private Timestamp createTime;
 
     @Enumerated(EnumType.ORDINAL) // 패널티는 종류가 달라질 수 있으므로 확장성을 위해 int 로 저장
     @Column(name = "CODE", length = 50)
     private PenaltyCode code;
+
+    public void setSiteUser(SiteUser siteUser) {
+        this.siteUser = siteUser;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
+
+    public void setCode(PenaltyCode code) {
+        this.code = code;
+    }
 }
